@@ -6748,16 +6748,20 @@ for i, choice in enumerate(current_story["choices"]):
                 st.markdown(f"*{m}的回应*:{h_r} *(+ {h_score} 积分)*")
                 st.markdown("---")
 
-    if st.button("🔄 重新选择角色/身份", use_container_width=True):
-        st.session_state.stage = "menu"
-        st.session_state.last_dialogue_result = None
-        st.rerun()
+# 假设这里是剧情或互动阶段内部
+if st.button("🔄 重新选择角色/身份", use_container_width=True):
+    st.session_state.stage = "menu"
+    st.session_state.last_dialogue_result = None
+    st.rerun()
 
+# 这里的 ending 阶段判断，应该和外层的阶段判断对齐，而不是紧挨着上面的 button
 elif st.session_state.stage == "ending":
     m = st.session_state.target_member
     score = st.session_state.total_score
 
     st.markdown(
+        # 你的结局 markdown 内容...
+    )
         f"""
     <div class="card-box" style="text-align: center;">
         <h2>🎉 恭喜达成完美心动结局！</h2>
