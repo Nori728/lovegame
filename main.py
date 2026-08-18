@@ -6638,7 +6638,7 @@ for i, choice in enumerate(current_story["choices"]):
             final_score += 15
         elif st.session_state.active_buff == "🥤 冰爽解暑饮料":
             final_score += 10
-                    st.session_state.active_buff = None
+                st.session_state.active_buff = None
 
                 st.session_state.total_score += final_score
                 st.session_state.dialogue_history.append(
