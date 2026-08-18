@@ -95,43 +95,43 @@ MEMBERS = {
     "丈君": {
         "trait": "⚾ 大阪搞笑担当 · 热血野球少年",
         "color": "#0284c7",
-        "img": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&q=80",
+        "img": "https://i.pinimg.com/1200x/26/b4/6e/26b46e13a5c9b81f9ef8cf4b2031a618.jpg",
         "greeting": "『哟！今天也要跟着本大爷一起充满活力地前进哦！』"
     },
     "大酱": {
         "trait": "☀️ 绝对C位 · 演技派小太阳",
         "color": "#e11d48",
-        "img": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&q=80",
+        "img": "https://i.pinimg.com/1200x/cd/08/52/cd0852d71e894d1046c702fbeb9f6a25.jpg",
         "greeting": "『能在这里遇见你，感觉今天的幸运值已经加满了～』"
     },
     "大桥": {
         "trait": "🍮 微笑队长 · 美食家兼主唱",
         "color": "#16a34a",
-        "img": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&q=80",
+        "img": "https://i.pinimg.com/736x/6e/1e/50/6e1e509e5aa92238642977764147e810.jpg",
         "greeting": "『布丁布丁！今天有好好吃饭吗？没有的话我带你去吃好吃的！』"
     },
     "恭平": {
         "trait": "🎮 自恋帅哥 · 游戏宅系帅哥",
         "color": "#9333ea",
-        "img": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&q=80",
+        "img": "https://i.pinimg.com/1200x/1a/3f/c6/1a3fc6b2bef0b4e446158128f4f0316f.jpg",
         "greeting": "『照照镜子……嗯，今天依然很帅！要来跟我组队打游戏吗？』"
     },
     "流星": {
         "trait": "✨ 可爱天花板 · 美妆小达人",
         "color": "#ec4899",
-        "img": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&q=80",
+        "img": "https://i.pinimg.com/736x/5a/d5/65/5ad565a277abf02809e1557df4cef95d.jpg",
         "greeting": "『wink~ 今天的妆容可是花了心思的，不许移开视线哦！』"
     },
     "米七": {
         "trait": "🌸 撕漫男神 · 纯爱系长腿弟弟",
         "color": "#2563eb",
-        "img": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&q=80",
+        "img": "https://i.pinimg.com/1200x/f5/c4/df/f5c4df2c34cb393dcb1b36ca7ff8d1ce.jpg",
         "greeting": "『内个……看到你笑的话，我也会忍不住开心起来呢。』"
     },
     "谦杜": {
         "trait": "🎨 潮流担当 · 淘气时尚小恶魔",
         "color": "#d97706",
-        "img": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&q=80",
+        "img": "https://i.pinimg.com/736x/e2/98/21/e298211a5e8e79b141274153e959df2e.jpg",
         "greeting": "『今天的穿搭很不错嘛～不过要不要听听本时尚专家的建议？』"
     }
   }
