@@ -6627,6 +6627,7 @@ if st.session_state.stage == "playing":
 
 for i, choice in enumerate(current_story["choices"]):
     choice_text = choice.get("option", "")
+    reply_text = choice.get("reply", "")
     base_score = choice.get("affection", 0)
     
     if st.button(choice_text, key=f"choice_{act}_{i}"):
@@ -6636,18 +6637,20 @@ for i, choice in enumerate(current_story["choices"]):
             st.session_state.active_buff = None
         elif st.session_state.active_buff == "🎧 读心耳机":
             final_score += 15
+            st.session_state.active_buff = None
         elif st.session_state.active_buff == "🥤 冰爽解暑饮料":
             final_score += 10
-                st.session_state.active_buff = None
-
-                st.session_state.total_score += final_score
-                st.session_state.dialogue_history.append(
-                    (current_story["title"], choice_text, reply_text, final_score)
-                )
-
-                # 暂存互动结果，以便呈现沉浸式对话
-                st.session_state.last_dialogue_result = (choice_text, reply_text, final_score)
-
+            st.session_state.active_buff = None
+            
+        # 统一的结算逻辑（必须和 if/elif 保持同一缩进层级）
+        st.session_state.total_score += final_score
+        st.session_state.dialogue_history.append(
+            (current_story["title"], choice_text, reply_text, final_score)
+        )
+        
+        # 暂存互动结果，以便呈现沉浸式对话
+        st.session_state.last_dialogue_result = (choice_text, reply_text, final_score)
+        st.rerun()
                 # 随机事件触发逻辑
                 if act < MAX_ACT and random.random() < 0.4:
                     random_events_pool = [
