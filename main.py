@@ -6304,10 +6304,6 @@ selected_member = st.selectbox(
         "💖 选择你的心动男主角：", list(MEMBERS.keys())
     )
 
-selected_member = st.selectbox(
-        "💖 选择你的心动男主角：", list(MEMBERS.keys())
-    )
-
     # 实时渲染人物图片
 st.image(MEMBERS[selected_member]["img"], width=220)
 
