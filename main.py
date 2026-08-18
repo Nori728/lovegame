@@ -139,6 +139,8 @@ ROLES = ["经纪人", "青梅竹马", "在日学生or打工人"]
 MAX_ACT = 6  # 6幕完整流程
 ROLES = ["经纪人", "青梅竹马", "在日学生or打工人"]
 MAX_ACT = 6  # 6幕完整流程
+ROLES = ["经纪人", "青梅竹马", "在日学生or打工人"]
+MAX_ACT = 6  # 6幕完整流程
 
 # -----------------------------------------------------------------------------
 # 3. STORIES 剧情库
@@ -6624,10 +6626,11 @@ if st.session_state.stage == "playing":
         st.markdown("请做出你的心动回应：")
 
         for i, choice in enumerate(current_story["choices"]):
-    choice_text = choice.get("option", "")
-    base_score = choice.get("affection", 0)
-        if st.button(choice_text, key=f"choice_{act}_{i}", use_container_width=True):
-                final_score = base_score
+        choice_text = choice.get("option", "")
+        base_score = choice.get("affection", 0)
+    
+    if st.button(choice_text, key=f"choice_{act}_{i}"):
+        final_score = base_score
         if st.session_state.active_buff == "🍬 恋爱加倍糖果":
                     final_score *= 2
                     st.session_state.active_buff = None
