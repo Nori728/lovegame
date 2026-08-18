@@ -3835,13 +3835,13 @@ with col_sel1:
 with col_sel2:
     if 'MEMBERS' in globals():
         member_names = list(MEMBERS.keys())
-        target_member = st.selectbox(
-            "2️⃣ 请选择你想攻略的成员：", 
-            member_names,
-            index=member_names.index(st.session_state.target_member) if st.session_state.target_member in member_names else 0
-        )
-        st.session_state.target_member = target_member
-
+target_member = st.selectbox(
+    "2️⃣ 请选择你想攻略的成员：", 
+    member_names,
+    index=member_names.index(st.session_state.target_member) if st.session_state.target_member in member_names else 0,
+    key="target_member_selector"  # 加上这个 key 即可解决 ID 重复报错
+)
+st.session_state.target_member = target_member
 # 渲染选中成员的精美卡片（对应视频中的图片、特征与专属色展示）
 if 'MEMBERS' in globals() and st.session_state.target_member in MEMBERS:
     m_info = MEMBERS[st.session_state.target_member]
