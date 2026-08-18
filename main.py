@@ -6311,11 +6311,11 @@ selected_member = st.selectbox(
     # 实时渲染人物图片
 st.image(MEMBERS[selected_member]["img"], width=220)
 
-    selected_role = st.selectbox("🎭 选择你的专属身份：", ROLES)
+selected_role = st.selectbox("🎭 选择你的专属身份：", ROLES)
 
     st.markdown(f"**当前角色特色：** {MEMBERS[selected_member]['trait']}")
 
-    if st.button("🚀 开始心动企划", use_container_width=True):
+if st.button("🚀 开始心动企划", use_container_width=True):
         st.session_state.target_member = selected_member
         st.session_state.player_role = selected_role
         st.session_state.current_act = 1
@@ -6324,7 +6324,7 @@ st.image(MEMBERS[selected_member]["img"], width=220)
         st.session_state.dialogue_history = []
         st.session_state.last_dialogue_result = None
         st.rerun()
-    st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
 
 # -----------------------------------------------------------------------------
