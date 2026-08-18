@@ -4025,4 +4025,85 @@ if 'STORIES' in globals():
             else:
                 btn_text, reply_text, base_score = choice[0], "……（温柔地看着你笑）", 20
 
-            if st.button(btn_text, key=f"choice_{current_act}_{idx}", use_
+            if st.button(btn_text, key=f"choice_{current_act}_{idx}", use_container_width=True):
+                # 计算 Buff 加成
+                actual_score = base_score
+                if st.session_state.active_buff == "🍬 恋爱加倍糖果":
+                    actual_score *= 2
+                    st.session_state.active_buff = None  
+                    st.toast("🍬 恋爱加倍糖果生效！好感积分翻倍！", icon="✨")
+                elif st.session_state.active_buff == "🎧 读心耳机":
+                    actual_score += 15
+                    st.session_state.active_buff = None
+                    st.toast("🎧 读心耳机生效：额外 +15 积分！", icon="✨")
+                elif st.session_state.active_buff in ["☕ 专属应援手摇杯", "🥤 冰爽解暑饮料"]:
+                    actual_score += 10
+                    st.session_state.active_buff = None
+                    st.toast("☕ 道具加成生效：额外 +10 积分！", icon="✨")
+                elif st.session_state.active_buff == "🌙 星空定制项链":
+                    actual_score += 25
+                    st.session_state.active_buff = None
+                    st.toast("🌙 星空定制项链生效：大幅提升结局甜度，额外 +25 积分！", icon="💖")
+
+                # 累加积分  
+                st.session_state.total_score += actual_score
+
+                # 记录历史与最新结果
+                st.session_state.last_dialogue_result = (
+                    act_data['title'],
+                    btn_text,
+                    reply_text,
+                    actual_score
+                )
+
+                # 推进到下一天/下一幕
+                st.session_state.current_act += 1
+
+                # 随机触发突发事件的概率 (40% 概率)
+                if random.random() < 0.4 and st.session_state.current_act < 6:
+                    events_pool = [
+                        {
+                            "title": "🚨 突发危机：文春记者的长焦镜头",
+                            "desc": f"在约会途中，街角突然闪过一道可疑的快门闪光灯！有八卦记者正在试图偷拍你和 {st.session_state.target_member} 的亲密合影！"
+                        },
+                        {
+                            "title": "⚡ 突发危机：热情粉丝与私生饭围堵",
+                            "desc": f"由于近期人气暴涨，你们在离开咖啡厅时突然被大批粉丝和围观人群堵在门口，场面一度有些混乱！"
+                        },
+                        {
+                            "title": "🌧️ 突发危机：突如其来的暴雨袭城",
+                            "desc": f"原本晴朗的天空瞬间下起倾盆大雨，街上的行人纷纷避雨，你们的计划被打乱了。"
+                        }
+                    ]
+                    st.session_state.random_event = random.choice(events_pool)
+
+                st.rerun()
+
+    else:
+        # 剧本通关结局界面
+        st.markdown(
+            f"""
+            <div style="background: linear-gradient(135deg, #fce7f3 100%, #fbcfe8 0%); border: 2px solid #f472b6; padding: 25px; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(244,114,182,0.2);">
+                <h2 style="color: #be185d; margin-top: 0;">🎉 恭喜达成完美结局！</h2>
+                <p style="font-size: 1.1rem; color: #4b5563; line-height: 1.6;">
+                    你与 <b>{st.session_state.target_member}</b> 在 <b>{selected_category}</b> 身份线中历经了种种浪漫与心动，顺利完成了全剧本通关！
+                </p>
+                <p style="font-size: 1.2rem; color: #9d174d; font-weight: bold;">
+                    🏆 最终收集心动积分：{st.session_state.total_score} 分
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        
+        col_end1, col_end2 = st.columns(2)
+        with col_end1:
+            if st.button("🔄 重新体验当前剧本", use_container_width=True):
+                st.session_state.current_act = 1
+                st.session_state.last_dialogue_result = None
+                st.rerun()
+        with col_end2:
+            if st.button("🎁 返回上方抽取高级恋爱道具", use_container_width=True):
+                st.session_state.current_act = 1
+                st.session_state.last_dialogue_result = None
+                st.rerun()
