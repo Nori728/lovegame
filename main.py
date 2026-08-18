@@ -6683,7 +6683,7 @@ def get_member_story(member, role, act):
     # 利用哈希确保同一角色在同一幕每次读取相对稳定，但不同角色/幕绝对不重复
     intro_text = intro_pool[(hash(member) + act * 3) % len(intro_pool)]
 
-   # 获取当前这一幕的数据
+# 获取当前这一幕的数据
 current_act_data = STORIES[selected_role][selected_identity][st.session_state.act]
 
 # 从数据里读取 choices，而不是从外部变量读取
