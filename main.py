@@ -6652,7 +6652,7 @@ for i, choice in enumerate(current_story["choices"]):
         st.session_state.last_dialogue_result = (choice_text, reply_text, final_score)
         st.rerun()
                 # 随机事件触发逻辑
-                if act < MAX_ACT and random.random() < 0.4:
+                if act < MAX_ACT and random.random()< 0.4:
                     random_events_pool = [
                         {
                             "title": "突发暴雨的屋檐避难",
