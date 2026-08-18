@@ -155,14 +155,32 @@ MEMBERS = {
   # -----------------------------------------------------------------------------
 # 3. 更新你的角色列表
 ROLES = ["经纪人", "青梅竹马", "在日留学生or打工人"]
-st.error(f"当前 MEMBERS 的类型是: {type(MEMBERS)}")
-selected_member = st.selectbox("💖 选择你的心动男主角：", MEMBERS)
-st.write("--- 调试信息 ---")
-st.write("1. 当前选中的名字:", selected_member)
-st.write("2. MEMBERS 的类型:", type(MEMBERS))
-st.write("3. MEMBERS 的所有键:", list(MEMBERS.keys()) if isinstance(MEMBERS, dict) else "致命错误：MEMBERS 当前不是字典！")
-st.image(MEMBERS[selected_member]["img"], width=220)
 
+# 下拉菜单选择心动男主角
+selected_member = st.selectbox("💖 选择你的心动男主角：", list(MEMBERS.keys()))
+
+# 实时渲染人物图片和信息（使用正确的英文键）
+if selected_member in MEMBERS:
+    st.image(MEMBERS[selected_member]["img"], width=220)
+    st.markdown(f"**当前角色特色：** {MEMBERS[selected_member]['trait']}")
+    st.info(f"{selected_member}：{MEMBERS[selected_member]['greeting']}")
+
+# 选择身份
+selected_role = st.selectbox("💙 选择你的专属身份：", ROLES)
+
+# 选择身份
+selected_role = st.selectbox("💙 选择你的专属身份：", ROLES)
+
+# 开始游戏的按钮
+if st.button("🚀 开始心动企划", use_container_width=True):
+    st.session_state.target_member = selected_member
+    st.session_state.player_role = selected_role
+    st.session_state.current_act = 1
+    st.session_state.total_score = 30
+    st.session_state.stage = "playing"
+    st.session_state.dialogue_history = []
+    st.session_state.last_dialogue_result = None
+    st.rerun()
 # -----------------------------------------------------------------------------
 # 3. 深度定制的个性化小说剧情数据库 (智能剧情生成引擎)
 # -----------------------------------------------------------------------------
