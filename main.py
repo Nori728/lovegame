@@ -6313,7 +6313,7 @@ st.image(MEMBERS[selected_member]["img"], width=220)
 
 selected_role = st.selectbox("🎭 选择你的专属身份：", ROLES)
 
-    st.markdown(f"**当前角色特色：** {MEMBERS[selected_member]['trait']}")
+st.markdown(f"**当前角色特色：** {MEMBERS[selected_member]['trait']}")
 
 if st.button("🚀 开始心动企划", use_container_width=True):
         st.session_state.target_member = selected_member
