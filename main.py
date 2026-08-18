@@ -12,6 +12,7 @@ st.markdown("""
     .stApp {
         background: linear-gradient(135deg, #fff5f7 0%, #fed7aa 100%);
     }
+    
     /* 标题样式 */
     .otome-title {
         font-size: 2.2rem;
@@ -21,6 +22,7 @@ st.markdown("""
         margin-bottom: 5px;
         text-shadow: 1px 1px 2px #fecdd3;
     }
+    
     /* 动漫乙女对话框样式 */
     .dialogue-box {
         background-color: rgba(255, 255, 255, 0.95);
@@ -30,6 +32,7 @@ st.markdown("""
         margin-top: 15px;
         box-shadow: 0 10px 25px rgba(225, 29, 72, 0.1);
     }
+    
     .speaker-tag {
         font-size: 1.1rem;
         font-weight: bold;
@@ -40,6 +43,7 @@ st.markdown("""
         display: inline-block;
         margin-bottom: 10px;
     }
+    
     .scene-desc {
         color: #78350f;
         font-style: italic;
@@ -50,6 +54,7 @@ st.markdown("""
         border-left: 3px solid #f97316;
         border-radius: 4px;
     }
+    
     .event-header {
         background: linear-gradient(90deg, #f43f5e, #fb7185);
         color: white;
@@ -58,10 +63,8 @@ st.markdown("""
         font-weight: bold;
         margin-bottom: 10px;
     }
-</style>
-""", unsafe_allow_html=True)
- 
-    /* 4. 抽卡结果框 & 事件结局框 */
+    
+    /* 抽卡结果框 & 事件结局框 */
     .gacha-box {
         background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
         padding: 15px;
@@ -69,6 +72,7 @@ st.markdown("""
         border: 1px solid #fde68a;
         margin-bottom: 15px;
     }
+    
     .event-box {
         background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
         padding: 15px;
@@ -76,8 +80,8 @@ st.markdown("""
         border: 1px solid #7dd3fc;
         margin-bottom: 15px;
     }
- 
-    /* 5. 【新增】按钮大改造！变成粉色游戏风按钮 */
+    
+    /* 按钮大改造：变成粉色游戏风按钮 */
     .stButton > button {
         background: linear-gradient(135deg, #fb7185 0%, #f43f5e 100%) !important;
         color: white !important;
@@ -88,19 +92,19 @@ st.markdown("""
         font-weight: bold !important;
         padding: 10px 24px !important;
     }
+    
     .stButton > button:hover {
         background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%) !important;
         box-shadow: 0 6px 12px rgba(225, 29, 72, 0.35) !important;
         transform: translateY(-2px) !important;
     }
+    
     .stButton > button:active {
         transform: translateY(1px) !important;
         box-shadow: 0 2px 4px rgba(225, 29, 72, 0.2) !important;
     }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+</style>
+""", unsafe_allow_html=True)
 # -----------------------------------------------------------------------------
 # 2. 7位成员基础信息定义
 # -----------------------------------------------------------------------------
