@@ -3988,7 +3988,7 @@ if st.sidebar.button("🔄 重置当前剧情进度", use_container_width=True):
 
 
 # -----------------------------------------------------------------------------
-# 8. 主剧情关卡渲染 (驱动剧本与选项)
+# 8. 主剧情关卡渲染 (兼容数字与字符串键，彻底解决一开局就跳结局的问题)
 # -----------------------------------------------------------------------------
 st.markdown("---")
 
@@ -4007,15 +4007,22 @@ if st.session_state.last_dialogue_result:
         unsafe_allow_html=True
     )
 
-# 获取当前天数（current_act）的剧本数据（默认使用第一个剧本分类或全局剧本）
 if 'STORIES' in globals():
     story_categories = list(STORIES.keys())
-    selected_category = story_categories[0]  # 默认取第一个分类或你可以换成 selectbox 选择
+    selected_category = story_categories[0]  
     category_stories = STORIES.get(selected_category, {})
     current_act = st.session_state.current_act
 
-    if current_act in category_stories:
-        act_data = category_stories[current_act]
+    # 关键修复：同时支持数字键 (1) 和字符串键 ("1" 或 "第一幕") 的查找
+    act_data = category_stories.get(current_act) or category_stories.get(str(current_act))
+    
+    # 如果还是没找到，尝试按顺序取第几个（防止键名完全对不上）
+    if not act_data:
+        keys_list = list(category_stories.keys())
+        if 0 <= current_act - 1 < len(keys_list):
+            act_data = category_stories[keys_list[current_act - 1]]
+
+    if act_data:
         st.markdown(f"### {act_data['title']}")
         
         # 渲染当前关卡的所有选项
@@ -4080,7 +4087,7 @@ if 'STORIES' in globals():
                 st.rerun()
 
     else:
-        # 剧本通关结局界面
+        # 剧本通关结局界面 (只有当所有幕数都走完才会走到这里)
         st.markdown(
             f"""
             <div style="background: linear-gradient(135deg, #fce7f3 100%, #fbcfe8 0%); border: 2px solid #f472b6; padding: 25px; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(244,114,182,0.2);">
