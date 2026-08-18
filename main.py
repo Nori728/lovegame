@@ -6628,23 +6628,35 @@ if st.session_state.last_dialogue_result:
         """,
         unsafe_allow_html=True,
     )
+    if st.session_state.last_dialogue_result:
+        choice_c, resp_list, f_score = st.session_state.last_dialogue_result
+        
+        # ... 这里省略了中间显示对话的逻辑 (保持不变) ...
+        # (确保上面 st.markdown 等代码都有统一的缩进)
 
+  # 这一块是按钮代码
         col_btn1, col_btn2 = st.columns(2)
-            with col_btn1:
-                if st.button("💌 珍藏回忆并进入下一幕", use_container_width=True):
-                    st.session_state.last_dialogue_result = None
-                    if act < MAX_ACT:
-                        st.session_state.current_act += 1
-                    else:
-                        st.session_state.stage = "ending"
-                    st.rerun()
-            with col_btn2:
-                if st.button("🔄 重新选择当前选项", use_container_width=True):
-                    st.session_state.last_dialogue_result = None
-                    st.rerun()
-        else:
-            # 尚未做选择时，渲染开场说明及候选按钮
-            st.markdown("请做出你的心动回应：")
+        with col_btn1:
+            if st.button("💌 珍藏回忆并进入下一幕", use_container_width=True):
+                st.session_state.last_dialogue_result = None
+                if act < MAX_ACT:
+                    st.session_state.current_act += 1
+                else:
+                    st.session_state.stage = "ending"
+                st.rerun()
+        with col_btn2:
+            if st.button("🔄 重新选择当前选项", use_container_width=True):
+                st.session_state.last_dialogue_result = None
+                st.rerun()
+
+    # ❗ 这一行最关键：else 必须和上面的 if st.session_state.last_dialogue_result: 垂直对齐
+    else:
+        # 尚未做选择时，渲染开场说明及候选按钮
+        st.markdown("请做出你的心动回应：")
+        
+        # ... 下面的代码也必须整体缩进 ...
+        for i, choice in enumerate(current_story.get("choices", [])):
+            # ...
 
             for i, choice in enumerate(current_story.get("choices", [])):
                 choice_text = choice.get("option", "")
