@@ -6300,7 +6300,6 @@ elif st.session_state.stage == "menu":
     st.markdown('<div class="card-box">', unsafe_allow_html=True)
     st.subheader("🛠️ 请定制你的心动企划档案")
 
-    selected_member = st.selectbox(
   selected_member = st.selectbox(
         "💖 选择你的心动男主角：", list(MEMBERS.keys())
     )
