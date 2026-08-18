@@ -6609,41 +6609,144 @@ elif st.session_state.stage == "menu":
         st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
+
+# -----------------------------------------------------------------------------
+# 7. 剧情获取核心函数
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# 7. 动态个性化剧情数据库与核心生成函数
+# -----------------------------------------------------------------------------
+
+# 你可以在这里针对特定成员或身份编写硬编码剧情（可选）
+ROLE_STORY_DB = {
+    # 示例格式：
+    # "丈君": {
+    #     "专属造型师": {
+    #         1: {
+    #             "intro": "「今天这个发型……是因为今天要见你，所以特意让造型师弄得成熟一点哦。」",
+    #             "scene": "后台化妆间",
+    #             "prologue": "镜子里映出他专注的眼神，空气中弥漫着淡淡的洗发水香气。",
+    #             "choices": [...]
+    #         }
+    #     }
+    # }
+}
+
 def get_member_story(member, role, act):
-    # 1. 从我们的个性化库里捞数据
-    member_data = ROLE_STORY_DB.get(member, {})
-    role_data = member_data.get(role, None)
+    # 1. 优先尝试从结构化数据库中读取硬编码的专属剧本
+    try:
+        member_data = ROLE_STORY_DB.get(member, {})
+        role_data = member_data.get(role, {})
+        act_data = role_data.get(act, None)
+        if act_data:
+            return act_data
+    except Exception:
+        pass
 
-    # 2. 如果没有定义该角色的该身份剧情，返回默认兜底
-    if not role_data:
-        role_data = {
-            "intro": "「能在这里和你相处，感觉真好。」",
-            "choices": [{"option": "微笑着回应", "affection": 10, "reply": "「我也这么觉得，这就是我们的小确幸。」"}]
-        }
+    # 2. 智能动态生成：根据「角色特点 + 玩家身份 + 当前幕数」组合出独一无二的剧情
+    member_trait = MEMBERS.get(member, {}).get("trait", "温柔贴心")
+    
+    # 根据幕数（Act）划分不同的剧情阶段和氛围
+    prologues_by_act = {
+        1: f"【初识与试探】你是{member}的{role}。初次合作的空气中带着一丝试探与新鲜感，他的性格特点（{member}：{member_trait}）在此刻展露无遗。",
+        2: f"【默契升温】你是{member}的{role}。随着企划推进到第 2 幕，你们在日常相处中已经有了独特的默契，气氛开始变得微妙起来。",
+        3: f"【心跳加速】你是{member}的{role}。来到了关键的第 3 幕，周围的喧嚣仿佛都消失了，只剩下彼此的心跳声。",
+        4: f"【情感爆发】你是{member}的{role}。在第 4 幕的高潮中，藏在心底的情愫终于再也无法掩饰……",
+        5: f"【终章抉择】你是{member}的{role}。这是决定命运的最后一幕，你们正站在心动企划的十字路口。"
+    }
+    
+    # 为不同角色和幕数定制开场白
+    intro_pool = [
+        f"「呐，其实从刚才开始，我的视线就一直没办法从你身上移开呢……」",
+        f"「如果是面对你的话，我好像无论什么秘密都愿意毫无保留地分享出来。」",
+        f"「今天能有这么多只属于我们两个人的时间，感觉真的像做梦一样。」",
+        f"「每次看你认真工作的样子，我都忍不住想离你更近一点，再近一点。」",
+        f"「真狡猾啊……明明什么都没做，却总是能轻易左右我的心情。」"
+    ]
+    # 利用哈希确保同一角色在同一幕每次读取相对稳定，但不同角色/幕绝对不重复
+    intro_text = intro_pool[(hash(member) + act * 3) % len(intro_pool)]
 
-    # 3. 组装成游戏能识别的格式
-    return {
-        "title": f"第 {act} 幕：{member} 与 {role} 的专属时刻",
-        "scene": "你们共同度过的空间",
-        "prologue": f"你是 {member} 的 {role}，在这个异国/工作的舞台上，你们的羁绊正在加深……",
-        "dialogue_intro": [(member, role_data["intro"])],
-        "choices": role_data["choices"]
+    # 针对不同幕数设计专属的差异化选项与对应回应
+    choices_pools = {
+        1: [
+            {
+                "option": "略显羞涩地避开视线，轻声转移话题",
+                "affection": 10,
+                "reply": f"「哈哈，害羞的样子也很可爱呢。不过，我更想听你的真心话哦。」"
+            },
+            {
+                "option": "落落大方地笑著反问：『那你想怎么样？』",
+                "affection": 15,
+                "reply": f"「不愧是我的{role}，反应真快……好啦，被你反将一军了呢。」"
+            },
+            {
+                "option": "认真地夸奖他今天表现得很棒",
+                "affection": 12,
+                "reply": f"「听到你这么说，我今天的努力就全都有意义了！」"
+            }
+        ],
+        2: [
+            {
+                "option": "主动帮他整理好衣领或随身道具",
+                "affection": 18,
+                "reply": f"「被你这么温柔地照顾……我好像越来越离不开你了怎么办？」"
+            },
+            {
+                "option": "调侃他今天是不是又在偷偷想什么坏主意",
+                "affection": 15,
+                "reply": f"「冤枉啊！我满脑子装的明明全都是怎么和配合好这件事……（笑）」"
+            },
+            {
+                "option": "递上一杯水，关切地问他累不累",
+                "affection": 16,
+                "reply": f"「本来有点累的，但你一出现，电量瞬间就满格了。」"
+            }
+        ],
+        3: [
+            {
+                "option": "坚定地回望他的双眼，顺势表达心意",
+                "affection": 25,
+                "reply": f"「太犯规了……听到你用这种眼神看着我，我的心跳得更快了。」"
+            },
+            {
+                "option": "假装严肃地提醒他注意镜头和影响",
+                "affection": 15,
+                "reply": f"「这时候就别管镜头啦……眼里只有你一个，还不够吗？」"
+            },
+            {
+                "option": "温柔地安抚他的情绪，轻声鼓励他",
+                "affection": 20,
+                "reply": f"「只要有你在身边，不管面对多大压力，我都觉得无所畏惧。」"
+            }
+        ],
+        4: [
+            {
+                "option": "顺势握住他的手，给彼此一个坚定的拥抱",
+                "affection": 30,
+                "reply": f"「（反手将你紧紧拥入怀中）……不准离开我，知不知道？」"
+            },
+            {
+                "option": "红着脸低声呢喃：『我也一样……』",
+                "affection": 25,
+                "reply": f"「这句话，我可是当真了哦。以后不许反悔。」"
+            }
+        ]
     }
 
-    # 如果玩家选的身份不在上面，默认返回一个通用版
-    current_choices = choices_map.get(role, [
-        {"option": "微笑着看向他。", "affection": 10, "reply": "「和你在一起，时间总是过得特别快。」"},
-        {"option": "询问他最近的感受。", "affection": 10, "reply": "「谢谢你愿意听我倾诉，你是最棒的聆听者。」"}
-    ])
+    # 获取对应幕数的选项（如果超出了定义的最大幕数，则使用最后一组）
+    act_choices = choices_pools.get(act, choices_pools.get(3))
 
     return {
         "title": f"第 {act} 幕：{member} 与 {role} 的专属心动时刻",
-        "scene": "工作与生活的交界点",
-        "prologue": f"你是{member}身边最特别的{role}。在这个瞬间，目光交汇，一切仿佛都静止了……",
-        "dialogue_intro": [(member, "「今天见到你，我感觉心情都变好了。你觉得呢？」")],
-        "choices": current_choices
+        "scene": f"{member} 的专属工作空间 / 浪漫现场（Act {act}）",
+        "prologue": prologues_by_act.get(act, f"你是{member}身边的{role}，在第 {act} 幕中，你们迎来了全新的心动转折。"),
+        "dialogue_intro": [(member, intro_text)],
+        "choices": act_choices
     }
 
+# -----------------------------------------------------------------------------
+# 8. 游戏舞台渲染 (Playing & Ending)
+# -----------------------------------------------------------------------------
 if st.session_state.stage == "playing":
     m = st.session_state.target_member
     r = st.session_state.player_role
@@ -6678,7 +6781,6 @@ if st.session_state.stage == "playing":
         if st.session_state.last_dialogue_result:
             choice_c, resp_list, single_reply, f_score = st.session_state.last_dialogue_result
             
-            # 💡 万能兼容渲染：不管你写的是多行列表还是单行reply，这里都会自动把字打印出来！
             dialogue_html = ""
             if resp_list:
                 for speaker, text in resp_list:
@@ -6714,7 +6816,6 @@ if st.session_state.stage == "playing":
                     st.session_state.last_dialogue_result = None
                     st.rerun()
         else:
-            # 尚未做选择时，渲染开场说明及候选按钮
             st.markdown("请做出你的心动回应：")
 
             for i, choice in enumerate(current_story.get("choices", [])):
@@ -6725,7 +6826,7 @@ if st.session_state.stage == "playing":
                 
                 if st.button(choice_text, key=f"choice_{act}_{i}"):
                     final_score = base_score
-                    if st.session_state.active_buff == "❤️ 恋爱加倍糖果":
+                    if st.session_state.active_buff == "🍬 恋爱加倍糖果":
                         final_score *= 2
                         st.session_state.active_buff = None
                     elif st.session_state.active_buff == "🎧 读心耳机":
@@ -6735,55 +6836,26 @@ if st.session_state.stage == "playing":
                         final_score += 10
                         st.session_state.active_buff = None
                         
-                    # 统一结算逻辑
                     st.session_state.total_score += final_score
                     history_reply_text = single_reply if single_reply else (resp_list[0][1] if resp_list else "...")
                     st.session_state.dialogue_history.append(
                         (current_story["title"], choice_text, history_reply_text, final_score)
                     )
                     
-                    # 暂存互动结果（兼容多行列表与单行reply）
                     st.session_state.last_dialogue_result = (choice_text, resp_list, single_reply, final_score)
                     
-                    # 随机事件触发逻辑（包含 9 大完整事件池与道具联动）
+                    # 随机事件触发逻辑
                     if act < MAX_ACT and random.random() < 0.4:
                         random_events_pool = [
-                            {
-                                "title": "突发暴雨的屋檐避难",
-                                "desc": "两人在回家路上突然遇到倾盆大雨，被迫挤在一个小小的便利店屋檐下，肩膀紧紧贴着……",
-                            },
-                            {
-                                "title": "电台直播的连线袭击",
-                                "desc": "工作间隙突然接到了一档电台连线直播，主持人现场要求他对你说一句真心话！",
-                            },
-                            {
-                                "title": "猫咪咖啡厅的意外邂逅",
-                                "desc": "排练间隙去咖啡厅休息，一只可爱的布偶猫突然跳进你怀里，引得他吃醋地看着你……",
-                            },
-                            {
-                                "title": "便利店最后一块布丁",
-                                "desc": "深夜去买宵夜，冰箱里只剩下最后一份他最爱的限定布丁，你们会怎么分？",
-                            },
-                            {
-                                "title": "📸 文春炮的闪光灯危机",
-                                "desc": "深夜在街角散步时，暗处突然闪过一道刺眼的白光！文春记者带着长枪短炮从阴影里冲了出来，你们必须立刻做出反应！",
-                            },
-                            {
-                                "title": "🚨 狂热私生饭的围堵",
-                                "desc": "刚结束录制，停车场突然冲出几个情绪激动的私生饭和私家车，死死堵住了去路，他下意识地把你护在了身后……",
-                            },
-                            {
-                                "title": "🎙️ 直播未关麦的社死瞬间",
-                                "desc": "以为直播已经切断，他正凑在你耳边小声呢喃情话，结果几万名在线观众把两人的亲密私语听得清清楚楚！",
-                            },
-                            {
-                                "title": "🎭 颁奖后台的擦肩而过",
-                                "desc": "在众多同行和媒体云集的颁奖典礼后台，为了避人耳目，你们俩不得不一起躲进了一个狭窄逼仄的杂物间里。",
-                            },
-                            {
-                                "title": "🕶️ 机场同款引发的饭圈地震",
-                                "desc": "两人前脚刚一前一后离开机场，后脚就被火眼金睛的粉丝扒出戴了同款情侣项链，热搜瞬间爆了！",
-                            },
+                            {"title": "突发暴雨的屋檐避难", "desc": "两人在回家路上突然遇到倾盆大雨，被迫挤在一个小小的便利店屋檐下，肩膀紧紧贴着……"},
+                            {"title": "电台直播的连线袭击", "desc": "工作间隙突然接到了一档电台连线直播，主持人现场要求他对你说一句真心话！"},
+                            {"title": "猫咪咖啡厅的意外邂逅", "desc": "排练间隙去咖啡厅休息，一只可爱的布偶猫突然跳进你怀里，引得他吃醋地看着你……"},
+                            {"title": "便利店最后一块布丁", "desc": "深夜去买宵夜，冰箱里只剩下最后一份他最爱的限定布丁，你们会怎么分？"},
+                            {"title": "📸 文春炮的闪光灯危机", "desc": "深夜在街角散步时，暗处突然闪过一道刺眼的白光！文春记者带着长枪短炮从阴影里冲了出来，你们必须立刻做出反应！"},
+                            {"title": "🚨 狂热私生饭的围堵", "desc": "刚结束录制，停车场突然冲出几个情绪激动的私生饭和私家车，死死堵住了去路，他下意识地把你护在了身后……"},
+                            {"title": "🎙️ 直播未关麦的社死瞬间", "desc": "以为直播已经切断，他正凑在你耳边小声呢喃情话，结果几万名在线观众把两人的亲密私语听得清清楚楚！"},
+                            {"title": "🎭 颁奖后台的擦肩而过", "desc": "在众多同行和媒体云集的颁奖典礼后台，为了避人耳目，你们俩不得不一起躲进了一个狭窄逼仄的杂物间里。"},
+                            {"title": "🕶️ 机场同款引发的饭圈地震", "desc": "两人前脚刚一前一后离开机场，后脚就被火眼金睛的粉丝扒出戴了同款情侣项链，热搜瞬间爆了！"},
                         ]
                         st.session_state.random_event = random.choice(random_events_pool)
 
@@ -6814,8 +6886,8 @@ if st.session_state.stage == "playing":
         with st.expander("📜 查看本局心动回忆录"):
             for h_title, h_c, h_r, h_score in st.session_state.dialogue_history:
                 st.markdown(f"**{h_title}**")
-                st.markdown(f"*你的选择*:{h_c}")
-                st.markdown(f"*{m}的回应*:{h_r} *(+ {h_score} 积分)*")
+                st.markdown(f"*你的选择*：{h_c}")
+                st.markdown(f"*{m}的回应*：{h_r} *(+ {h_score} 积分)*")
                 st.markdown("---")
 
     if st.button("🔄 重新选择角色/身份", use_container_width=True):
