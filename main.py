@@ -3723,8 +3723,8 @@ STORIES = {
             ],
         },
     },
+},
 }
-
 
 # 终极智能兜底函数（双重保险，绝不报错）
 def get_member_story(member, role, act):
