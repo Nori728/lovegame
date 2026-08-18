@@ -4086,7 +4086,7 @@ if act_data:
 
                 st.rerun()
 
-    else:
+else:
         # 剧本通关结局界面 (只有当所有幕数都走完才会走到这里)
         st.markdown(
             f"""
