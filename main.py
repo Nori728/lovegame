@@ -6648,98 +6648,98 @@ for i, choice in enumerate(current_story["choices"]):
             (current_story["title"], choice_text, reply_text, final_score)
         )
         
-        # 暂存互动结果，以便呈现沉浸式对话
+# 暂存互动结果，以便呈现沉浸式对话
         st.session_state.last_dialogue_result = (choice_text, reply_text, final_score)
+        
+        # 随机事件触发逻辑（必须在 rerun 之前运行！）
+        if act < MAX_ACT and random.random() < 0.4:
+            random_events_pool = [
+                {
+                    "title": "突发暴雨的屋檐避难",
+                    "desc": (
+                        "两人在回家路上突然遇到倾盆大雨，被迫挤在一个小小的便利店屋檐下，肩膀紧紧贴着……"
+                    ),
+                },
+                {
+                    "title": "电台直播的连线袭击",
+                    "desc": (
+                        "工作间隙突然接到了一档电台连线直播，主持人现场要求他对你说一句真心话！"
+                    ),
+                },
+                {
+                    "title": "猫咪咖啡厅的意外邂逅",
+                    "desc": (
+                        "排练间隙去咖啡厅休息，一只可爱的布偶猫突然跳进你怀里，引得他吃醋地看着你……"
+                    ),
+                },
+                {
+                    "title": "便利店最后一块布丁",
+                    "desc": (
+                        "深夜去买宵夜，冰箱里只剩下最后一份他最爱的限定布丁，你们会怎么分？"
+                    ),
+                },
+                {
+                    "title": "📸 文春炮的闪光灯危机",
+                    "desc": (
+                        "深夜在街角散步时，暗处突然闪过一道刺眼的白光！文春记者带着长枪短炮从阴影里冲了出来，你们必须立刻做出反应！"
+                    ),
+                },
+                {
+                    "title": "🚨 狂热私生饭的围堵",
+                    "desc": (
+                        "刚结束录制，停车场突然冲出几个情绪激动的私生饭和私家车，死死堵住了去路，他下意识地把你护在了身后……"
+                    ),
+                },
+                {
+                    "title": "🎙️ 直播未关麦的社死瞬间",
+                    "desc": (
+                        "以为直播已经切断，他正凑在你耳边小声呢喃情话，结果几万名在线观众把两人的亲密私语听得清清楚楚！"
+                    ),
+                },
+                {
+                    "title": "🎭 颁奖后台的擦肩而过",
+                    "desc": (
+                        "在众多同行和媒体云集的颁奖典礼后台，为了避人耳目，你们俩不得不一起躲进了一个狭窄逼仄的杂物间里。"
+                    ),
+                },
+                {
+                    "title": "🕶️ 机场同款引发的饭圈地震",
+                    "desc": (
+                        "两人前脚刚一前一后离开机场，后脚就被火眼金睛的粉丝扒出戴了同款情侣项链，热搜瞬间爆了！"
+                    ),
+                },
+            ]
+            st.session_state.random_event = random.choice(random_events_pool)
+
+            current_event_title = st.session_state.random_event["title"]
+
+            if "文春炮" in current_event_title:
+                if "🕵️‍♂️ 黑色鸭舌帽" in st.session_state.inventory:
+                    st.success(
+                        "✨ 【触发道具：黑色鸭舌帽】低调伪装成功！成功避开了文春的镜头！"
+                    )
+                    st.session_state.inventory.remove("🕵️‍♂️ 黑色鸭舌帽")
+                    st.session_state.total_score += 10
+                elif "📜 紧急公关手稿" in st.session_state.inventory:
+                    st.success(
+                        "✨ 【触发道具：紧急公关手稿】公关手稿发挥作用，稳住了媒体！"
+                    )
+                    st.session_state.inventory.remove("📜 紧急公关手稿")
+                else:
+                    st.session_state.total_score -= 30
+
+            elif "私生饭" in current_event_title:
+                if "📱 备用双卡手机" in st.session_state.inventory:
+                    st.success(
+                        "✨ 【触发道具：备用双卡手机】及时联络安保人员清场，安全脱身！"
+                    )
+                    st.session_state.inventory.remove("📱 备用双卡手机")
+                    st.session_state.total_score += 10
+                else:
+                    st.session_state.total_score -= 25
+
+        # 所有逻辑处理完毕后，最后再刷新页面
         st.rerun()
-                # 随机事件触发逻辑
-                if act < MAX_ACT and random.random()< 0.4:
-                    random_events_pool = [
-                        {
-                            "title": "突发暴雨的屋檐避难",
-                            "desc": (
-                                "两人在回家路上突然遇到倾盆大雨，被迫挤在一个小小的便利店屋檐下，肩膀紧紧贴着……"
-                            ),
-                        },
-                        {
-                            "title": "电台直播的连线袭击",
-                            "desc": (
-                                "工作间隙突然接到了一档电台连线直播，主持人现场要求他对你说一句真心话！"
-                            ),
-                        },
-                        {
-                            "title": "猫咪咖啡厅的意外邂逅",
-                            "desc": (
-                                "排练间隙去咖啡厅休息，一只可爱的布偶猫突然跳进你怀里，引得他吃醋地看着你……"
-                            ),
-                        },
-                        {
-                            "title": "便利店最后一块布丁",
-                            "desc": (
-                                "深夜去买宵夜，冰箱里只剩下最后一份他最爱的限定布丁，你们会怎么分？"
-                            ),
-                        },
-                        {
-                            "title": "📸 文春炮的闪光灯危机",
-                            "desc": (
-                                "深夜在街角散步时，暗处突然闪过一道刺眼的白光！文春记者带着长枪短炮从阴影里冲了出来，你们必须立刻做出反应！"
-                            ),
-                        },
-                        {
-                            "title": "🚨 狂热私生饭的围堵",
-                            "desc": (
-                                "刚结束录制，停车场突然冲出几个情绪激动的私生饭和私家车，死死堵住了去路，他下意识地把你护在了身后……"
-                            ),
-                        },
-                        {
-                            "title": "🎙️ 直播未关麦的社死瞬间",
-                            "desc": (
-                                "以为直播已经切断，他正凑在你耳边小声呢喃情话，结果几万名在线观众把两人的亲密私语听得清清楚楚！"
-                            ),
-                        },
-                        {
-                            "title": "🎭 颁奖后台的擦肩而过",
-                            "desc": (
-                                "在众多同行和媒体云集的颁奖典礼后台，为了避人耳目，你们俩不得不一起躲进了一个狭窄逼仄的杂物间里。"
-                            ),
-                        },
-                        {
-                            "title": "🕶️ 机场同款引发的饭圈地震",
-                            "desc": (
-                                "两人前脚刚一前一后离开机场，后脚就被火眼金睛的粉丝扒出戴了同款情侣项链，热搜瞬间爆了！"
-                            ),
-                        },
-                    ]
-                    st.session_state.random_event = random.choice(random_events_pool)
-
-                    current_event_title = st.session_state.random_event["title"]
-
-                    if "文春炮" in current_event_title:
-                        if "🕵️‍♂️ 黑色鸭舌帽" in st.session_state.inventory:
-                            st.success(
-                                "✨ 【触发道具：黑色鸭舌帽】低调伪装成功！成功避开了文春的镜头！"
-                            )
-                            st.session_state.inventory.remove("🕵️‍♂️ 黑色鸭舌帽")
-                            st.session_state.total_score += 10
-                        elif "📜 紧急公关手稿" in st.session_state.inventory:
-                            st.success(
-                                "✨ 【触发道具：紧急公关手稿】公关手稿发挥作用，稳住了媒体！"
-                            )
-                            st.session_state.inventory.remove("📜 紧急公关手稿")
-                        else:
-                            st.session_state.total_score -= 30
-
-                    elif "私生饭" in current_event_title:
-                        if "📱 备用双卡手机" in st.session_state.inventory:
-                            st.success(
-                                "✨ 【触发道具：备用双卡手机】及时联络安保人员清场，安全脱身！"
-                            )
-                            st.session_state.inventory.remove("📱 备用双卡手机")
-                            st.session_state.total_score += 10
-                        else:
-                            st.session_state.total_score -= 25
-
-                st.rerun()
-
     if st.session_state.dialogue_history:
         with st.expander("📜 查看本局心动回忆录"):
             for h_title, h_c, h_r, h_score in st.session_state.dialogue_history:
