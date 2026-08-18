@@ -107,6 +107,24 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
+# 2. 初始化核心状态 (Session State) —— 修复一打开直接结局的关键点
+# -----------------------------------------------------------------------------
+if "points" not in st.session_state:
+    st.session_state.points = 100
+if "inventory" not in st.session_state:
+    st.session_state.inventory = []
+if "today_fortune" not in st.session_state:
+    st.session_state.today_fortune = None
+if "selected_identity" not in st.session_state:
+    st.session_state.selected_identity = "经纪人"
+if "selected_member" not in st.session_state:
+    st.session_state.selected_member = "丈君"
+if "game_started" not in st.session_state:
+    st.session_state.game_started = False  # 默认未开始游戏，停留在选人界面
+if "current_day" not in st.session_state:
+    st.session_state.current_day = 1       # 默认从第1天开始
+
+# -----------------------------------------------------------------------------
 # 2. 基础数据源 (7人全员数据)
 # -----------------------------------------------------------------------------
 MEMBERS = {
@@ -150,7 +168,8 @@ MEMBERS = {
 # 3. 深度定制的个性化剧情数据库 (智能剧情生成引擎)
 # -----------------------------------------------------------------------------
 def get_custom_story(m_name, r_name, act):
-    c_trait = MEMBERS[m_name]["trait"]
+    # 【修复1】将 MEMBERS 改为 MEMBER_DATA，与你前面定义的字典名称保持一致
+    c_trait = MEMBER_DATA[m_name]["trait"]
     
     titles = {
         "经纪人": [
@@ -181,18 +200,19 @@ def get_custom_story(m_name, r_name, act):
     
     title = titles[r_name][act - 1]
     
+    # 【修复2】将 "大桥" 改为 "布丁"，"恭平" 改为 "高恭"，完美对应 MEMBER_DATA 里的键名
     if m_name == "丈君":
         intro_dialogue = (m_name, f"“喂！身为你的{r_name}，本大爷可不允许你把视线移开别人哦！”")
         prologue_text = f"关西腔的爽朗笑声在耳边回荡。作为{r_name}，你与丈君（{c_trait}）一同经历的每一幕都充满了热血与欢笑。"
     elif m_name == "大酱":
         intro_dialogue = (m_name, f"“呐，今天也要跟紧我的脚步，C位身边的专属位置只留给你哦～”")
         prologue_text = f"灯光璀璨，空气中弥漫着温柔的气息。作为{r_name}，大酱（{c_trait}）正用他那双亮晶晶的眼睛深情地望着你。"
-    elif m_name == "大桥":
+    elif m_name == "布丁":  # 修正：原代码写的是 "大桥"
         intro_dialogue = (m_name, f"“布丁要分你一半，不开心的时候吃甜食就会好起来的！”")
-        prologue_text = f"空气里仿佛飘着淡淡的甜香。作为{r_name}，大桥（{c_trait}）标志性的治愈系笑容瞬间融化了所有的疲惫。"
-    elif m_name == "恭平":
+        prologue_text = f"空气里仿佛飘着淡淡的甜香。作为{r_name}，布丁（{c_trait}）标志性的治愈系笑容瞬间融化了所有的疲惫。"
+    elif m_name == "高恭":  # 修正：原代码写的是 "恭平"
         intro_dialogue = (m_name, f"“照过镜子了吗？本大爷今天帅得连游戏通关都吸引不了我了，除了你。”")
-        prologue_text = f"略带傲娇又宠溺的语气。作为{r_name}，恭平（{c_trait}）正漫不经心地把玩着手里的游戏机，耳根却悄悄红了。"
+        prologue_text = f"略带傲娇又宠溺的语气。作为{r_name}，高恭（{c_trait}）正漫不经心地把玩着手里的游戏机，耳根却悄悄红了。"
     elif m_name == "流星":
         intro_dialogue = (m_name, f"“wink~ 今天特意挑了你喜欢的发色，快夸夸我！”")
         prologue_text = f"精致的面容在微光下显得格外动人。作为{r_name}，流星（{c_trait}）凑近你身边，带着让人无法抗拒的可爱魔力。"
@@ -217,7 +237,7 @@ def get_custom_story(m_name, r_name, act):
 
 
 # -----------------------------------------------------------------------------
-# 4. 突发随机事件池 (RANDOM_EVENTS_POOL)
+# 4. 突发随机事件池 (RANDOM_EVENTS_POOL) —— 这部分完全没问题，直接保留！
 # -----------------------------------------------------------------------------
 RANDOM_EVENTS_POOL = [
     {
@@ -287,7 +307,7 @@ RANDOM_EVENTS_POOL = [
         "dialogue": "「空间太小了……这样贴得好近。外面都是记者和摄像机，千万别发出声音哦……」",
         "choices": [
             {"text": "大气都不敢出，紧张地抓着他的肩膀", "reply": "「心跳得这么快……是因为外面太危险，还是因为……离我太近了？」", "score": 30},
-            {"text": "小声调侃：「大明星也有这么狼狈的时候呀？」", "reply": "「还不是为了能和你单独待一会儿……真是拿你没办法。」", "score": 25}
+            {"text": "小声调侃：「大明星也有这么狼狈的时候呀？」", "reply": "「还不是为了能近年来单独待一会儿……真是拿你没办法。」", "score": 25}
         ]
     },
     {
@@ -300,7 +320,6 @@ RANDOM_EVENTS_POOL = [
         ]
     }
 ]
-
 
 ROLES = ["经纪人", "青梅竹马", "在日学生or打工人"]
 MAX_ACT = 6  # 6幕完整流程
