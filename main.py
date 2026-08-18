@@ -6514,7 +6514,7 @@ if st.session_state.inventory:
 
 if st.session_state.active_buff:
     st.markdown(
-        f"> ⚡ **当前生效增益Buff:** `{st.session_state.active_buff}`"
+        f"> ⚡ **当前生效增益Buff:** `{st.session\\\\\\\_state.active\\\\\\\_buff}`"
     )
 
 st.markdown("---")
@@ -6567,8 +6567,13 @@ elif st.session_state.stage == "menu":
         st.session_state.last_dialogue_result = None
         st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
-
-elif st.session_state.stage == "playing":
+def get_member_story(member, role, act):
+    # 安全获取对应成员、身份和幕数的剧情
+    try:
+        return STORIES.get(member, {}).get(role, {}).get(act, None)
+    except Exception:
+        return None
+if st.session_state.stage == "playing":
     m = st.session_state.target_member
     r = st.session_state.player_role
     act = st.session_state.current_act
