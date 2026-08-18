@@ -157,7 +157,10 @@ MEMBERS = {
 ROLES = ["经纪人", "青梅竹马", "在日留学生or打工人"]
 st.error(f"当前 MEMBERS 的类型是: {type(MEMBERS)}")
 selected_member = st.selectbox("💖 选择你的心动男主角：", MEMBERS)
-
+st.write("--- 调试信息 ---")
+st.write("1. 当前选中的名字:", selected_member)
+st.write("2. MEMBERS 的类型:", type(MEMBERS))
+st.write("3. MEMBERS 的所有键:", list(MEMBERS.keys()) if isinstance(MEMBERS, dict) else "致命错误：MEMBERS 当前不是字典！")
 st.image(MEMBERS[selected_member]["img"], width=220)
 
 # -----------------------------------------------------------------------------
