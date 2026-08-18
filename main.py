@@ -6629,7 +6629,7 @@ if st.session_state.last_dialogue_result:
         unsafe_allow_html=True,
     )
 
-            col_btn1, col_btn2 = st.columns(2)
+        col_btn1, col_btn2 = st.columns(2)
             with col_btn1:
                 if st.button("💌 珍藏回忆并进入下一幕", use_container_width=True):
                     st.session_state.last_dialogue_result = None
