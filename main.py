@@ -6309,7 +6309,7 @@ selected_member = st.selectbox(
     )
 
     # 实时渲染人物图片
-    st.image(MEMBERS[selected_member]["img"], width=220)
+st.image(MEMBERS[selected_member]["img"], width=220)
 
     selected_role = st.selectbox("🎭 选择你的专属身份：", ROLES)
 
