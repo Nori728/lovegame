@@ -160,14 +160,11 @@ ROLES = ["经纪人", "青梅竹马", "在日留学生or打工人"]
 # 直接传入 MEMBERS 字典
 selected_member = st.selectbox("💖 选择你的心动男主角：", MEMBERS)
 
-# 实时渲染人物图片和信息（使用正确的英文键）
+# 实时渲染人物图片和信息
 if selected_member in MEMBERS:
-   # 直接从 selected_member 中取图片链接
-st.image(selected_member["img"], width=220)
+    st.image(MEMBERS[selected_member]["img"], width=220)
     st.markdown(f"**当前角色特色：** {MEMBERS[selected_member]['trait']}")
     st.info(f"{selected_member}：{MEMBERS[selected_member]['greeting']}")
-# 选择身份
-selected_role = st.selectbox("💙 选择你的专属身份：", ROLES)
 
 # 选择身份
 selected_role = st.selectbox("💙 选择你的专属身份：", ROLES)
