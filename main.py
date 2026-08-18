@@ -6671,7 +6671,7 @@ for i, choice in enumerate(choices):
     # 获取对应幕数的选项（如果超出了定义的最大幕数，则使用最后一组）
     act_choices = choices_pools.get(act, choices_pools.get(3))
 
-    return {
+return {
         "title": f"第 {act} 幕：{member} 与 {role} 的专属心动时刻",
         "scene": f"{member} 的专属工作空间 / 浪漫现场（Act {act}）",
         "prologue": prologues_by_act.get(act, f"你是{member}身边的{role}，在第 {act} 幕中，你们迎来了全新的心动转折。"),
