@@ -6625,20 +6625,19 @@ if st.session_state.stage == "playing":
     else:
         st.markdown("请做出你的心动回应：")
 
-        for i, choice in enumerate(current_story["choices"]):
-        choice_text = choice.get("option", "")
-        base_score = choice.get("affection", 0)
+for i, choice in enumerate(current_story["choices"]):
+    choice_text = choice.get("option", "")
+    base_score = choice.get("affection", 0)
     
     if st.button(choice_text, key=f"choice_{act}_{i}"):
         final_score = base_score
-        if st.session_state.active_buff == "🍬 恋爱加倍糖果":
-                    final_score *= 2
-                    st.session_state.active_buff = None
+        if st.session_state.active_buff == "❤️ 恋爱加倍糖果":
+            final_score *= 2
+            st.session_state.active_buff = None
         elif st.session_state.active_buff == "🎧 读心耳机":
-                    final_score += 15
-                    st.session_state.active_buff = None
+            final_score += 15
         elif st.session_state.active_buff == "🥤 冰爽解暑饮料":
-                    final_score += 10
+            final_score += 10
                     st.session_state.active_buff = None
 
                 st.session_state.total_score += final_score
