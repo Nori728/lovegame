@@ -6762,13 +6762,18 @@ elif st.session_state.stage == "ending":
     st.markdown(
         # 你的结局 markdown 内容...
     )
+   elif st.session_state.stage == "ending":
+    m = st.session_state.target_member
+    score = st.session_state.total_score
+
+    st.markdown(
         f"""
-    <div class="card-box" style="text-align: center;">
-        <h2>🎉 恭喜达成完美心动结局！</h2>
-        <p style="font-size: 1.1rem; color: #e11d48;">你与 {m} 的专属企划圆满落幕！</p>
-        <p>最终累计心动积分：{score} 分</p>
-    </div>
-    """,
+        <div class="card-box" style="text-align: center;">
+            <h2>🎉 恭喜达成完美心动结局！</h2>
+            <p style="font-size: 1.1rem; color: #e11d48;">你与 {m} 的专属企划圆满落幕！</p>
+            <p>最终累计心动积分：{score} 分</p>
+        </div>
+        """,
         unsafe_allow_html=True,
     )
 
