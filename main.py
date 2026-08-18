@@ -126,7 +126,7 @@ MEMBERS = {
         "img": "https://i.pinimg.com/1200x/c6/53/9c/c6539ce73f6c358cf4bd8fcd12c1935e.jpg",
     },
     "高恭": {
-        "trait": "🎮 自恋帅哥 · 游戏宅系帅哥"
+        "trait": "🎮 自恋帅哥 · 游戏宅系帅哥",
         "color": "紫色",
         "img": "https://i.pinimg.com/736x/23/e5/0d/23e50dceb8f34d93b23e564d6242bbb2.jpg",
     },
