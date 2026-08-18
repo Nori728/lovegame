@@ -135,13 +135,48 @@ MEMBERS = {
         "greeting": "『今天的穿搭很不错嘛～不过要不要听听本时尚专家的建议？』"
     }
   }
-ROLES = ["经纪人", "青梅竹马", "在日学生or打工人"]
-MAX_ACT = 6  # 6幕完整流程
-ROLES = ["经纪人", "青梅竹马", "在日学生or打工人"]
-MAX_ACT = 6  # 6幕完整流程
-ROLES = ["经纪人", "青梅竹马", "在日学生or打工人"]
-MAX_ACT = 6  # 6幕完整流程
+# 1. 更新你的角色列表
+ROLES = ["经纪人", "青梅竹马", "在日留学生"]
 
+# 2. 深度定制数据库
+ROLE_STORY_DB = {
+    "丈君": {
+        "经纪人": {"intro": "「今天行程很满，但我知道有你在，我一定能撑住！」", "choices": [{"option": "带去吃大阪烧补体力", "affection": 20, "reply": "「哇！懂我！这才是真正的搭档！」"}]},
+        "青梅竹马": {"intro": "「喂，刚才那球看清了吗？本大爷帅吧？」", "choices": [{"option": "也就那样吧，勉强及格", "affection": 15, "reply": "「喂！怎么这样啊，明明刚才看的时候眼睛都亮了！」"}]},
+        "在日留学生": {"intro": "「日语很难吧？别怕，虽然我大阪腔重，但我会教你最地道的！」", "choices": [{"option": "让他带你去吃正宗大阪烧", "affection": 20, "reply": "「走！这可是本大爷的专属地图，包在我身上！」"}]}
+    },
+    "大酱": {
+        "经纪人": {"intro": "「虽然是工作，但能和你一起走通告，感觉就像约会一样。」", "choices": [{"option": "认真核对通告单，别分心", "affection": 10, "reply": "「呜，好严肃……不过，这就是我喜欢的认真劲儿。」"}]},
+        "青梅竹马": {"intro": "「好久没这么放松了，今天不去管工作，就在这陪我好吗？」", "choices": [{"option": "当然，今天只属于你", "affection": 20, "reply": "「嘿嘿，我就知道你最好啦。」"}]},
+        "在日留学生": {"intro": "「在这个城市，你就是我的充电站，累的时候只要看你一眼就够了。」", "choices": [{"option": "送上暖暖的罐装咖啡", "affection": 25, "reply": "「啊，好温暖……比咖啡还要温暖的是你的心意。」"}]}
+    },
+    "大桥": {
+        "经纪人": {"intro": "「肚子饿了吗？虽然现在在赶通告，但我包里有私藏的布丁！」", "choices": [{"option": "一起吃布丁，补充能量", "affection": 25, "reply": "「嘿嘿，分你一半！我们是命运共同体嘛！」"}]},
+        "青梅竹马": {"intro": "「呐，下次去尝试那家新开的餐厅吧？你一定要陪我！」", "choices": [{"option": "当然要去！我想吃那个限定款", "affection": 20, "reply": "「耶！我就知道你和我想到一块儿去了！」"}]},
+        "在日留学生": {"intro": "「异国他乡最想念的就是家乡的味道，要不要尝尝我做的爱心便当？」", "choices": [{"option": "感动地大口吃掉", "affection": 25, "reply": "「看到你吃得这么开心，我感觉自己更有动力学做饭了！」"}]}
+    },
+    "恭平": {
+        "经纪人": {"intro": "「虽然我很帅，但为了工作我也能很努力的，看着吧！」", "choices": [{"option": "夸他确实很帅，很有魅力", "affection": 20, "reply": "「那是当然的！不过被你夸奖，感觉特别开心。」"}]},
+        "青梅竹马": {"intro": "「来打游戏吗？我刚练了个新连招，赢了的人有奖励哦。」", "choices": [{"option": "赌上奖励，一定要赢你", "affection": 15, "reply": "「好啊，那如果你输了，要请我喝奶茶哦。」"}]},
+        "在日留学生": {"intro": "「这里的夜晚太安静了，能不能陪我在便利店门口坐一会儿？」", "choices": [{"option": "静静听他讲心事", "affection": 20, "reply": "「只要你在旁边，就算什么都不说，我也觉得很安心。」"}]}
+    },
+    "流星": {
+        "经纪人": {"intro": "「今天工作很辛苦吧？来，我给你看我的可爱收藏品治愈一下。」", "choices": [{"option": "一起欣赏他的收藏", "affection": 20, "reply": "「你看这个是不是很可爱？像你一样！」"}]},
+        "青梅竹马": {"intro": "「今天心情不好吗？要不要我给你做个wink缓解一下？」", "choices": [{"option": "笑纳这份可爱的wink", "affection": 20, "reply": "「嘿嘿，这可是限定款，只给你看哦！」"}]},
+        "在日留学生": {"intro": "「这里的流行趋势我帮你把关！走，带你去涩谷逛逛！」", "choices": [{"option": "享受他专属的时尚导游服务", "affection": 25, "reply": "「跟着我走，保证让你成为这条街上最亮眼的留学生！」"}]}
+    },
+    "米七": {
+        "经纪人": {"intro": "「对于这场戏，你有什么建议吗？只要是你的想法，我都想听。」", "choices": [{"option": "提出专业的演技建议", "affection": 20, "reply": "「太棒了，有你在，我感觉我有无限的灵感。」"}]},
+        "青梅竹马": {"intro": "「小时候我们说好要一起去海边，什么时候兑现？」", "choices": [{"option": "下个休息日就去！", "affection": 20, "reply": "「真的？那一言为定，不准反悔哦！」"}]},
+        "在日留学生": {"intro": "「虽然身在异国，但只要有你在，哪里都像家一样。」", "choices": [{"option": "牵住他的手", "affection": 30, "reply": "「（脸红）你的手，好热……我会一直牵着的。」"}]}
+    },
+    "谦杜": {
+        "经纪人": {"intro": "「现在的时尚潮流瞬息万变，但我相信你的判断。」", "choices": [{"option": "带他去选最新潮的配饰", "affection": 20, "reply": "「这就是我要的！我就知道你肯定懂我。」"}]},
+        "青梅竹马": {"intro": "「刚才看中了一家潮牌店，陪我去逛逛？」", "choices": [{"option": "没问题，作为专家陪你逛", "affection": 15, "reply": "「太好了！走，我们要横扫全场！」"}]},
+        "在日留学生": {"intro": "「留学生涯很苦吧？别担心，我带你去挖掘东京那些不为人知的隐藏景点！」", "choices": [{"option": "期待他的秘密冒险", "affection": 20, "reply": "「跟着我，带你开启真正的东京生活！」"}]}
+    },
+}
+MAX_ACT = 6  # 6幕完整流程
 # -----------------------------------------------------------------------------
 # 3. STORIES 剧情库
 # -----------------------------------------------------------------------------
@@ -6575,11 +6610,39 @@ elif st.session_state.stage == "menu":
     st.markdown("</div>", unsafe_allow_html=True)
 
 def get_member_story(member, role, act):
-    # 安全获取对应成员、身份和幕数的剧情
-    try:
-        return STORIES.get(member, {}).get(role, {}).get(act, None)
-    except Exception:
-        return None
+    # 1. 从我们的个性化库里捞数据
+    member_data = ROLE_STORY_DB.get(member, {})
+    role_data = member_data.get(role, None)
+
+    # 2. 如果没有定义该角色的该身份剧情，返回默认兜底
+    if not role_data:
+        role_data = {
+            "intro": "「能在这里和你相处，感觉真好。」",
+            "choices": [{"option": "微笑着回应", "affection": 10, "reply": "「我也这么觉得，这就是我们的小确幸。」"}]
+        }
+
+    # 3. 组装成游戏能识别的格式
+    return {
+        "title": f"第 {act} 幕：{member} 与 {role} 的专属时刻",
+        "scene": "你们共同度过的空间",
+        "prologue": f"你是 {member} 的 {role}，在这个异国/工作的舞台上，你们的羁绊正在加深……",
+        "dialogue_intro": [(member, role_data["intro"])],
+        "choices": role_data["choices"]
+    }
+
+    # 如果玩家选的身份不在上面，默认返回一个通用版
+    current_choices = choices_map.get(role, [
+        {"option": "微笑着看向他。", "affection": 10, "reply": "「和你在一起，时间总是过得特别快。」"},
+        {"option": "询问他最近的感受。", "affection": 10, "reply": "「谢谢你愿意听我倾诉，你是最棒的聆听者。」"}
+    ])
+
+    return {
+        "title": f"第 {act} 幕：{member} 与 {role} 的专属心动时刻",
+        "scene": "工作与生活的交界点",
+        "prologue": f"你是{member}身边最特别的{role}。在这个瞬间，目光交汇，一切仿佛都静止了……",
+        "dialogue_intro": [(member, "「今天见到你，我感觉心情都变好了。你觉得呢？」")],
+        "choices": current_choices
+    }
 
 if st.session_state.stage == "playing":
     m = st.session_state.target_member
