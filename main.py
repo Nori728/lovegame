@@ -6507,36 +6507,65 @@ with col_g1:
         st.session_state.daily_gacha_result = (lucky_name, lucky_data)
 
 with col_g2:
-    if st.button("🎁 抽取心动道具 (消耗10积分)", use_container_width=True):
-        if st.session_state.total_score >= 10:
-            st.session_state.total_score -= 10
-            items_pool = [
-                ("🍬 恋爱加倍糖果", "下一次选择获得双倍好感积分！"),
-                ("🎧 读心耳机", "精准洞察真实心意，额外+15积分！"),
-                ("📸 SSR限定拍立得", "增加全盘浪漫氛围与结局甜度！"),
-                ("🥤 冰爽解暑饮料", "恢复元气，额外+10积分！"),
-                (
-                    "🕵️‍♂️ 黑色鸭舌帽",
-                    "低调伪装神器，免疫一次轻度偷拍危机！",
-                ),
-                (
-                    "📜 紧急公关手稿",
-                    "遭遇绯闻时自动触发，大幅度降低负面好感损失！",
-                ),
-                (
-                    "📱 备用双卡手机",
-                    "防止私生饭骚扰与紧急联络专用，增加容错率！",
-                ),
-                (
-                    "☕ 专属应援手摇杯",
-                    "满含心意的特调饮品，全选项好感度小幅额外+5!",
-                ),
-            ]
-            item_name, item_desc = random.choice(items_pool)
-            st.session_state.inventory.append(item_name)
-            st.success(f"成功获得道具：{item_name}({item_desc})!")
-        else:
-            st.warning("积分不足10分,快去剧情里增加好感吧！")
+if st.button("🎁 抽取心动道具 (消耗10积分)", use_container_width=True):
+    if st.session_state.total_score >= 10:
+        st.session_state.total_score -= 10
+        items_pool = [
+            ("🍬 恋爱加倍糖果", "下一次选择获得双倍好感积分！"),
+            ("🎧 读心耳机", "精准洞察真实心意，额外+15积分！"),
+            ("📸 SSR限定拍立得", "增加全盘浪漫氛围与结局甜度！"),
+            ("🥤 冰爽解暑饮料", "恢复元气，额外+10积分！"),
+            (
+                "🕵️‍♂️ 黑色鸭舌帽",
+                "低调伪装神器，免疫一次轻度偷拍危机！",
+            ),
+            (
+                "📜 紧急公关手稿",
+                "遭遇绯闻时自动触发，大幅度降低负面好感损失！",
+            ),
+            (
+                "📱 备用双卡手机",
+                "防止私生饭骚扰与紧急联络专用，增加容错率！",
+            ),
+            (
+                "☕ 专属应援手摇杯",
+                "满含心意的特调饮品，全选项好感度小幅额外+5!",
+            ),
+            # --- 新增的心动与娱乐圈特色道具 ---
+            (
+                "🎟️ VIP前排观演门票",
+                "近距离接触的心动暴击，好感获取效率大幅提升！",
+            ),
+            (
+                "🕶️ 明星同款墨镜",
+                "闪避一次记者的长焦镜头抓拍，维持神秘感与安全度！",
+            ),
+            (
+                "📜 绝密通告行程单",
+                "提前获知对方动向，精准制造偶遇，额外+20积分！",
+            ),
+            (
+                "🌹 手作永生玫瑰",
+                "浪漫值直接拉满，有机会触发隐藏甜蜜对话剧情！",
+            ),
+            (
+                "🍫 手工黑巧礼盒",
+                "甜而不腻的心意表达，关键时刻化解尴尬气氛！",
+            ),
+            (
+                "🌙 星空定制项链",
+                "专属浪漫信物，大幅提升最终结局的甜度与评级！",
+            ),
+            (
+                "🐾 宠物协力萌爪",
+                "利用可爱萌宠助攻，瞬间融化冰冷防备，额外+12积分！",
+            ),
+        ]
+        item_name, item_desc = random.choice(items_pool)
+        st.session_state.inventory.append(item_name)
+        st.success(f"成功获得道具：{item_name}（{item_desc}）!")
+    else:
+        st.warning("积分不足10分,快去剧情里增加好感吧！")
 
 if st.session_state.daily_gacha_result:
     lname, ldata = st.session_state.daily_gacha_result
