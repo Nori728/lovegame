@@ -107,7 +107,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 2. 基础数据源 (7人全员数据)
+# 2. 基础数据源 (成员信息)
 # -----------------------------------------------------------------------------
 MEMBERS = {
     "丈君": {
@@ -146,163 +146,48 @@ MEMBERS = {
         "img": "https://i.pinimg.com/1200x/47/1a/59/471a59c662b0affdee44776e34946118.jpg",
     },
 }
-# -----------------------------------------------------------------------------
-# 3. 深度定制的个性化剧情数据库 (智能剧情生成引擎)
-# -----------------------------------------------------------------------------
-def get_custom_story(m_name, r_name, act):
-    # 【修复1】将 MEMBERS 改为 MEMBER_DATA，与你前面定义的字典名称保持一致
-    c_trait = MEMBER_DATA[m_name]["trait"]
-    
-    titles = {
-        "经纪人": [
-            f"🎬 第一幕：后台倒计时的视线交汇",
-            f"🎬 第二幕：深夜休息室的卸防独白",
-            f"🎬 第三幕：通告间隙的秘密私奔",
-            f"🎬 第四幕：镜头死角的直球对峙",
-            f"🎬 第五幕：风口浪尖的坚定守护",
-            f"🎬 第六幕（终章）：闪耀舞台下的永恒契约"
-        ],
-        "青梅竹马": [
-            f"🏡 第一幕：老旧阁楼的放学后重逢",
-            f"🏡 第二幕：便利店门口分食的冰淇淋",
-            f"🏡 第三幕：深夜房间窗台的秘密纸条",
-            f"🏡 第四幕：夏日祭烟火下的怦然心动",
-            f"🏡 第五幕：争吵后的隐秘眼泪与拥抱",
-            f"🏡 第六幕（终章）：经年陪伴的告白终点站"
-        ],
-        "在日留学生or打工人": [
-            f"🗼 第一幕：异国涩谷十字路口的擦肩",
-            f"🗼 第二幕：电车终点站的雨伞与温热罐装咖啡",
-            f"🗼 第三幕：狭小公寓厨房里的手作料理",
-            f"🗼 第四幕：樱花树下的跨国心事坦白",
-            f"🗼 第五幕：异国深夜生病时的慌乱照顾",
-            f"🗼 第六幕（终章）：东京塔下的浪漫长相厮守"
-        ]
-    }
-    
-    title = titles[r_name][act - 1]
-    
-    if m_name == "丈君":
-        intro_dialogue = (m_name, f"“喂！身为你的{r_name}，本大爷可不允许你把视线移开别人哦！”")
-        prologue_text = f"关西腔的爽朗笑声在耳边回荡。作为{r_name}，你与丈君（{c_trait}）一同经历的每一幕都充满了热血与欢笑。"
-    elif m_name == "大酱":
-        intro_dialogue = (m_name, f"“呐，今天也要跟紧我的脚步，C位身边的专属位置只留给你哦～”")
-        prologue_text = f"灯光璀璨，空气中弥漫着温柔的气息。作为{r_name}，大酱（{c_trait}）正用他那双亮晶晶的眼睛深情地望着你。"
-    elif m_name == "布丁":  # 修正：原代码写的是 "大桥"
-        intro_dialogue = (m_name, f"“布丁要分你一半，不开心的时候吃甜食就会好起来的！”")
-        prologue_text = f"空气里仿佛飘着淡淡的甜香。作为{r_name}，布丁（{c_trait}）标志性的治愈系笑容瞬间融化了所有的疲惫。"
-    elif m_name == "高恭":  # 修正：原代码写的是 "恭平"
-        intro_dialogue = (m_name, f"“照过镜子了吗？本大爷今天帅得连游戏通关都吸引不了我了，除了你。”")
-        prologue_text = f"略带傲娇又宠溺的语气。作为{r_name}，高恭（{c_trait}）正漫不经心地把玩着手里的游戏机，耳根却悄悄红了。"
-    elif m_name == "流星":
-        intro_dialogue = (m_name, f"“wink~ 今天特意挑了你喜欢的发色，快夸夸我！”")
-        prologue_text = f"精致的面容在微光下显得格外动人。作为{r_name}，流星（{c_trait}）凑近你身边，带着让人无法抗拒的可爱魔力。"
-    elif m_name == "米七":
-        intro_dialogue = (m_name, f"“内个……只要你在身边，我就觉得连风都是甜的。”")
-        prologue_text = f"纯爱漫画般的氛围。作为{r_name}，米七（{c_trait}）修长的身影将你轻轻笼罩，眼底满是青涩的依恋。"
-    else:  # 谦杜
-        intro_dialogue = (m_name, f"“今天的穿搭可是专门为你搭配的哦，小恶魔时尚顾问满意吗？”")
-        prologue_text = f"潮流感十足的街头风气息。作为{r_name}，谦杜（{c_trait}）带着恶作剧般的坏笑，轻轻拉住了你的衣角。"
-
-    return {
-        "title": title,
-        "scene": f"{m_name} 与你的专属剧情现场",
-        "prologue": prologue_text,
-        "dialogue_intro": [intro_dialogue],
-        "choices": [
-            {"option": "微笑回应并靠近一步", "reply": "「……犯规了，你这样笑会让我的心跳彻底失控的。」", "affection": 20},
-            {"option": "打趣化解害羞的情绪", "reply": "「哼，也就只有你敢这么调侃我了，不过……我喜欢。」", "affection": 15},
-            {"option": "认真握住对方的手", "reply": "「被你这样注视着，我好像已经没办法再去想其他人了。」", "affection": 25}
-        ]
-    }
-
-
-# -----------------------------------------------------------------------------
-# 4. 突发随机事件池 (RANDOM_EVENTS_POOL) —— 这部分完全没问题，直接保留！
-# -----------------------------------------------------------------------------
-RANDOM_EVENTS_POOL = [
-    {
-        "title": "突发暴雨的屋檐避难",
-        "desc": "两人在回家路上突然遇到倾盆大雨，被迫挤在一个小小的便利店屋檐下，肩膀紧紧贴着……",
-        "dialogue": "「雨下得好大啊……你的肩膀都湿了一片。来，往我这边靠紧一点，别着凉了。」",
-        "choices": [
-            {"text": "顺势靠进他怀里：「这样就不冷啦，谢谢你。」", "reply": "「真是的……心跳声这么快，全都传过来了啦。」", "score": 25},
-            {"text": "把伞往他那边推：「你别淋湿了才是，我没事的。」", "reply": "「傻瓜，我一个男生淋点雨没关系……不过，被你这样关心，我有点高兴过头了。」", "score": 20}
-        ]
-    },
-    {
-        "title": "电台直播的连线袭击",
-        "desc": "工作间隙突然接到了一档电台连线直播，主持人现场要求他对你说一句真心话！",
-        "dialogue": "「诶？连线直播吗……咳，那我就直说了。其实不管行程多累，只要想到你在身边，我就——」",
-        "choices": [
-            {"text": "红着脸小声抢话：「好啦，快别在直播里说这个了！」", "reply": "「哈哈，害羞了吗？直播间的几万名粉丝可都听见咯。」", "score": 20},
-            {"text": "落落大方地对着麦克风回应：「我也一样哦，一直辛苦了。」", "reply": "「……听到你这么说，我突然觉得今天所有的疲惫都瞬间消失了。」", "score": 30}
-        ]
-    },
-    {
-        "title": "猫咪咖啡厅的意外邂逅",
-        "desc": "排练间隙去咖啡厅休息，一只可爱的布偶猫突然跳进你怀里，引得他吃醋地看着你……",
-        "dialogue": "「喂……它在你怀里待得太久了吧？我也想要抱抱，不许偏心哦。」",
-        "choices": [
-            {"text": "笑着把猫抱好、顺手戳戳他的脸：「连猫的醋也吃呀？」", "reply": "「才没有吃醋……好吧，有一点点。谁让你眼里只有它没有我。」", "score": 22},
-            {"text": "放下猫咪，主动拉住他的袖子：「好啦，那我只看你总行了吧。」", "reply": "「这还差不多……不准反悔哦。」", "score": 28}
-        ]
-    },
-    {
-        "title": "便利店最后一块布丁",
-        "desc": "深夜去买宵夜，冰箱里只剩下最后一份他最爱的限定布丁，你们会怎么分？",
-        "dialogue": "「啊……只剩最后一个了。要不，你吃吧？我看你今天录制辛苦了。」",
-        "choices": [
-            {"text": "用勺子挖了一口喂到他嘴边：「我们一人一半呀！」", "reply": "「唔……好甜。不过，比布丁更甜的是你喂的这一口……」", "score": 30},
-            {"text": "「不行，你是寿星/大明星，你吃！」", "reply": "「那……那我分你一大半，不许拒绝，不然我会生气的。」", "score": 20}
-        ]
-    },
-    {
-        "title": "📸 文春炮的闪光灯危机",
-        "desc": "深夜在街角散步时，暗处突然闪过一道刺眼的白光！文春记者带着长枪短炮从阴影里冲了出来！",
-        "dialogue": "「闪光灯？！别慌，抓紧我的手，跟着我跑！」",
-        "choices": [
-            {"text": "紧紧反握住他的手，跟着他一路狂奔", "reply": "「甩掉了……好险！不过刚才那一瞬间，我满脑子只想保护你一个人，没顾上别的。」", "score": 35}
-        ]
-    },
-    {
-        "title": "🚨 狂热私生饭的围堵",
-        "desc": "刚结束录制，停车场突然冲出几个情绪激动的私生饭和私家车，死死堵住了去路……",
-        "dialogue": "「别看他们，低下头，我把你整个人护在身后！」",
-        "choices": [
-            {"text": "紧紧抓着他的衣角，信任地靠在他身后", "reply": "「别怕，有我在，谁也别想伤害你半根汗毛。我们马上上车。」", "score": 30}
-        ]
-    },
-    {
-        "title": "🎙️ 直播未关麦的社死瞬间",
-        "desc": "以为直播已经切断，他正凑在你耳边小声呢喃情话，结果几万名在线观众把两人的亲密私语听得清清楚楚！",
-        "dialogue": "「等、等一下……刚才的麦克风好像一直没关？！完蛋了，全直播间都听见了……」",
-        "choices": [
-            {"text": "红着脸捂住他的嘴：「都怪你啦！」", "reply": "「咳……听见就听见了吧，反正我对你说的每一句话，都是认真的。」", "score": 35},
-            {"text": "大方对着镜头挥手打招呼：「大家晚安呀~」", "reply": "「……你比想象中还要大胆嘛，不过，我好喜欢你这样。」", "score": 30}
-        ]
-    },
-    {
-        "title": "🎭 颁奖后台的擦肩而过",
-        "desc": "在众多同行和媒体云集的颁奖典礼后台，为了避人耳目，你们俩不得不一起躲进了一个狭窄逼仄的杂物间里。",
-        "dialogue": "「空间太小了……这样贴得好近。外面都是记者和摄像机，千万别发出声音哦……」",
-        "choices": [
-            {"text": "大气都不敢出，紧张地抓着他的肩膀", "reply": "「心跳得这么快……是因为外面太危险，还是因为……离我太近了？」", "score": 30},
-            {"text": "小声调侃：「大明星也有这么狼狈的时候呀？」", "reply": "「还不是为了能近年来单独待一会儿……真是拿你没办法。」", "score": 25}
-        ]
-    },
-    {
-        "title": "🕶️ 机场同款引发的饭圈地震",
-        "desc": "两人前脚刚一前一后离开机场，后脚就被火眼金睛的粉丝扒出戴了同款情侣项链，热搜瞬间爆了！",
-        "dialogue": "「热搜爆了……经纪人刚才已经打电话来盘问了。不过，看着粉丝们的评论，我其实……」",
-        "choices": [
-            {"text": "紧张地问：「那怎么办？会不会对你工作有影响？」", "reply": "「傻瓜，我才不在乎热搜怎么说，我只担心你有没有被吓到。」", "score": 28},
-            {"text": "开玩笑道：「那要不索性公开承认算了？」", "reply": "「……这可是你说的。既然你都这么勇敢了，那我可就要顺水推舟咯。」", "score": 40}
-        ]
-    }
-]
 
 ROLES = ["经纪人", "青梅竹马", "在日学生or打工人"]
+
+# -----------------------------------------------------------------------------
+# 3. Session State 初始化
+# -----------------------------------------------------------------------------
+if "stage" not in st.session_state:
+    st.session_state.stage = "menu"
+if "player_role" not in st.session_state:
+    st.session_state.player_role = ROLES[0]
+if "target_member" not in st.session_state:
+    st.session_state.target_member = "丈君"
+if "current_act" not in st.session_state:
+    st.session_state.current_act = 1
+if "total_score" not in st.session_state:
+    st.session_state.total_score = 0
+if "last_dialogue_result" not in st.session_state:
+    st.session_state.last_dialogue_result = None
+if "random_event" not in st.session_state:
+    st.session_state.random_event = None
+
+# -----------------------------------------------------------------------------
+# 4. 标题与选择区域
+# -----------------------------------------------------------------------------
+st.markdown('<p class="otome-title">💖 浪花男子心动日常</p>', unsafe_allow_html=True)
+
+col_sel1, col_sel2 = st.columns(2)
+with col_sel1:
+    player_role = st.selectbox("1️⃣ 请选择你的身份：", ROLES)
+    st.session_state.player_role = player_role
+
+with col_sel2:
+    member_names = list(MEMBERS.keys())
+    target_member = st.selectbox("2️⃣ 请选择你想攻略的成员：", member_names)
+    st.session_state.target_member = target_member
+
+# 渲染选中成员的图片
+m_info = MEMBERS[st.session_state.target_member]
+st.image(m_info["img"], use_container_width=True)
+
+st.markdown("---")
+# 接下来的代码将会是你的剧情渲染循环...
 MAX_ACT = 6  # 6幕完整流程
 
 # -----------------------------------------------------------------------------
@@ -3725,7 +3610,6 @@ STORIES = {
     },
 },
 }
-
 # 终极智能兜底函数（双重保险，绝不报错）
 def get_member_story(member, role, act):
     if (
@@ -3988,7 +3872,7 @@ if st.sidebar.button("🔄 重置当前剧情进度", use_container_width=True):
 
 
 # -----------------------------------------------------------------------------
-# 8. 主剧情关卡渲染 (兼容数字与字符串键，彻底解决一开局就跳结局的问题)
+# 8. 主剧情关卡渲染 (使用 get_member_story 完美适配成员、身份与当前幕数，让选项真正运作起来)
 # -----------------------------------------------------------------------------
 st.markdown("---")
 
@@ -4007,111 +3891,105 @@ if st.session_state.last_dialogue_result:
         unsafe_allow_html=True
     )
 
+# 获取当前成员、身份、幕数的剧情数据
+act_data = None
 if 'STORIES' in globals():
-    story_categories = list(STORIES.keys())
-    selected_category = story_categories[0]  
-    category_stories = STORIES.get(selected_category, {})
-    current_act = st.session_state.current_act
-
-    # 关键修复：同时支持数字键 (1) 和字符串键 ("1" 或 "第一幕") 的查找
-    act_data = category_stories.get(current_act) or category_stories.get(str(current_act))
-    
-    # 如果还是没找到，尝试按顺序取第几个（防止键名完全对不上）
-    if not act_data:
-        keys_list = list(category_stories.keys())
-        if 0 <= current_act - 1 < len(keys_list):
-            act_data = category_stories[keys_list[current_act - 1]]
+    act_data = get_member_story(
+        st.session_state.target_member,
+        st.session_state.player_role,
+        st.session_state.current_act
+    )
 
 if act_data:
-        act_title = act_data.get('title', f"第 {st.session_state.current_act} 幕：心动时刻") if isinstance(act_data, dict) else f"第 {st.session_state.current_act} 幕"
-        st.markdown(f"### 🎬 {act_title}")
-        # 渲染当前关卡的所有选项（改用 .get 安全获取，防止 KeyError）
-        choices_list = act_data.get("choices", []) if isinstance(act_data, dict) else (act_data if isinstance(act_data, (list, tuple)) else [])
-        for idx, choice in enumerate(choices_list):
-            if len(choice) == 3:
-                btn_text, reply_text, base_score = choice
-            else:
-                btn_text, reply_text, base_score = choice[0], "……（温柔地看着你笑）", 20
+    act_title = act_data.get('title', f"第 {st.session_state.current_act} 幕：心动时刻")
+    st.markdown(f"### 🎬 {act_title}")
+    
+    choices_list = act_data.get("choices", [])
+    for idx, choice in enumerate(choices_list):
+        if len(choice) == 3:
+            btn_text, reply_text, base_score = choice
+        else:
+            btn_text, reply_text, base_score = choice[0], "……（温柔地看着你笑）", 20
 
-            if st.button(btn_text, key=f"choice_{current_act}_{idx}", use_container_width=True):
-                # 计算 Buff 加成
-                actual_score = base_score
-                if st.session_state.active_buff == "🍬 恋爱加倍糖果":
-                    actual_score *= 2
-                    st.session_state.active_buff = None  
-                    st.toast("🍬 恋爱加倍糖果生效！好感积分翻倍！", icon="✨")
-                elif st.session_state.active_buff == "🎧 读心耳机":
-                    actual_score += 15
-                    st.session_state.active_buff = None
-                    st.toast("🎧 读心耳机生效：额外 +15 积分！", icon="✨")
-                elif st.session_state.active_buff in ["☕ 专属应援手摇杯", "🥤 冰爽解暑饮料"]:
-                    actual_score += 10
-                    st.session_state.active_buff = None
-                    st.toast("☕ 道具加成生效：额外 +10 积分！", icon="✨")
-                elif st.session_state.active_buff == "🌙 星空定制项链":
-                    actual_score += 25
-                    st.session_state.active_buff = None
-                    st.toast("🌙 星空定制项链生效：大幅提升结局甜度，额外 +25 积分！", icon="💖")
+        if st.button(btn_text, key=f"choice_{st.session_state.current_act}_{idx}", use_container_width=True):
+            # 计算 Buff 加成
+            actual_score = base_score
+            if st.session_state.active_buff == "🍬 恋爱加倍糖果":
+                actual_score *= 2
+                st.session_state.active_buff = None  
+                st.toast("🍬 恋爱加倍糖果生效！好感积分翻倍！", icon="✨")
+            elif st.session_state.active_buff == "🎧 读心耳机":
+                actual_score += 15
+                st.session_state.active_buff = None
+                st.toast("🎧 读心耳机生效：额外 +15 积分！", icon="✨")
+            elif st.session_state.active_buff in ["☕ 专属应援手摇杯", "🥤 冰爽解暑饮料"]:
+                actual_score += 10
+                st.session_state.active_buff = None
+                st.toast("☕ 道具加成生效：额外 +10 积分！", icon="✨")
+            elif st.session_state.active_buff == "🌙 星空定制项链":
+                actual_score += 25
+                st.session_state.active_buff = None
+                st.toast("🌙 星空定制项链生效：大幅提升结局甜度，额外 +25 积分！", icon="💖")
 
-                # 累加积分  
-                st.session_state.total_score += actual_score
+            # 累加积分  
+            st.session_state.total_score += actual_score
 
-                # 记录历史与最新结果
-                st.session_state.last_dialogue_result = (
-                    act_data['title'],
-                    btn_text,
-                    reply_text,
-                    actual_score
-                )
+            # 记录历史与最新结果
+            st.session_state.last_dialogue_result = (
+                act_title,
+                btn_text,
+                reply_text,
+                actual_score
+            )
 
-                # 推进到下一天/下一幕
-                st.session_state.current_act += 1
+            # 推进到下一幕
+            st.session_state.current_act += 1
 
-                # 随机触发突发事件的概率 (40% 概率)
-                if random.random() < 0.4 and st.session_state.current_act < 6:
-                    events_pool = [
-                        {
-                            "title": "🚨 突发危机：文春记者的长焦镜头",
-                            "desc": f"在约会途中，街角突然闪过一道可疑的快门闪光灯！有八卦记者正在试图偷拍你和 {st.session_state.target_member} 的亲密合影！"
-                        },
-                        {
-                            "title": "⚡ 突发危机：热情粉丝与私生饭围堵",
-                            "desc": f"由于近期人气暴涨，你们在离开咖啡厅时突然被大批粉丝和围观人群堵在门口，场面一度有些混乱！"
-                        },
-                        {
-                            "title": "🌧️ 突发危机：突如其来的暴雨袭城",
-                            "desc": f"原本晴朗的天空瞬间下起倾盆大雨，街上的行人纷纷避雨，你们的计划被打乱了。"
-                        }
-                    ]
-                    st.session_state.random_event = random.choice(events_pool)
+            # 随机触发突发事件的概率 (40% 概率)
+            if random.random() < 0.4 and st.session_state.current_act < 6:
+                events_pool = [
+                    {
+                        "title": "🚨 突发危机：文春记者的长焦镜头",
+                        "desc": f"在约会途中，街角突然闪过一道可疑的快门闪光灯！有八卦记者正在试图偷拍你和 {st.session_state.target_member} 的亲密合影！"
+                    },
+                    {
+                        "title": "⚡ 突发危机：热情粉丝与私生饭围堵",
+                        "desc": f"由于近期人气暴涨，你们在离开咖啡厅时突然被大批粉丝和围观人群堵在门口，场面一度有些混乱！"
+                    },
+                    {
+                        "title": "🌧️ 突发危机：突如其来的暴雨袭城",
+                        "desc": f"原本晴朗的天空瞬间下起倾盆大雨，街上的行人纷纷避雨，你们的计划被打乱了。"
+                    }
+                ]
+                st.session_state.random_event = random.choice(events_pool)
 
-                st.rerun()
+            st.rerun()
 
 else:
-        # 剧本通关结局界面 (只有当所有幕数都走完才会走到这里)
-        st.markdown(
-            f"""
-            <div style="background: linear-gradient(135deg, #fce7f3 100%, #fbcfe8 0%); border: 2px solid #f472b6; padding: 25px; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(244,114,182,0.2);">
-                <h2 style="color: #be185d; margin-top: 0;">🎉 恭喜达成完美结局！</h2>
-                <p style="font-size: 1.1rem; color: #4b5563; line-height: 1.6;">
-                    你与 <b>{st.session_state.target_member}</b> 在 <b>{selected_category}</b> 身份线中历经了种种浪漫与心动，顺利完成了全剧本通关！
-                </p>
-                <p style="font-size: 1.2rem; color: #9d174d; font-weight: bold;">
-                    🏆 最终收集心动积分：{st.session_state.total_score} 分
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-        
-        col_end1, col_end2 = st.columns(2)
-        with col_end1:
-            if st.button("🔄 重新体验当前剧本", use_container_width=True):
-                st.session_state.current_act = 1
-                st.session_state.last_dialogue_result = None
-                st.rerun()
-        with col_end2:
-            if st.button("🎁 返回上方抽取高级恋爱道具", use_container_width=True):
-                st.session_state.current_act = 1
-                st.session_state.last_dialogue_result = None
-                st.rerun()
+    # 剧本通关结局界面 (只有当所有幕数都走完才会走到这里)
+    st.markdown(
+        f"""
+        <div style="background: linear-gradient(135deg, #fce7f3 100%, #fbcfe8 0%); border: 2px solid #f472b6; padding: 25px; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(244,114,182,0.2);">
+            <h2 style="color: #be185d; margin-top: 0;">🎉 恭喜达成完美结局！</h2>
+            <p style="font-size: 1.1rem; color: #4b5563; line-height: 1.6;">
+                你与 <b>{st.session_state.target_member}</b>（<b>{st.session_state.player_role}</b>线）历经了种种浪漫与心动，顺利完成了全剧本通关！
+            </p>
+            <p style="font-size: 1.2rem; color: #9d174d; font-weight: bold;">
+                🏆 最终收集心动积分：{st.session_state.total_score} 分
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    
+    col_end1, col_end2 = st.columns(2)
+    with col_end1:
+        if st.button("🔄 重新体验当前剧本", use_container_width=True):
+            st.session_state.current_act = 1
+            st.session_state.last_dialogue_result = None
+            st.rerun()
+    with col_end2:
+        if st.button("🎁 返回上方抽取高级恋爱道具", use_container_width=True):
+            st.session_state.current_act = 1
+            st.session_state.last_dialogue_result = None
+            st.rerun()
