@@ -110,25 +110,25 @@ MEMBERS = {
         "img": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&q=80",
         "greeting": "『布丁布丁！今天有好好吃饭吗？没有的话我带你去吃好吃的！』"
     },
-  "恭平": {
+    "恭平": {
         "trait": "🎮 自恋帅哥 · 游戏宅系帅哥",
         "color": "#9333ea",
         "img": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&q=80",
         "greeting": "『照照镜子……嗯，今天依然很帅！要来跟我组队打游戏吗？』"
     },
-  "流星": {
+    "流星": {
         "trait": "✨ 可爱天花板 · 美妆小达人",
         "color": "#ec4899",
         "img": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&q=80",
         "greeting": "『wink~ 今天的妆容可是花了心思的，不许移开视线哦！』"
     },
-  "骏佑": {
+    "米七": {
         "trait": "🌸 撕漫男神 · 纯爱系长腿弟弟",
         "color": "#2563eb",
         "img": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&q=80",
         "greeting": "『内个……看到你笑的话，我也会忍不住开心起来呢。』"
     },
-  "谦杜": {
+    "谦杜": {
         "trait": "🎨 潮流担当 · 淘气时尚小恶魔",
         "color": "#d97706",
         "img": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&q=80",
@@ -389,7 +389,6 @@ STORIES = {
             },
         },
     },
-},
 "青梅竹马": {
     1: {
         "title": "🎬 丈君·放学路：从小打到大的欢喜冤家",
