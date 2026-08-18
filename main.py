@@ -3961,7 +3961,7 @@ with col_sel2:
 # 渲染选中成员的精美卡片（对应视频中的图片、特征与专属色展示）
 if 'MEMBERS' in globals() and st.session_state.target_member in MEMBERS:
     m_info = MEMBERS[st.session_state.target_member]
-    st.image(m_info["img"], use_column_width=True)
+   st.image(m_info["img"], use_container_width=True)
     st.markdown(
         f"""
         <div style="text-align: center; margin-top: 5px; margin-bottom: 15px;">
