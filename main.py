@@ -6432,7 +6432,6 @@ if "random_event" not in st.session_state:
 # 新增：用于乙女游戏沉浸式互动的临时状态
 if "last_dialogue_result" not in st.session_state:
     st.session_state.last_dialogue_result = None
-
 # -----------------------------------------------------------------------------
 # 5. 主界面渲染
 # -----------------------------------------------------------------------------
