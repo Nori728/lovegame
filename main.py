@@ -6514,7 +6514,7 @@ if st.session_state.inventory:
 
 if st.session_state.active_buff:
     st.markdown(
-        f"> ⚡ **当前生效增益Buff:** `{st.session\\\\\\\_state.active\\\\\\\_buff}`"
+        f"> ⚡ **当前生效增益Buff:** `{st.session_state.active_buff}`"
     )
 
 st.markdown("---")
