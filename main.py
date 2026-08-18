@@ -6601,19 +6601,33 @@ if st.session_state.stage == "playing":
         st.markdown(f"### {current_story['title']}")
 
         # 乙女游戏核心交互：如果刚点击了选项，展示男主的深情回应对话框
-        if st.session_state.last_dialogue_result:
-            choice_c, reply_r, f_score = st.session_state.last_dialogue_result
-            st.markdown(
-                f"""
-                <div style="background-color: #fff1f2; border-left: 4px solid #e11d48; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <p style="margin: 0 0 8px 0; color: #881337; font-size: 0.950rem;">你的选择： {choice_c}</p>
-                    <hr style="border: none; border-top: 1px dashed #fecdd3; margin: 8px 0;">
-                    <p style="margin: 0; color: #9f1239; font-size: 1.05rem;">{m}的回应： {reply_r}</p>
-                    <p style="margin: 8px 0 0 0; color: #be123c; font-size: 0.85rem; text-align: right;">✨ 好感度 +{f_score}</p>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+if st.session_state.last_dialogue_result:
+    choice_c, resp_list, single_reply, f_score = st.session_state.last_dialogue_result
+    
+    # 💡 万能兼容渲染：不管你写的是哪种格式，这里都会自动把字打印出来！
+    dialogue_html = ""
+    if resp_list:
+        # 如果你写的是多行列表格式
+        for speaker, text in resp_list:
+            dialogue_html += f'<p style="margin: 6px 0; color: #9f1239;"><b>{speaker}：</b>{text}</p>'
+    elif single_reply:
+        # 如果你写的是单行 reply 格式
+        dialogue_html += f'<p style="margin: 6px 0; color: #9f1239;"><b>{m}：</b>{single_reply}</p>'
+    else:
+        # 兜底保护：如果两边都没写，自动显示默认暖心话，绝对不留白！
+        dialogue_html += f'<p style="margin: 6px 0; color: #9f1239;"><b>{m}：</b>（温柔地看着你，笑而不语）</p>'
+
+    st.markdown(
+        f"""
+        <div style="background-color: #fff1f2; border-left: 4px solid #e11d48; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <p style="margin: 0 0 8px 0; color: #881337; font-size: 0.95rem;">你的选择： {choice_c}</p>
+            <hr style="border: none; border-top: 1px dashed #fecdd3; margin: 8px 0;">
+            {dialogue_html}
+            <p style="margin: 8px 0 0 0; color: #be123c; font-size: 0.85rem; text-align: right;">✨ 好感度 +{f_score}</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
             col_btn1, col_btn2 = st.columns(2)
             with col_btn1:
