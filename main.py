@@ -3826,13 +3826,12 @@ st.markdown("### 📖 开启心动互动剧情")
 
 col_sel1, col_sel2 = st.columns(2)
 with col_sel1:
-player_role = st.selectbox(
-    "1️⃣ 请选择你的身份：", 
-    ROLES if 'ROLES' in globals() else ["经纪人", "青梅竹马", "粉丝"],
-    key="unique_player_role_select"  # 加上这一行，问题就解决了
-)
-st.session_state.player_role = player_role
-
+    player_role = st.selectbox(
+        "1️⃣ 请选择你的身份：", 
+        ROLES if 'ROLES' in globals() else ["经纪人", "青梅竹马", "粉丝"],
+        key="unique_player_role_select"
+    )
+    st.session_state.player_role = player_role
 with col_sel2:
     if 'MEMBERS' in globals():
         member_names = list(MEMBERS.keys())
