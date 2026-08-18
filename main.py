@@ -1,5 +1,5 @@
-import streamlit as st
 import random
+import streamlit as st
 
 # -----------------------------------------------------------------------------
 # 1. 基础配置与样式 (动漫乙女风格 UI)
@@ -107,24 +107,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 2. 初始化核心状态 (Session State) —— 修复一打开直接结局的关键点
-# -----------------------------------------------------------------------------
-if "points" not in st.session_state:
-    st.session_state.points = 100
-if "inventory" not in st.session_state:
-    st.session_state.inventory = []
-if "today_fortune" not in st.session_state:
-    st.session_state.today_fortune = None
-if "selected_identity" not in st.session_state:
-    st.session_state.selected_identity = "经纪人"
-if "selected_member" not in st.session_state:
-    st.session_state.selected_member = "丈君"
-if "game_started" not in st.session_state:
-    st.session_state.game_started = False  # 默认未开始游戏，停留在选人界面
-if "current_day" not in st.session_state:
-    st.session_state.current_day = 1       # 默认从第1天开始
-
-# -----------------------------------------------------------------------------
 # 2. 基础数据源 (7人全员数据)
 # -----------------------------------------------------------------------------
 MEMBERS = {
@@ -200,7 +182,6 @@ def get_custom_story(m_name, r_name, act):
     
     title = titles[r_name][act - 1]
     
-    # 【修复2】将 "大桥" 改为 "布丁"，"恭平" 改为 "高恭"，完美对应 MEMBER_DATA 里的键名
     if m_name == "丈君":
         intro_dialogue = (m_name, f"“喂！身为你的{r_name}，本大爷可不允许你把视线移开别人哦！”")
         prologue_text = f"关西腔的爽朗笑声在耳边回荡。作为{r_name}，你与丈君（{c_trait}）一同经历的每一幕都充满了热血与欢笑。"
