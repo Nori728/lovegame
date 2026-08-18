@@ -4022,7 +4022,7 @@ if 'STORIES' in globals():
         if 0 <= current_act - 1 < len(keys_list):
             act_data = category_stories[keys_list[current_act - 1]]
 
-    if act_data:
+if act_data:
         st.markdown(f"### {act_data['title']}")
         
         # 渲染当前关卡的所有选项
