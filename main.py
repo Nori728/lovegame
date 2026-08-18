@@ -165,7 +165,6 @@ if selected_member in MEMBERS:
     st.image(MEMBERS[selected_member]["img"], width=220)
     st.markdown(f"**当前角色特色：** {MEMBERS[selected_member]['trait']}")
     st.info(f"{selected_member}：{MEMBERS[selected_member]['greeting']}")
-
 # 选择身份
 selected_role = st.selectbox("💙 选择你的专属身份：", ROLES)
 
