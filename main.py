@@ -6621,21 +6621,6 @@ elif st.session_state.stage == "menu":
 # 7. 动态个性化剧情数据库与核心生成函数
 # -----------------------------------------------------------------------------
 
-# 你可以在这里针对特定成员或身份编写硬编码剧情（可选）
-ROLE_STORY_DB = {
-    # 示例格式：
-    # "丈君": {
-    #     "专属造型师": {
-    #         1: {
-    #             "intro": "「今天这个发型……是因为今天要见你，所以特意让造型师弄得成熟一点哦。」",
-    #             "scene": "后台化妆间",
-    #             "prologue": "镜子里映出他专注的眼神，空气中弥漫着淡淡的洗发水香气。",
-    #             "choices": [...]
-    #         }
-    #     }
-    # }
-}
-
 def get_member_story(member, role, act):
     # 1. 优先尝试从结构化数据库中读取硬编码的专属剧本
     try:
@@ -6670,72 +6655,18 @@ def get_member_story(member, role, act):
     # 利用哈希确保同一角色在同一幕每次读取相对稳定，但不同角色/幕绝对不重复
     intro_text = intro_pool[(hash(member) + act * 3) % len(intro_pool)]
 
-    # 针对不同幕数设计专属的差异化选项与对应回应
-    choices_pools = {
-        1: [
-            {
-                "option": "略显羞涩地避开视线，轻声转移话题",
-                "affection": 10,
-                "reply": f"「哈哈，害羞的样子也很可爱呢。不过，我更想听你的真心话哦。」"
-            },
-            {
-                "option": "落落大方地笑著反问：『那你想怎么样？』",
-                "affection": 15,
-                "reply": f"「不愧是我的{role}，反应真快……好啦，被你反将一军了呢。」"
-            },
-            {
-                "option": "认真地夸奖他今天表现得很棒",
-                "affection": 12,
-                "reply": f"「听到你这么说，我今天的努力就全都有意义了！」"
-            }
-        ],
-        2: [
-            {
-                "option": "主动帮他整理好衣领或随身道具",
-                "affection": 18,
-                "reply": f"「被你这么温柔地照顾……我好像越来越离不开你了怎么办？」"
-            },
-            {
-                "option": "调侃他今天是不是又在偷偷想什么坏主意",
-                "affection": 15,
-                "reply": f"「冤枉啊！我满脑子装的明明全都是怎么和配合好这件事……（笑）」"
-            },
-            {
-                "option": "递上一杯水，关切地问他累不累",
-                "affection": 16,
-                "reply": f"「本来有点累的，但你一出现，电量瞬间就满格了。」"
-            }
-        ],
-        3: [
-            {
-                "option": "坚定地回望他的双眼，顺势表达心意",
-                "affection": 25,
-                "reply": f"「太犯规了……听到你用这种眼神看着我，我的心跳得更快了。」"
-            },
-            {
-                "option": "假装严肃地提醒他注意镜头和影响",
-                "affection": 15,
-                "reply": f"「这时候就别管镜头啦……眼里只有你一个，还不够吗？」"
-            },
-            {
-                "option": "温柔地安抚他的情绪，轻声鼓励他",
-                "affection": 20,
-                "reply": f"「只要有你在身边，不管面对多大压力，我都觉得无所畏惧。」"
-            }
-        ],
-        4: [
-            {
-                "option": "顺势握住他的手，给彼此一个坚定的拥抱",
-                "affection": 30,
-                "reply": f"「（反手将你紧紧拥入怀中）……不准离开我，知不知道？」"
-            },
-            {
-                "option": "红着脸低声呢喃：『我也一样……』",
-                "affection": 25,
-                "reply": f"「这句话，我可是当真了哦。以后不许反悔。」"
-            }
-        ]
-    }
+   # 获取当前这一幕的数据
+current_act_data = STORIES[selected_role][selected_identity][st.session_state.act]
+
+# 从数据里读取 choices，而不是从外部变量读取
+choices = current_act_data["choices"] 
+
+# 渲染按钮
+for i, choice in enumerate(choices):
+    if st.button(choice["option"], key=f"btn_{i}"):
+        # 显示回复
+        st.write(choice["reply"])
+        # 更新好感度...
 
     # 获取对应幕数的选项（如果超出了定义的最大幕数，则使用最后一组）
     act_choices = choices_pools.get(act, choices_pools.get(3))
