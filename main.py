@@ -3758,46 +3758,237 @@ def get_member_story(member, role, act):
 
 
 # -----------------------------------------------------------------------------
-# 7. 侧边栏：角色与身份选择 (让你可以自由选人、选剧本类型)
+# 4. Session State 初始化
 # -----------------------------------------------------------------------------
+if "stage" not in st.session_state:
+    st.session_state.stage = "menu"
+if "player_role" not in st.session_state:
+    st.session_state.player_role = ROLES[0] if 'ROLES' in globals() else "经纪人"
+if "target_member" not in st.session_state:
+    st.session_state.target_member = "丈君"
+if "current_act" not in st.session_state:
+    st.session_state.current_act = 1
+if "total_score" not in st.session_state:
+    st.session_state.total_score = 30
+if "dialogue_history" not in st.session_state:
+    st.session_state.dialogue_history = []
+if "inventory" not in st.session_state:
+    st.session_state.inventory = []
+if "active_buff" not in st.session_state:
+    st.session_state.active_buff = None
+if "daily_gacha_result" not in st.session_state:
+    st.session_state.daily_gacha_result = None
+if "random_event" not in st.session_state:
+    st.session_state.random_event = None
+if "last_dialogue_result" not in st.session_state:
+    st.session_state.last_dialogue_result = None
+
+
+# -----------------------------------------------------------------------------
+# 5. 主界面渲染 (顶部标题、扭蛋机与背包)
+# -----------------------------------------------------------------------------
+st.markdown('<p class="main-header">💖 浪花男子心动日常</p>', unsafe_allow_html=True)
+st.markdown('<p class="sub-header">✨ 沉浸式乙女恋爱养成企划 (全剧情流畅推进)</p>', unsafe_allow_html=True)
+
+st.markdown(
+    """
+    <div class="gacha-box">
+        <h3 style="margin-top:0; color:#b45309; font-size: 1.2rem;">🎲 每日运势与道具扭蛋机</h3>
+        <p style="font-size: 0.9rem; color: #78350f; margin-bottom: 10px;">消耗10积分抽取恋爱道具，并在背包中手动点击使用以获得增益效果！</p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+col_g1, col_g2 = st.columns(2)
+with col_g1:
+    if st.button("✨ 测测今天大势心动成员", use_container_width=True):
+        if 'MEMBERS' in globals():
+            lucky_name, lucky_data = random.choice(list(MEMBERS.items()))
+            st.session_state.daily_gacha_result = (lucky_name, lucky_data)
+
+with col_g2:
+    if st.button("🎁 抽取心动道具 (消耗10积分)", use_container_width=True):
+        if st.session_state.total_score >= 10:
+            st.session_state.total_score -= 10
+            items_pool = [
+                ("🍬 恋爱加倍糖果", "下一次选择获得双倍好感积分！"),
+                ("🎧 读心耳机", "精准洞察真实心意，额外+15积分！"),
+                ("📸 SSR限定拍立得", "增加全盘浪漫氛围与结局甜度！"),
+                ("🥤 冰爽解暑饮料", "恢复元气，额外+10积分！"),
+                ("🕵️‍♂️ 黑色鸭舌帽", "低调伪装神器，免疫一次轻度偷拍危机！"),
+                ("📜 紧急公关手稿", "遭遇绯闻时自动触发，大幅度降低负面好感损失！"),
+                ("📱 备用双卡手机", "防止私生饭骚扰与紧急联络专用，增加容错率！"),
+                ("☕ 专属应援手摇杯", "满含心意的特调饮品，全选项好感度小幅额外+5!"),
+                ("🎟️ VIP前排观演门票", "近距离接触的心动暴击，好感获取效率大幅提升！"),
+                ("🕶️ 明星同款墨镜", "闪避一次记者的长焦镜头抓拍，维持神秘感与安全度！"),
+                ("📜 绝密通告行程单", "提前获知对方动向，精准制造偶遇，额外+20积分！"),
+                ("🌹 手作永生玫瑰", "浪漫值直接拉满，有机会触发隐藏甜蜜对话剧情！"),
+                ("🍫 手工黑巧礼盒", "甜而不腻的心意表达，关键时刻化解尴尬气氛！"),
+                ("🌙 星空定制项链", "专属浪漫信物，大幅提升最终结局的甜度与评级！"),
+                ("🐾 宠物协力萌爪", "利用可爱萌宠助攻，瞬间融化冰冷防备，额外+12积分！"),
+            ]
+            item_name, item_desc = random.choice(items_pool)
+            st.session_state.inventory.append(item_name)
+            st.success(f"成功获得道具：{item_name}（{item_desc}）!")
+        else:
+            st.warning("积分不足10分,快去剧情里增加好感吧！")
+
+if st.session_state.daily_gacha_result:
+    lname, ldata = st.session_state.daily_gacha_result
+    st.info(f"✨ 今日运势大吉！今日最强心动电波对象是：**{lname}**（特点：{ldata['trait']}）。快去选择他开启剧情吧！")
+
+# 背包与 Buff 道具栏
+if st.session_state.inventory:
+    st.markdown("---")
+    st.write("🎒 **你的恋爱道具背包：**")
+    cols_inv = st.columns(len(st.session_state.inventory))
+    for idx, item in enumerate(st.session_state.inventory):
+        with cols_inv[idx]:
+            if st.button(f"使用 {item}", key=f"inv_{idx}"):
+                st.session_state.active_buff = item
+                st.session_state.inventory.pop(idx)
+                st.success(f"已激活道具：{item}!")
+                st.rerun()
+
+if st.session_state.active_buff:
+    st.markdown(f"> ⚡ **当前生效增益Buff:** `{st.session_state.active_buff}`")
+
+st.markdown("---")
+
+
+# -----------------------------------------------------------------------------
+# 6. 游戏流程控制 (突发事件弹窗处理)
+# -----------------------------------------------------------------------------
+if st.session_state.random_event:
+    ev = st.session_state.random_event
+    ev_title = ev['title']
+    ev_desc = ev['desc']
+    m_name = st.session_state.target_member
+    
+    st.markdown(
+        f"""
+        <div style="background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); border: 2px solid #fb7185; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(225,29,72,0.15);">
+            <h3 style="margin-top:0; color: #9f1239; font-size: 1.3rem;">⚡ 【心动危机 / 突发事件】{ev_title}</h3>
+            <p style="font-size: 1.05rem; color: #44403c; line-height: 1.6;">{ev_desc}</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    item_triggered = None
+    if "文春" in ev_title:
+        if "🕵️‍♂️ 黑色鸭舌帽" in st.session_state.inventory:
+            st.success("✨ 【道具自动触发：黑色鸭舌帽】低调伪装成功！你们完美避开了文春记者的长枪短炮！")
+            st.session_state.inventory.remove("🕵️‍♂️ 黑色鸭舌帽")
+            item_triggered = True
+        elif "📜 紧急公关手稿" in st.session_state.inventory:
+            st.success("✨ 【道具自动触发：紧急公关手稿】手稿发挥作用，团队迅速稳住了媒体风向！")
+            st.session_state.inventory.remove("📜 紧急公关手稿")
+            item_triggered = True
+    elif "私生饭" in ev_title:
+        if "📱 备用双卡手机" in st.session_state.inventory:
+            st.success("✨ 【道具-备用双卡手机】及时联络到安保人员精准清场，安全脱身！")
+            st.session_state.inventory.remove("📱 备用双卡手机")
+            item_triggered = True
+
+    if item_triggered:
+        st.info("💡 因为你携带了正确的心动道具，顺利化解危机，额外获得 **+25 积分**！")
+        if st.button("💖 携手化解危机，继续心动行程", use_container_width=True):
+            st.session_state.total_score += 25
+            st.session_state.random_event = None
+            st.rerun()
+    else:
+        st.markdown(f"**{m_name} 紧紧握住你的手，低声问你：\"别怕，这种时候……你打算怎么应对？\"**")
+        col_ev1, col_ev2 = st.columns(2)
+        with col_ev1:
+            if st.button("🛡️ 勇敢迎难而上，与他默契配合", use_container_width=True):
+                st.session_state.total_score += 15
+                st.session_state.last_dialogue_result = (
+                    f"面对突发事件：{ev_title}", 
+                    None, 
+                    f"「有你在我身边，我什么都不怕。大不了……公开好了。」（宠溺又坚定地笑着看着你）", 
+                    15
+                )
+                st.session_state.random_event = None
+                st.rerun()
+        with col_ev2:
+            if st.button("🏃‍♂️ 听他的指挥，迅速寻找浪漫避难所", use_container_width=True):
+                st.session_state.total_score += 10
+                st.session_state.last_dialogue_result = (
+                    f"面对突发事件：{ev_title}", 
+                    None, 
+                    f"「抓紧我！往这边跑……呼，好险，不过能和你有这种秘密经历，好像也不赖？」（无奈又宠溺地揉了揉你的头发）", 
+                    10
+                )
+                st.session_state.random_event = None
+                st.rerun()
+        
+        if "文春" in ev_title or "私生饭" in ev_title or "暴雨" in ev_title:
+            if st.button("⚠️ 哎呀，不小心被拍到了/被围堵了（扣除部分积分）", use_container_width=True):
+                penalty = 30 if "文春" in ev_title else 25
+                st.session_state.total_score -= penalty
+                st.warning(f"危机处理略显慌乱，好感度 -{penalty} 分！快去用道具或后续剧情追回来吧！")
+                st.session_state.random_event = None
+                st.rerun()
+    
+    st.stop()
+
+
+# -----------------------------------------------------------------------------
+# 7. 主页面：开启心动互动剧情 (完美契合视频中的下拉选择与大图卡片)
+# -----------------------------------------------------------------------------
+st.markdown("### 📖 开启心动互动剧情")
+
+col_sel1, col_sel2 = st.columns(2)
+with col_sel1:
+    player_role = st.selectbox(
+        "1️⃣ 请选择你的身份：", 
+        ROLES if 'ROLES' in globals() else ["经纪人", "青梅竹马", "粉丝"]
+    )
+    st.session_state.player_role = player_role
+
+with col_sel2:
+    if 'MEMBERS' in globals():
+        member_names = list(MEMBERS.keys())
+        target_member = st.selectbox(
+            "2️⃣ 请选择你想攻略的成员：", 
+            member_names,
+            index=member_names.index(st.session_state.target_member) if st.session_state.target_member in member_names else 0
+        )
+        st.session_state.target_member = target_member
+
+# 渲染选中成员的精美卡片（对应视频中的图片、特征与专属色展示）
+if 'MEMBERS' in globals() and st.session_state.target_member in MEMBERS:
+    m_info = MEMBERS[st.session_state.target_member]
+    st.image(m_info["img"], use_column_width=True)
+    st.markdown(
+        f"""
+        <div style="text-align: center; margin-top: 5px; margin-bottom: 15px;">
+            <span style="font-size: 1.1rem; font-weight: bold; color: #db2777;">
+                ✨ {st.session_state.target_member}（特征：{m_info['trait']} | 专属色：{m_info['color']}）
+            </span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+# 侧边栏辅助：显示当前总积分与重置按钮
 st.sidebar.markdown("## ⚙️ 恋爱养成控制台")
 st.sidebar.markdown(f"**当前总积分 / 好感度：** `{st.session_state.total_score}` 分")
-
-# 选择攻略的成员 (丈君, 米七 等)
-member_names = list(MEMBERS.keys())
-selected_member = st.sidebar.selectbox(
-    "1️⃣ 选择心动目标成员",
-    member_names,
-    index=member_names.index(st.session_state.target_member) if st.session_state.target_member in member_names else 0
-)
-st.session_state.target_member = selected_member
-m_info = MEMBERS[selected_member]
-
-st.sidebar.markdown(f"**当前对象档案：** {selected_member}")
-st.sidebar.markdown(f"> *特点：* {m_info['trait']}")
-st.sidebar.markdown(f"> *代表色：* {m_info['color']}")
-
-st.sidebar.markdown("---")
-
-# 选择剧本身份/分类（对应 STORIES 字典里的分类，比如 "经纪人", "青梅竹马", "在日学生or打工人" 等）
-story_categories = list(STORIES.keys())
-selected_category = st.sidebar.selectbox(
-    "2️⃣ 选择剧本身份线",
-    story_categories
-)
-
 st.sidebar.markdown("---")
 if st.sidebar.button("🔄 重置当前剧情进度", use_container_width=True):
     st.session_state.current_act = 1
     st.session_state.dialogue_history = []
     st.session_state.last_dialogue_result = None
     st.session_state.random_event = None
+    st.session_state.active_buff = None
     st.success("已重置当前进度！")
     st.rerun()
 
 
 # -----------------------------------------------------------------------------
-# 8. 主剧情关卡渲染 (驱动你刚写的 1-6 天剧本和选项)
+# 8. 主剧情关卡渲染 (驱动剧本与选项)
 # -----------------------------------------------------------------------------
 st.markdown("---")
 
@@ -3809,104 +4000,29 @@ if st.session_state.last_dialogue_result:
         <div style="background-color: #fdf2f8; border-left: 4px solid #db2777; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
             <p style="margin: 0; color: #9d174d; font-weight: bold;">💬 上一幕互动回顾：{q_title}</p>
             <p style="margin: 5px 0 0 0; color: #4b5563;">你的选择：{user_choice_text if user_choice_text else '顺利化解危机'}</p>
-            <p style="margin: 8px 0 0 0; color: #1f2937; font-size: 1.05rem;"><b>{selected_member} 回应：</b> {char_reply}</p>
+            <p style="margin: 8px 0 0 0; color: #1f2937; font-size: 1.05rem;"><b>{st.session_state.target_member} 回应：</b> {char_reply}</p>
             <p style="margin: 5px 0 0 0; color: #059669; font-size: 0.9rem;">✨ 好感度变动：+{score_gain} 分</p>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-# 获取当前身份线与当前天数（current_act）的剧本数据
-category_stories = STORIES.get(selected_category, {})
-current_act = st.session_state.current_act
+# 获取当前天数（current_act）的剧本数据（默认使用第一个剧本分类或全局剧本）
+if 'STORIES' in globals():
+    story_categories = list(STORIES.keys())
+    selected_category = story_categories[0]  # 默认取第一个分类或你可以换成 selectbox 选择
+    category_stories = STORIES.get(selected_category, {})
+    current_act = st.session_state.current_act
 
-if current_act in category_stories:
-    act_data = category_stories[current_act]
-    st.markdown(f"### {act_data['title']}")
-    
-    # 渲染当前关卡的所有选项
-    for idx, choice in enumerate(act_data["choices"]):
-        # 兼容处理：检查选项格式是 (选项文本, 回复文本, 分值)
-        if len(choice) == 3:
-            btn_text, reply_text, base_score = choice
-        else:
-            btn_text, reply_text, base_score = choice[0], "……（温柔地看着你笑）", 20
+    if current_act in category_stories:
+        act_data = category_stories[current_act]
+        st.markdown(f"### {act_data['title']}")
+        
+        # 渲染当前关卡的所有选项
+        for idx, choice in enumerate(act_data["choices"]):
+            if len(choice) == 3:
+                btn_text, reply_text, base_score = choice
+            else:
+                btn_text, reply_text, base_score = choice[0], "……（温柔地看着你笑）", 20
 
-        if st.button(btn_text, key=f"choice_{current_act}_{idx}", use_container_width=True):
-            # 计算Buff加成
-            actual_score = base_score
-            if st.session_state.active_buff == "🍬 恋爱加倍糖果":
-                actual_score *= 2
-                st.session_state.active_buff = None  # 消耗Buff
-                st.toast("🍬 恋爱加倍糖果生效！好感积分翻倍！", icon="✨")
-            elif st.session_state.active_buff == "🎧 读心耳机":
-                actual_score += 15
-                st.session_state.active_buff = None
-                st.toast("🎧 读心耳机生效：额外 +15 积分！", icon="✨")
-            elif st.session_state.active_buff == "☕ 专属应援手摇杯":
-                actual_score += 5
-                st.session_state.active_buff = None
-                st.toast("☕ 专属应援手摇杯生效：额外 +5 积分！", icon="✨")
-
-            # 累加积分
-            st.session_state.total_score += actual_score
-
-            # 记录历史与最新结果
-            st.session_state.last_dialogue_result = (
-                act_data['title'],
-                btn_text,
-                reply_text,
-                actual_score
-            )
-
-            # 推进到下一天/下一幕
-            st.session_state.current_act += 1
-
-            # 随机触发突发事件的概率 (例如每过一幕有 40% 概率触发突发危机)
-            if random.random() < 0.4 and st.session_state.current_act < 6:
-                events_pool = [
-                    {
-                        "title": "🚨 突发危机：文春记者的长焦镜头",
-                        "desc": f"在约会途中，街角突然闪过一道可疑的快门闪光灯！有八卦记者正在试图偷拍你和 {selected_member} 的亲密合影！"
-                    },
-                    {
-                        "title": "⚡ 突发危机：热情粉丝与私生饭围堵",
-                        "desc": f"由于近期人气暴涨，你们在离开咖啡厅时突然被大批粉丝和围观人群堵在门口，场面一度有些混乱！"
-                    },
-                    {
-                        "title": "🌧️ 突发危机：突如其来的暴雨袭城",
-                        "desc": f"原本晴朗的天空瞬间下起倾盆大雨，街上的行人纷纷避雨，你们的计划被打乱了。"
-                    }
-                ]
-                st.session_state.random_event = random.choice(events_pool)
-
-            st.rerun()
-
-else:
-    # 剧本通关结局界面
-    st.markdown(
-        f"""
-        <div style="background: linear-gradient(135deg, #fce7f3 100%, #fbcfe8 0%); border: 2px solid #f472b6; padding: 25px; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(244,114,182,0.2);">
-            <h2 style="color: #be185d; margin-top: 0;">🎉 恭喜达成完美结局！</h2>
-            <p style="font-size: 1.1rem; color: #4b5563; line-height: 1.6;">
-                你与 <b>{selected_member}</b> 在 <b>{selected_category}</b> 身份线中历经了种种浪漫与心动，顺利完成了全剧本通关！
-            </p>
-            <p style="font-size: 1.2rem; color: #9d174d; font-weight: bold;">
-                🏆 最终收集心动积分：{st.session_state.total_score} 分
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-    
-    col_end1, col_end2 = st.columns(2)
-    with col_end1:
-        if st.button("🔄 重新体验当前剧本", use_container_width=True):
-            st.session_state.current_act = 1
-            st.session_state.last_dialogue_result = None
-            st.rerun()
-    with col_end2:
-        if st.button("🎁 去扭蛋机抽高级恋爱道具", use_container_width=True):
-            st.session_state.current_act = 1
-            st.session_state.last_dialogue_result = None
-            st.rerun()
+            if st.button(btn_text, key=f"choice_{current_act}_{idx}", use_
