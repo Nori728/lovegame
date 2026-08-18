@@ -6643,20 +6643,18 @@ elif st.session_state.stage == "menu":
 
 
 # -----------------------------------------------------------------------------
-# 7. 剧情获取核心函数
-# -----------------------------------------------------------------------------
-# -----------------------------------------------------------------------------
 # 7. 动态个性化剧情数据库与核心生成函数
 # -----------------------------------------------------------------------------
 
 def get_member_story(member, role, act):
     # 1. 优先尝试从结构化数据库中读取硬编码的专属剧本
     try:
-        member_data = ROLE_STORY_DB.get(member, {})
-        role_data = member_data.get(role, {})
-        act_data = role_data.get(act, None)
-        if act_data:
-            return act_data
+        if 'ROLE_STORY_DB' in globals():
+            member_data = ROLE_STORY_DB.get(member, {})
+            role_data = member_data.get(role, {})
+            act_data = role_data.get(act, None)
+            if act_data:
+                return act_data
     except Exception:
         pass
 
@@ -6683,26 +6681,37 @@ def get_member_story(member, role, act):
     # 利用哈希确保同一角色在同一幕每次读取相对稳定，但不同角色/幕绝对不重复
     intro_text = intro_pool[(hash(member) + act * 3) % len(intro_pool)]
 
-# 获取当前这一幕的数据
-current_act_data = STORIES[selected_role][selected_identity][st.session_state.act]
+    # 为不同幕数自动匹配动态的趣味选项
+    default_choices_pools = {
+        1: [
+            {"option": "微笑回应：\"今天也请多关照啦，搭档。\"", "reply": "「嗯，我会的……不过，对你可不仅仅是‘多关照’这么简单哦。」", "affection": 15},
+            {"option": "故意调侃：\"怎么一直盯着我看，我脸上有东西吗？\"", "reply": "「被发现了啊……因为你太好看，让我没办法移开视线嘛。」", "affection": 20},
+            {"option": "转移话题：\"快看那边，好像有很有趣的工作安排。\"", "reply": "「真是的，好不容易能单独相处，你居然看别的地方……惩罚你今晚多陪我一会儿。」", "affection": 10}
+        ],
+        2: [
+            {"option": "顺势递过去一杯温水：\"辛苦了，润润喉吧。\"", "reply": "「谢谢你……总觉得每次有你在身边，心里就会觉得格外安心。」", "affection": 18},
+            {"option": "开玩笑：\"看来我们的默契还得再练练哦？\"", "reply": "「默契吗？我觉得已经够心有灵犀了……不信你听听看，我的心跳是不是有点快？」", "affection": 22},
+            {"option": "认真点头：\"我会努力做好你的专属支援的！\"", "reply": "「有你这句话就够了，接下来的行程，让我们一起创造最棒的回忆吧。」", "affection": 15}
+        ],
+        3: [
+            {"option": "轻声呢喃：\"今天真的发生了很多意料之外的事呢……\"", "reply": "「但对我来说，今天最棒的意外，就是遇见了你，并且离你更近了一步。」", "affection": 25},
+            {"option": "直视他的眼睛：\"好啦，不许再逗我了。\"", "reply": "「我可没有在逗你，我是认真的……对你的喜欢，从来都不是开玩笑。」", "affection": 30},
+            {"option": "微微红着脸避开视线：\"时间不早了，我们抓紧吧。\"", "reply": "「害羞的样子也很可爱……好啦，不逗你了，我会一直在你身边的。」", "affection": 20}
+        ],
+        4: [
+            {"option": "坚定地握住他的手：\"不管未来怎样，我都会陪着你。\"", "reply": "「这句话……我可就当真了。以后无论走到哪，你都别想轻易甩掉我。」", "affection": 35},
+            {"option": "笑着打趣：\"大明星今天怎么这么黏人？\"", "reply": "「因为面对喜欢的人，谁没办法保持冷静啊……真拿你没办法。」", "affection": 30},
+            {"option": "深吸一口气：\"其实，我也一直在等这一刻。\"", "reply": "「太好了……听到你这么说，我悬着的心终于落下了。接下来，换我来守护你。」", "affection": 40}
+        ],
+        5: [
+            {"option": "给出最深情的告白：\"我的心动企划，永远只为你一个人开放。\"", "reply": "「我也是……从今往后，你的每一个日常，我都想以恋人的身份全部承包。」", "affection": 50},
+            {"option": "相视一笑：\"这就是我们之间最完美的结局。\"", "reply": "「不，这只是开始。属于我们的浪漫物语，才刚刚翻开序章呢。」", "affection": 45},
+            {"option": "调皮眨眼：\"那接下来的行程单，可要由我来制定咯！\"", "reply": "「遵命，我的专属主策划大人。我的一切，全部听从你的指挥。」", "affection": 40}
+        ]
+    }
 
-# 从数据里读取 choices，而不是从外部变量读取
-choices = current_act_data["choices"] 
+    act_choices = default_choices_pools.get(act, default_choices_pools.get(3))
 
-# 渲染按钮
-for i, choice in enumerate(choices):
-    if st.button(choice["option"], key=f"btn_{i}"):
-        # 显示回复
-        st.write(choice["reply"])
-        # 更新好感度...
-
-    # 获取对应幕数的选项（如果超出了定义的最大幕数，则使用最后一组）
-    act_choices = choices_pools.get(act, choices_pools.get(3))
-
-def generate_act_story(member, role, act, intro_text, act_choices, prologues_by_act):
-    """
-    动态生成指定成员、身份、幕数的剧情结构
-    """
     return {
         "title": f"第 {act} 幕：{member} 与 {role} 的专属心动时刻",
         "scene": f"{member} 的专属工作空间 / 浪漫现场（Act {act}）",
@@ -6725,6 +6734,7 @@ if st.session_state.stage == "playing":
     col_s2.metric("🎭 玩家身份", r)
     col_s3.metric("💖 当前心动积分", st.session_state.total_score)
 
+    MAX_ACT = 5  # 确保最大幕数有定义
     st.progress(
         act / MAX_ACT, text=f"📖 剧情推进进度：第 {act} 幕 / 共 {MAX_ACT} 幕"
     )
