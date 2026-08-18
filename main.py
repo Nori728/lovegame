@@ -6598,70 +6598,67 @@ if st.session_state.stage == "playing":
     st.markdown("---")
 
     if current_story:
-        st.markdown(f"### {current_story['title']}")
+        st.markdown(f"### {current_story.get('title', '')}")
+        
+        if current_story.get("scene"):
+            st.caption(f"📍 {current_story['scene']}")
+        if current_story.get("prologue"):
+            st.write(current_story["prologue"])
+            
+        if current_story.get("dialogue_intro"):
+            for speaker, text in current_story["dialogue_intro"]:
+                st.markdown(f"**{speaker}**：{text}")
+                
+        st.markdown("---")
 
         # 乙女游戏核心交互：如果刚点击了选项，展示男主的深情回应对话框
-if st.session_state.last_dialogue_result:
-    choice_c, resp_list, single_reply, f_score = st.session_state.last_dialogue_result
-    
-    # 💡 万能兼容渲染：不管你写的是哪种格式，这里都会自动把字打印出来！
-    dialogue_html = ""
-    if resp_list:
-        # 如果你写的是多行列表格式
-        for speaker, text in resp_list:
-            dialogue_html += f'<p style="margin: 6px 0; color: #9f1239;"><b>{speaker}：</b>{text}</p>'
-    elif single_reply:
-        # 如果你写的是单行 reply 格式
-        dialogue_html += f'<p style="margin: 6px 0; color: #9f1239;"><b>{m}：</b>{single_reply}</p>'
-    else:
-        # 兜底保护：如果两边都没写，自动显示默认暖心话，绝对不留白！
-        dialogue_html += f'<p style="margin: 6px 0; color: #9f1239;"><b>{m}：</b>（温柔地看着你，笑而不语）</p>'
+        if st.session_state.last_dialogue_result:
+            choice_c, resp_list, single_reply, f_score = st.session_state.last_dialogue_result
+            
+            # 💡 万能兼容渲染：不管你写的是多行列表还是单行reply，这里都会自动把字打印出来！
+            dialogue_html = ""
+            if resp_list:
+                for speaker, text in resp_list:
+                    dialogue_html += f'<p style="margin: 6px 0; color: #9f1239;"><b>{speaker}：</b>{text}</p>'
+            elif single_reply:
+                dialogue_html += f'<p style="margin: 6px 0; color: #9f1239;"><b>{m}：</b>{single_reply}</p>'
+            else:
+                dialogue_html += f'<p style="margin: 6px 0; color: #9f1239;"><b>{m}：</b>（温柔地看着你，笑而不语）</p>'
 
-    st.markdown(
-        f"""
-        <div style="background-color: #fff1f2; border-left: 4px solid #e11d48; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-            <p style="margin: 0 0 8px 0; color: #881337; font-size: 0.95rem;">你的选择： {choice_c}</p>
-            <hr style="border: none; border-top: 1px dashed #fecdd3; margin: 8px 0;">
-            {dialogue_html}
-            <p style="margin: 8px 0 0 0; color: #be123c; font-size: 0.85rem; text-align: right;">✨ 好感度 +{f_score}</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    if st.session_state.last_dialogue_result:
-        choice_c, resp_list, f_score = st.session_state.last_dialogue_result
-        
-        # ... 这里省略了中间显示对话的逻辑 (保持不变) ...
-        # (确保上面 st.markdown 等代码都有统一的缩进)
+            st.markdown(
+                f"""
+                <div style="background-color: #fff1f2; border-left: 4px solid #e11d48; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <p style="margin: 0 0 8px 0; color: #881337; font-size: 0.95rem;">你的选择： {choice_c}</p>
+                    <hr style="border: none; border-top: 1px dashed #fecdd3; margin: 8px 0;">
+                    {dialogue_html}
+                    <p style="margin: 8px 0 0 0; color: #be123c; font-size: 0.85rem; text-align: right;">✨ 好感度 +{f_score}</p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
-  # 这一块是按钮代码
-        col_btn1, col_btn2 = st.columns(2)
-        with col_btn1:
-            if st.button("💌 珍藏回忆并进入下一幕", use_container_width=True):
-                st.session_state.last_dialogue_result = None
-                if act < MAX_ACT:
-                    st.session_state.current_act += 1
-                else:
-                    st.session_state.stage = "ending"
-                st.rerun()
-        with col_btn2:
-            if st.button("🔄 重新选择当前选项", use_container_width=True):
-                st.session_state.last_dialogue_result = None
-                st.rerun()
-
-    # ❗ 这一行最关键：else 必须和上面的 if st.session_state.last_dialogue_result: 垂直对齐
-    else:
-        # 尚未做选择时，渲染开场说明及候选按钮
-        st.markdown("请做出你的心动回应：")
-        
-        # ... 下面的代码也必须整体缩进 ...
-        for i, choice in enumerate(current_story.get("choices", [])):
-            # ...
+            col_btn1, col_btn2 = st.columns(2)
+            with col_btn1:
+                if st.button("💌 珍藏回忆并进入下一幕", use_container_width=True):
+                    st.session_state.last_dialogue_result = None
+                    if act < MAX_ACT:
+                        st.session_state.current_act += 1
+                    else:
+                        st.session_state.stage = "ending"
+                    st.rerun()
+            with col_btn2:
+                if st.button("🔄 重新选择当前选项", use_container_width=True):
+                    st.session_state.last_dialogue_result = None
+                    st.rerun()
+        else:
+            # 尚未做选择时，渲染开场说明及候选按钮
+            st.markdown("请做出你的心动回应：")
 
             for i, choice in enumerate(current_story.get("choices", [])):
                 choice_text = choice.get("option", "")
-                reply_text = choice.get("reply", "")
                 base_score = choice.get("affection", 0)
+                resp_list = choice.get("dialogue_response", None)
+                single_reply = choice.get("reply", "")
                 
                 if st.button(choice_text, key=f"choice_{act}_{i}"):
                     final_score = base_score
@@ -6677,12 +6674,13 @@ if st.session_state.last_dialogue_result:
                         
                     # 统一结算逻辑
                     st.session_state.total_score += final_score
+                    history_reply_text = single_reply if single_reply else (resp_list[0][1] if resp_list else "...")
                     st.session_state.dialogue_history.append(
-                        (current_story["title"], choice_text, reply_text, final_score)
+                        (current_story["title"], choice_text, history_reply_text, final_score)
                     )
                     
-                    # 暂存互动结果
-                    st.session_state.last_dialogue_result = (choice_text, reply_text, final_score)
+                    # 暂存互动结果（兼容多行列表与单行reply）
+                    st.session_state.last_dialogue_result = (choice_text, resp_list, single_reply, final_score)
                     
                     # 随机事件触发逻辑（包含 9 大完整事件池与道具联动）
                     if act < MAX_ACT and random.random() < 0.4:
