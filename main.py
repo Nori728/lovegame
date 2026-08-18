@@ -4025,8 +4025,9 @@ if 'STORIES' in globals():
 if act_data:
         act_title = act_data.get('title', f"第 {st.session_state.current_act} 幕：心动时刻") if isinstance(act_data, dict) else f"第 {st.session_state.current_act} 幕"
         st.markdown(f"### 🎬 {act_title}")
-        # 渲染当前关卡的所有选项
-        for idx, choice in enumerate(act_data["choices"]):
+        # 渲染当前关卡的所有选项（改用 .get 安全获取，防止 KeyError）
+        choices_list = act_data.get("choices", []) if isinstance(act_data, dict) else (act_data if isinstance(act_data, (list, tuple)) else [])
+        for idx, choice in enumerate(choices_list):
             if len(choice) == 3:
                 btn_text, reply_text, base_score = choice
             else:
