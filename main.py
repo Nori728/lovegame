@@ -6438,6 +6438,7 @@ if "random_event" not in st.session_state:
 # 新增：用于乙女游戏沉浸式互动的临时状态
 if "last_dialogue_result" not in st.session_state:
     st.session_state.last_dialogue_result = None
+
 # -----------------------------------------------------------------------------
 # 5. 主界面渲染
 # -----------------------------------------------------------------------------
@@ -6448,6 +6449,7 @@ st.markdown(
     '<p class="sub-header">✨ 沉浸式乙女恋爱养成企划 (全剧情流畅推进)</p>',
     unsafe_allow_html=True,
 )
+
 # 抽卡与扭蛋区域
 st.markdown(
     """
@@ -6522,6 +6524,7 @@ if st.session_state.active_buff:
     )
 
 st.markdown("---")
+
 # -----------------------------------------------------------------------------
 # 6. 游戏流程控制
 # -----------------------------------------------------------------------------
@@ -6570,12 +6573,14 @@ elif st.session_state.stage == "menu":
         st.session_state.last_dialogue_result = None
         st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
+
 def get_member_story(member, role, act):
     # 安全获取对应成员、身份和幕数的剧情
     try:
         return STORIES.get(member, {}).get(role, {}).get(act, None)
     except Exception:
         return None
+
 if st.session_state.stage == "playing":
     m = st.session_state.target_member
     r = st.session_state.player_role
@@ -6592,154 +6597,132 @@ if st.session_state.stage == "playing":
     )
     st.markdown("---")
 
-    st.markdown(f"### {current_story['title']}")
+    if current_story:
+        st.markdown(f"### {current_story['title']}")
 
-    # 乙女游戏核心交互：如果刚点击了选项，展示男主的深情回应对话框
-    if st.session_state.last_dialogue_result:
-        choice_c, reply_r, f_score = st.session_state.last_dialogue_result
-        st.markdown(
-            f"""
-            <div style="background-color: #fff1f2; border-left: 4px solid #e11d48; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                <p style="margin: 0 0 8px 0; color: #881337; font-size: 0.950rem;">你的选择： {choice_c}</p>
-                <hr style="border: none; border-top: 1px dashed #fecdd3; margin: 8px 0;">
-                <p style="margin: 0; color: #9f1239; font-size: 1.05rem;">{m}的回应： {reply_r}</p>
-                <p style="margin: 8px 0 0 0; color: #be123c; font-size: 0.85rem; text-align: right;">✨ 好感度 +{f_score}</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        # 乙女游戏核心交互：如果刚点击了选项，展示男主的深情回应对话框
+        if st.session_state.last_dialogue_result:
+            choice_c, reply_r, f_score = st.session_state.last_dialogue_result
+            st.markdown(
+                f"""
+                <div style="background-color: #fff1f2; border-left: 4px solid #e11d48; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <p style="margin: 0 0 8px 0; color: #881337; font-size: 0.950rem;">你的选择： {choice_c}</p>
+                    <hr style="border: none; border-top: 1px dashed #fecdd3; margin: 8px 0;">
+                    <p style="margin: 0; color: #9f1239; font-size: 1.05rem;">{m}的回应： {reply_r}</p>
+                    <p style="margin: 8px 0 0 0; color: #be123c; font-size: 0.85rem; text-align: right;">✨ 好感度 +{f_score}</p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
-        col_btn1, col_btn2 = st.columns(2)
-        with col_btn1:
-            if st.button("💌 珍藏回忆并进入下一幕", use_container_width=True):
-                st.session_state.last_dialogue_result = None
-                if act < MAX_ACT:
-                    st.session_state.current_act += 1
-                else:
-                    st.session_state.stage = "ending"
-                st.rerun()
-        with col_btn2:
-            if st.button("🔄 重新选择当前选项", use_container_width=True):
-                st.session_state.last_dialogue_result = None
-                st.rerun()
-    else:
-        st.markdown("请做出你的心动回应：")
+            col_btn1, col_btn2 = st.columns(2)
+            with col_btn1:
+                if st.button("💌 珍藏回忆并进入下一幕", use_container_width=True):
+                    st.session_state.last_dialogue_result = None
+                    if act < MAX_ACT:
+                        st.session_state.current_act += 1
+                    else:
+                        st.session_state.stage = "ending"
+                    st.rerun()
+            with col_btn2:
+                if st.button("🔄 重新选择当前选项", use_container_width=True):
+                    st.session_state.last_dialogue_result = None
+                    st.rerun()
+        else:
+            # 尚未做选择时，渲染开场说明及候选按钮
+            st.markdown("请做出你的心动回应：")
 
-for i, choice in enumerate(current_story["choices"]):
-    choice_text = choice.get("option", "")
-    reply_text = choice.get("reply", "")
-    base_score = choice.get("affection", 0)
-    
-    if st.button(choice_text, key=f"choice_{act}_{i}"):
-        final_score = base_score
-        if st.session_state.active_buff == "❤️ 恋爱加倍糖果":
-            final_score *= 2
-            st.session_state.active_buff = None
-        elif st.session_state.active_buff == "🎧 读心耳机":
-            final_score += 15
-            st.session_state.active_buff = None
-        elif st.session_state.active_buff == "🥤 冰爽解暑饮料":
-            final_score += 10
-            st.session_state.active_buff = None
-            
-        # 统一的结算逻辑（必须和 if/elif 保持同一缩进层级）
-        st.session_state.total_score += final_score
-        st.session_state.dialogue_history.append(
-            (current_story["title"], choice_text, reply_text, final_score)
-        )
-        
-# 暂存互动结果，以便呈现沉浸式对话
-        st.session_state.last_dialogue_result = (choice_text, reply_text, final_score)
-        
-        # 随机事件触发逻辑（必须在 rerun 之前运行！）
-        if act < MAX_ACT and random.random() < 0.4:
-            random_events_pool = [
-                {
-                    "title": "突发暴雨的屋檐避难",
-                    "desc": (
-                        "两人在回家路上突然遇到倾盆大雨，被迫挤在一个小小的便利店屋檐下，肩膀紧紧贴着……"
-                    ),
-                },
-                {
-                    "title": "电台直播的连线袭击",
-                    "desc": (
-                        "工作间隙突然接到了一档电台连线直播，主持人现场要求他对你说一句真心话！"
-                    ),
-                },
-                {
-                    "title": "猫咪咖啡厅的意外邂逅",
-                    "desc": (
-                        "排练间隙去咖啡厅休息，一只可爱的布偶猫突然跳进你怀里，引得他吃醋地看着你……"
-                    ),
-                },
-                {
-                    "title": "便利店最后一块布丁",
-                    "desc": (
-                        "深夜去买宵夜，冰箱里只剩下最后一份他最爱的限定布丁，你们会怎么分？"
-                    ),
-                },
-                {
-                    "title": "📸 文春炮的闪光灯危机",
-                    "desc": (
-                        "深夜在街角散步时，暗处突然闪过一道刺眼的白光！文春记者带着长枪短炮从阴影里冲了出来，你们必须立刻做出反应！"
-                    ),
-                },
-                {
-                    "title": "🚨 狂热私生饭的围堵",
-                    "desc": (
-                        "刚结束录制，停车场突然冲出几个情绪激动的私生饭和私家车，死死堵住了去路，他下意识地把你护在了身后……"
-                    ),
-                },
-                {
-                    "title": "🎙️ 直播未关麦的社死瞬间",
-                    "desc": (
-                        "以为直播已经切断，他正凑在你耳边小声呢喃情话，结果几万名在线观众把两人的亲密私语听得清清楚楚！"
-                    ),
-                },
-                {
-                    "title": "🎭 颁奖后台的擦肩而过",
-                    "desc": (
-                        "在众多同行和媒体云集的颁奖典礼后台，为了避人耳目，你们俩不得不一起躲进了一个狭窄逼仄的杂物间里。"
-                    ),
-                },
-                {
-                    "title": "🕶️ 机场同款引发的饭圈地震",
-                    "desc": (
-                        "两人前脚刚一前一后离开机场，后脚就被火眼金睛的粉丝扒出戴了同款情侣项链，热搜瞬间爆了！"
-                    ),
-                },
-            ]
-            st.session_state.random_event = random.choice(random_events_pool)
-
-            current_event_title = st.session_state.random_event["title"]
-
-            if "文春炮" in current_event_title:
-                if "🕵️‍♂️ 黑色鸭舌帽" in st.session_state.inventory:
-                    st.success(
-                        "✨ 【触发道具：黑色鸭舌帽】低调伪装成功！成功避开了文春的镜头！"
+            for i, choice in enumerate(current_story.get("choices", [])):
+                choice_text = choice.get("option", "")
+                reply_text = choice.get("reply", "")
+                base_score = choice.get("affection", 0)
+                
+                if st.button(choice_text, key=f"choice_{act}_{i}"):
+                    final_score = base_score
+                    if st.session_state.active_buff == "❤️ 恋爱加倍糖果":
+                        final_score *= 2
+                        st.session_state.active_buff = None
+                    elif st.session_state.active_buff == "🎧 读心耳机":
+                        final_score += 15
+                        st.session_state.active_buff = None
+                    elif st.session_state.active_buff == "🥤 冰爽解暑饮料":
+                        final_score += 10
+                        st.session_state.active_buff = None
+                        
+                    # 统一结算逻辑
+                    st.session_state.total_score += final_score
+                    st.session_state.dialogue_history.append(
+                        (current_story["title"], choice_text, reply_text, final_score)
                     )
-                    st.session_state.inventory.remove("🕵️‍♂️ 黑色鸭舌帽")
-                    st.session_state.total_score += 10
-                elif "📜 紧急公关手稿" in st.session_state.inventory:
-                    st.success(
-                        "✨ 【触发道具：紧急公关手稿】公关手稿发挥作用，稳住了媒体！"
-                    )
-                    st.session_state.inventory.remove("📜 紧急公关手稿")
-                else:
-                    st.session_state.total_score -= 30
+                    
+                    # 暂存互动结果
+                    st.session_state.last_dialogue_result = (choice_text, reply_text, final_score)
+                    
+                    # 随机事件触发逻辑（包含 9 大完整事件池与道具联动）
+                    if act < MAX_ACT and random.random() < 0.4:
+                        random_events_pool = [
+                            {
+                                "title": "突发暴雨的屋檐避难",
+                                "desc": "两人在回家路上突然遇到倾盆大雨，被迫挤在一个小小的便利店屋檐下，肩膀紧紧贴着……",
+                            },
+                            {
+                                "title": "电台直播的连线袭击",
+                                "desc": "工作间隙突然接到了一档电台连线直播，主持人现场要求他对你说一句真心话！",
+                            },
+                            {
+                                "title": "猫咪咖啡厅的意外邂逅",
+                                "desc": "排练间隙去咖啡厅休息，一只可爱的布偶猫突然跳进你怀里，引得他吃醋地看着你……",
+                            },
+                            {
+                                "title": "便利店最后一块布丁",
+                                "desc": "深夜去买宵夜，冰箱里只剩下最后一份他最爱的限定布丁，你们会怎么分？",
+                            },
+                            {
+                                "title": "📸 文春炮的闪光灯危机",
+                                "desc": "深夜在街角散步时，暗处突然闪过一道刺眼的白光！文春记者带着长枪短炮从阴影里冲了出来，你们必须立刻做出反应！",
+                            },
+                            {
+                                "title": "🚨 狂热私生饭的围堵",
+                                "desc": "刚结束录制，停车场突然冲出几个情绪激动的私生饭和私家车，死死堵住了去路，他下意识地把你护在了身后……",
+                            },
+                            {
+                                "title": "🎙️ 直播未关麦的社死瞬间",
+                                "desc": "以为直播已经切断，他正凑在你耳边小声呢喃情话，结果几万名在线观众把两人的亲密私语听得清清楚楚！",
+                            },
+                            {
+                                "title": "🎭 颁奖后台的擦肩而过",
+                                "desc": "在众多同行和媒体云集的颁奖典礼后台，为了避人耳目，你们俩不得不一起躲进了一个狭窄逼仄的杂物间里。",
+                            },
+                            {
+                                "title": "🕶️ 机场同款引发的饭圈地震",
+                                "desc": "两人前脚刚一前一后离开机场，后脚就被火眼金睛的粉丝扒出戴了同款情侣项链，热搜瞬间爆了！",
+                            },
+                        ]
+                        st.session_state.random_event = random.choice(random_events_pool)
 
-            elif "私生饭" in current_event_title:
-                if "📱 备用双卡手机" in st.session_state.inventory:
-                    st.success(
-                        "✨ 【触发道具：备用双卡手机】及时联络安保人员清场，安全脱身！"
-                    )
-                    st.session_state.inventory.remove("📱 备用双卡手机")
-                    st.session_state.total_score += 10
-                else:
-                    st.session_state.total_score -= 25
+                        current_event_title = st.session_state.random_event["title"]
 
-        # 所有逻辑处理完毕后，最后再刷新页面
-        st.rerun()
+                        if "文春炮" in current_event_title:
+                            if "🕵️‍♂️ 黑色鸭舌帽" in st.session_state.inventory:
+                                st.success("✨ 【触发道具：黑色鸭舌帽】低调伪装成功！成功避开了文春的镜头！")
+                                st.session_state.inventory.remove("🕵️‍♂️ 黑色鸭舌帽")
+                                st.session_state.total_score += 10
+                            elif "📜 紧急公关手稿" in st.session_state.inventory:
+                                st.success("✨ 【触发道具：紧急公关手稿】公关手稿发挥作用，稳住了媒体！")
+                                st.session_state.inventory.remove("📜 紧急公关手稿")
+                            else:
+                                st.session_state.total_score -= 30
+
+                        elif "私生饭" in current_event_title:
+                            if "📱 备用双卡手机" in st.session_state.inventory:
+                                st.success("✨ 【触发道具：备用双卡手机】及时联络安保人员清场，安全脱身！")
+                                st.session_state.inventory.remove("📱 备用双卡手机")
+                                st.session_state.total_score += 10
+                            else:
+                                st.session_state.total_score -= 25
+
+                    st.rerun()
+
     if st.session_state.dialogue_history:
         with st.expander("📜 查看本局心动回忆录"):
             for h_title, h_c, h_r, h_score in st.session_state.dialogue_history:
@@ -6748,20 +6731,11 @@ for i, choice in enumerate(current_story["choices"]):
                 st.markdown(f"*{m}的回应*:{h_r} *(+ {h_score} 积分)*")
                 st.markdown("---")
 
-# 假设这里是剧情或互动阶段内部
-if st.button("🔄 重新选择角色/身份", use_container_width=True):
-    st.session_state.stage = "menu"
-    st.session_state.last_dialogue_result = None
-    st.rerun()
+    if st.button("🔄 重新选择角色/身份", use_container_width=True):
+        st.session_state.stage = "menu"
+        st.session_state.last_dialogue_result = None
+        st.rerun()
 
-# 这里的 ending 阶段判断，应该和外层的阶段判断对齐，而不是紧挨着上面的 button
-elif st.session_state.stage == "ending":
-    m = st.session_state.target_member
-    score = st.session_state.total_score
-
-    st.markdown(
-        # 你的结局 markdown 内容...
-    )
 elif st.session_state.stage == "ending":
     m = st.session_state.target_member
     score = st.session_state.total_score
