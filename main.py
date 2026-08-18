@@ -6301,8 +6301,7 @@ elif st.session_state.stage == "menu":
     st.subheader("🛠️ 请定制你的心动企划档案")
 
 selected_member = st.selectbox(
-        "💖 选择你的心动男主角：", list(MEMBERS.keys())
-    )
+st.selectbox("💖 选择你的心动男主角：", MEMBERS)
 
     # 实时渲染人物图片
 st.image(MEMBERS[selected_member]["img"], width=220)
