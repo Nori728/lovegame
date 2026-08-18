@@ -6762,7 +6762,7 @@ elif st.session_state.stage == "ending":
     st.markdown(
         # 你的结局 markdown 内容...
     )
-   elif st.session_state.stage == "ending":
+elif st.session_state.stage == "ending":
     m = st.session_state.target_member
     score = st.session_state.total_score
 
