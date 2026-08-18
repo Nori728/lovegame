@@ -156,7 +156,7 @@ MEMBERS = {
 # 3. 更新你的角色列表
 ROLES = ["经纪人", "青梅竹马", "在日留学生or打工人"]
 st.error(f"当前 MEMBERS 的类型是: {type(MEMBERS)}")
-selected_member = st.selectbox("💖 选择你的心动男主角：", list(MEMBERS.keys()))
+selected_member = st.selectbox("💖 选择你的心动男主角：", MEMBERS)
 
 st.image(MEMBERS[selected_member]["img"], width=220)
 
