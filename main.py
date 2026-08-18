@@ -147,7 +147,7 @@ STORIES = {
             1: {
                 "title": "🎬 丈君·后台初遇：大阪式的幽默开场",
                 "scene": "Location: 电视台后台休息室 | Time: 18:00 | Atmosphere: 紧迫混乱，空气中弥漫着热咖啡与化妆品的气味",
-                "prologue": "开演前倒计时30分钟，后台工作人员来回穿梭。丈君正拿着台词本狂背，脸上挂着招牌式的夸张表情。",
+                "prologue": "开演前倒计时30分钟,后台工作人员来回穿梭。丈君正拿着台词本狂背，脸上挂着招牌式的夸张表情。",
                 "dialogue_intro": [
                     ("丈君", "“糟糕糟糕！这个关西腔的梗要是东京观众不买账怎么办？经纪人，你看我这表情够滑稽吗？”"),
                     ("经纪人", "（看着他一边擦汗一边摆出搞笑鬼脸，无奈地叹了口气）"),
@@ -6400,11 +6400,14 @@ STORIES = {
                             "narrative": "东京的雪与国内的霓虹在这一刻完美交融，所有的异国思念终于化作了永恒相守的浪漫大片。",
                             "dialogue": ("谦杜", "“从东京的寒冬到国内的顶峰，我这辈子所有的时尚灵感和唯一的偏爱，全权交由你一个人独家署名！”"),
                             "bonus_affection": 15,
- },
+                        },
+                },
+            ],
+        },
+    },
 },
- ],
-},
- }
+}
+
 # -----------------------------------------------------------------------------
 # 4. Session State 初始化
 # -----------------------------------------------------------------------------
@@ -6481,14 +6484,14 @@ with col_g2:
                 ),
                 (
                     "☕ 专属应援手摇杯",
-                    "满含心意的特调饮品，全选项好感度小幅额外+5！",
+                    "满含心意的特调饮品，全选项好感度小幅额外+5!",
                 ),
             ]
             item_name, item_desc = random.choice(items_pool)
             st.session_state.inventory.append(item_name)
-            st.success(f"成功获得道具：{item_name}（{item_desc}）！")
+            st.success(f"成功获得道具：{item_name}({item_desc})!")
         else:
-            st.warning("积分不足10分，快去剧情里增加好感吧！")
+            st.warning("积分不足10分,快去剧情里增加好感吧！")
 
 if st.session_state.daily_gacha_result:
     lname, ldata = st.session_state.daily_gacha_result
@@ -6506,12 +6509,12 @@ if st.session_state.inventory:
             if st.button(f"使用 {item}", key=f"inv_{idx}"):
                 st.session_state.active_buff = item
                 st.session_state.inventory.pop(idx)
-                st.success(f"已激活道具：{item}！")
+                st.success(f"已激活道具：{item}!")
                 st.rerun()
 
 if st.session_state.active_buff:
     st.markdown(
-        f"> ⚡ **当前生效增益Buff：** `{st.session\\\\\\\_state.active\\\\\\\_buff}`"
+        f"> ⚡ **当前生效增益Buff:** `{st.session\\\\\\\_state.active\\\\\\\_buff}`"
     )
 
 st.markdown("---")
@@ -6730,8 +6733,8 @@ elif st.session_state.stage == "playing":
         with st.expander("📜 查看本局心动回忆录"):
             for h_title, h_c, h_r, h_score in st.session_state.dialogue_history:
                 st.markdown(f"**{h_title}**")
-                st.markdown(f"*你的选择*：{h_c}")
-                st.markdown(f"*{m}的回应*：{h_r} *(+ {h_score} 积分)*")
+                st.markdown(f"*你的选择*:{h_c}")
+                st.markdown(f"*{m}的回应*:{h_r} *(+ {h_score} 积分)*")
                 st.markdown("---")
 
     if st.button("🔄 重新选择角色/身份", use_container_width=True):
