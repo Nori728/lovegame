@@ -157,7 +157,8 @@ MEMBERS = {
 ROLES = ["经纪人", "青梅竹马", "在日留学生or打工人"]
 
 # 下拉菜单选择心动男主角
-selected_member = st.selectbox("💖 选择你的心动男主角：", list(MEMBERS.keys()))
+# 直接传入 MEMBERS 字典
+selected_member = st.selectbox("💖 选择你的心动男主角：", MEMBERS)
 
 # 实时渲染人物图片和信息（使用正确的英文键）
 if selected_member in MEMBERS:
