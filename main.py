@@ -7,7 +7,7 @@ import streamlit as st
 st.set_page_config(page_title="浪花男子心动日常", page_icon="💖", layout="centered")
 
 st.markdown("""
-<style>
+<style> 
     /* 核心背景与字体 */
     .stApp {
         background: linear-gradient(135deg, #fff5f7 0%, #fed7aa 100%);
