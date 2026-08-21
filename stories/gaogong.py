@@ -1,6 +1,6 @@
-# stories/dajiang.py
+# stories/gaogong.py
 
-DAJIANG_STORY = { 
+GAOFGONG_STORY = { 
 "经纪人": {
         # ==================== 第一天：后台初遇与闪耀开场 ====================
         1: {
