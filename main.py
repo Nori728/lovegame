@@ -883,7 +883,7 @@ if st.session_state.current_event:
                     st.session_state.current_event = None
                     st.rerun()
 
-               if st.button("💥 哎呀，应对失误导致有些小狼狈（扣除部分积分）", use_container_width=True):
+     if st.button("💥 哎呀，应对失误导致有些小狼狈（扣除部分积分）", use_container_width=True):
                     st.session_state.total_score -= 25
                     st.session_state.current_event = None
                     st.rerun()
