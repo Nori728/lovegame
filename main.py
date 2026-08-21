@@ -750,143 +750,144 @@ if st.session_state.current_event:
             st.session_state.current_event = None
             st.rerun()
     else:
-   # 根据不同事件动态渲染不同的专属互动按钮
-        col_ev1, col_ev2 = st.columns(2)
-        
-        if "文春" in ev_title:
-            st.markdown(f"**{m_name} 看着远处的长焦镜头，眼神微冷：\"啧，这群记者还真是阴魂不散。\"**")
-            with col_ev1:
-                if st.button("📸 大方直面镜头，直接挽紧他的手臂", use_container_width=True):
-                    st.session_state.total_score += 20
-                    st.session_state.current_event = None
-                    st.rerun()
-            with col_ev2:
-                if st.button("🏃‍♂️ 拽起他的衣角，闪身躲进旁边的盲区", use_container_width=True):
-                    st.session_state.total_score += 15
-                    st.session_state.current_event = None
-                    st.rerun()
+# 根据不同事件动态渲染不同的专属互动按钮
+    col_ev1, col_ev2 = st.columns(2)
+    
+    if "文春" in ev_title:
+        st.markdown(f"**{m_name} 看着远处的长焦镜头，眼神微冷：\"啧，这群记者还真是阴魂不散。\"**")
+        with col_ev1:
+            if st.button("📸 大方直面镜头，直接挽紧他的手臂", use_container_width=True):
+                st.session_state.total_score += 20
+                st.session_state.current_event = None
+                st.rerun()
+        with col_ev2:
+            if st.button("🏃‍♂️ 拽起他的衣角，闪身躲进旁边的盲区", use_container_width=True):
+                st.session_state.total_score += 15
+                st.session_state.current_event = None
+                st.rerun()
 
-        elif "私生饭" in ev_title:
-            st.markdown(f"**{m_name} 微微蹙眉，将你护在身后，语气低沉：\"别看他们，跟着我走。\"**")
-            with col_ev1:
-                if st.button("🛡️ 配合他的保护，迅速低头快步离开", use_container_width=True):
-                    st.session_state.total_score += 15
-                    st.session_state.current_event = None
-                    st.rerun()
-            with col_ev2:
-                if st.button("🎭 反客为主，当众假装你们在吵架转移视线", use_container_width=True):
-                    st.session_state.total_score += 18
-                    st.session_state.current_event = None
-                    st.rerun()
+    elif "私生饭" in ev_title:
+        st.markdown(f"**{m_name} 微微蹙眉，将你护在身后，语气低沉：\"别看他们，跟着我走。\"**")
+        with col_ev1:
+            if st.button("🛡️ 配合他的保护，迅速低头快步离开", use_container_width=True):
+                st.session_state.total_score += 15
+                st.session_state.current_event = None
+                st.rerun()
+        with col_ev2:
+            if st.button("🎭 反客为主，当众假装你们在吵架转移视线", use_container_width=True):
+                st.session_state.total_score += 18
+                st.session_state.current_event = None
+                st.rerun()
 
-        elif "暴雨" in ev_title:
-            st.markdown(f"**{m_name} 看着倾盆而下的雨幕，无奈地脱下外套帮你挡雨：\"这天气还真是说变就变。\"**")
-            with col_ev1:
-                if st.button("☂️ 钻进同一件外套下，紧紧贴在一起避雨", use_container_width=True):
-                    st.session_state.total_score += 20
-                    st.session_state.current_event = None
-                    st.rerun()
-            with col_ev2:
-                if st.button("🏃‍♂️ 笑着拉他一起踩水坑，享受雨中狂奔", use_container_width=True):
-                    st.session_state.total_score += 15
-                    st.session_state.current_event = None
-                    st.rerun()
+    elif "暴雨" in ev_title:
+        st.markdown(f"**{m_name} 看着倾盆而下的雨幕，无奈地脱下外套帮你挡雨：\"这天气还真是说变就变。\"**")
+        with col_ev1:
+            if st.button("☂️ 钻进同一件外套下，紧紧贴在一起避雨", use_container_width=True):
+                st.session_state.total_score += 20
+                st.session_state.current_event = None
+                st.rerun()
+        with col_ev2:
+            if st.button("🏃‍♂️ 笑着拉他一起踩水坑，享受雨中狂奔", use_container_width=True):
+                st.session_state.total_score += 15
+                st.session_state.current_event = None
+                st.rerun()
 
-        elif "经纪人" in ev_title:
-            st.markdown(f"**{m_name} 看着震个不停的手机，露出一抹恶作剧般的坏笑：\"要接吗？\"**")
-            with col_ev1:
-                if st.button("📱 帮他直接挂断并关机：\"今天休假，天王老子来了也没用！\"", use_container_width=True):
-                    st.session_state.total_score += 20
-                    st.session_state.current_event = None
-                    st.rerun()
-            with col_ev2:
-                if st.button("🗣️ 拿过手机一本正经地帮他编借口请假", use_container_width=True):
-                    st.session_state.total_score += 15
-                    st.session_state.current_event = None
-                    st.rerun()
+    elif "经纪人" in ev_title:
+        st.markdown(f"**{m_name} 看着震个不停的手机，露出一抹恶作剧般的坏笑：\"要接吗？\"**")
+        with col_ev1:
+            if st.button("📱 帮他直接挂断并关机：\"今天休假，天王老子来了也没用！\"", use_container_width=True):
+                st.session_state.total_score += 20
+                st.session_state.current_event = None
+                st.rerun()
+        with col_ev2:
+            if st.button("🗣️ 拿过手机一本正经地帮他编借口请假", use_container_width=True):
+                st.session_state.total_score += 15
+                st.session_state.current_event = None
+                st.rerun()
 
-        elif "自行车链条" in ev_title:
-            st.markdown(f"**{m_name} 蹲在地上擦了擦手上的黑油，抬头冲你爽朗一笑：\"看来只能步行啦。\"**")
-            with col_ev1:
-                if st.button("🚲 「没关系，本大爷载你回去！」（推车漫步夕阳）", use_container_width=True):
-                    st.session_state.total_score += 15
-                    st.session_state.current_event = None
-                    st.rerun()
-            with col_ev2:
-                if st.button("🥤 「罚你今晚请喝抹茶拿铁压惊！」", use_container_width=True):
-                    st.session_state.total_score += 18
-                    st.session_state.current_event = None
-                    st.rerun()
+    elif "自行车链条" in ev_title:
+        st.markdown(f"**{m_name} 蹲在地上擦了擦手上的黑油，抬头冲你爽朗一笑：\"看来只能步行啦。\"**")
+        with col_ev1:
+            if st.button("🚲 「没关系，本大爷载你回去！」（推车漫步夕阳）", use_container_width=True):
+                st.session_state.total_score += 15
+                st.session_state.current_event = None
+                st.rerun()
+        with col_ev2:
+            if st.button("🥤 「罚你今晚请喝抹茶拿铁压惊！」", use_container_width=True):
+                st.session_state.total_score += 18
+                st.session_state.current_event = None
+                st.rerun()
 
-        elif "便利店" in ev_title:
-            st.markdown(f"**{m_name} 压低帽檐，隔着玻璃冲你挑眉坏笑：\"兼职的小员工，这份炸鸡块我要了。\"**")
-            with col_ev1:
-                if st.button("🍙 笑眯眯地让给他：「大明星辛苦啦，这个让给你。」", use_container_width=True):
-                    st.session_state.total_score += 15
-                    st.session_state.current_event = None
-                    st.rerun()
-            with col_ev2:
-                if st.button("🛡️ 叉腰护住便当：「先到先得！这可是本打工人的夜宵！」", use_container_width=True):
-                    st.session_state.total_score += 18
-                    st.session_state.current_event = None
-                    st.rerun()
+    elif "便利店" in ev_title:
+        st.markdown(f"**{m_name} 压低帽檐，隔着玻璃冲你挑眉坏笑：\"兼职的小员工，这份炸鸡块我要了。\"**")
+        with col_ev1:
+            if st.button("🍙 笑眯眯地让给他：「大明星辛苦啦，这个让给你。」", use_container_width=True):
+                st.session_state.total_score += 15
+                st.session_state.current_event = None
+                st.rerun()
+        with col_ev2:
+            if st.button("🛡️ 叉腰护住便当：「先到先得！这可是本打工人的夜宵！」", use_container_width=True):
+                st.session_state.total_score += 18
+                st.session_state.current_event = None
+                st.rerun()
 
-        elif "流浪肥猫" in ev_title:
-            st.markdown(f"**{m_name} 毫无偶像包袱地蹲在路边，伸手逗弄着胖橘猫：\"你看它，眼神跟你生气时一模一样。\"**")
-            with col_ev1:
-                if st.button("🐾 蹲下来温柔撸猫：「好可爱啊……像谁呢哼？」", use_container_width=True):
-                    st.session_state.total_score += 15
-                    st.session_state.current_event = None
-                    st.rerun()
-            with col_ev2:
-                if st.button("💢 假装吃醋拍拍他的肩：「怎么，眼里只有猫没有我了？」", use_container_width=True):
-                    st.session_state.total_score += 18
-                    st.session_state.current_event = None
-                    st.rerun()
+    elif "流浪肥猫" in ev_title:
+        st.markdown(f"**{m_name} 毫无偶像包袱地蹲在路边，伸手逗弄着胖橘猫：\"你看它，眼神跟你生气时一模一样。\"**")
+        with col_ev1:
+            if st.button("🐾 蹲下来温柔撸猫：「好可爱啊……像谁呢哼？」", use_container_width=True):
+                st.session_state.total_score += 15
+                st.session_state.current_event = None
+                st.rerun()
+        with col_ev2:
+            if st.button("💢 假装吃醋拍拍他的肩：「怎么，眼里只有猫没有我了？」", use_container_width=True):
+                st.session_state.total_score += 18
+                st.session_state.current_event = None
+                st.rerun()
 
-        elif "Suica卡" in ev_title:
-            st.markdown(f"**{m_name} 看着闸机屏幕上的残高不足，忍不住轻笑出声：\"关键时刻还得靠本大爷吧。\"**")
-            with col_ev1:
-                if st.button("羞涩道谢：「谢谢大明星慷慨解囊，回头请吃章鱼烧！」", use_container_width=True):
-                    st.session_state.total_score += 15
-                    st.session_state.current_event = None
-                    st.rerun()
-            with col_ev2:
-                if st.button("理直气壮挑眉：「花青梅/男友的钱天经地义！」", use_container_width=True):
-                    st.session_state.total_score += 18
-                    st.session_state.current_event = None
-                    st.rerun()
+    elif "Suica卡" in ev_title:
+        st.markdown(f"**{m_name} 看着闸机屏幕上的残高不足，忍不住轻笑出声：\"关键时刻还得靠本大爷吧。\"**")
+        with col_ev1:
+            if st.button("羞涩道谢：「谢谢大明星慷慨解囊，回头请吃章鱼烧！」", use_container_width=True):
+                st.session_state.total_score += 15
+                st.session_state.current_event = None
+                st.rerun()
+        with col_ev2:
+            if st.button("理直气壮挑眉：「花青梅/男友的钱天经地义！」", use_container_width=True):
+                st.session_state.total_score += 18
+                st.session_state.current_event = None
+                st.rerun()
 
-        elif "成名曲" in ev_title:
-            st.markdown(f"**{m_name} 微微一顿，有些不好意思地拉了拉你的衣角：\"……怎么突然放这个。\"**")
-            with col_ev1:
-                if st.button("小声哼唱并戳他手臂：「听，是你的歌耶，大明星有何感想？」", use_container_width=True):
-                    st.session_state.total_score += 15
-                    st.session_state.current_event = None
-                    st.rerun()
-            with col_ev2:
-                if st.button("坏笑着拉他快走：「走啦，在这里听自己的歌不害羞吗？」", use_container_width=True):
-                    st.session_state.total_score += 18
-                    st.session_state.current_event = None
-                    st.rerun()
+    elif "成名曲" in ev_title:
+        st.markdown(f"**{m_name} 微微一顿，有些不好意思地拉了拉你的衣角：\"……怎么突然放这个。\"**")
+        with col_ev1:
+            if st.button("小声哼唱并戳他手臂：「听，是你的歌耶，大明星有何感想？」", use_container_width=True):
+                st.session_state.total_score += 15
+                st.session_state.current_event = None
+                st.rerun()
+        with col_ev2:
+            if st.button("坏笑着拉他快走：「走啦，在这里听自己的歌不害羞吗？」", use_container_width=True):
+                st.session_state.total_score += 18
+                st.session_state.current_event = None
+                st.rerun()
 
-        elif "料理翻车" in ev_title:
-            st.markdown(f"**{m_name} 看着盘子里黑乎乎的厚蛋烧，表情瞬间凝固又化为宠溺：\"……这是要谋杀亲夫吗？\"**")
-            with col_ev1:
-                if st.button("视死如归自己尝一口：「呃……其实咸淡刚刚好（才怪）！」", use_container_width=True):
-                    st.session_state.total_score += 15
-                    st.session_state.current_event = None
-                    st.rerun()
-            with col_ev2:
-                if st.button("吐舌头耍赖：「虽然卖相差了点，但心意满分噢！」", use_container_width=True):
-                    st.session_state.total_score += 18
-                    st.session_state.current_event = None
-                    st.rerun()
+    elif "料理翻车" in ev_title:
+        st.markdown(f"**{m_name} 看着盘子里黑乎乎的厚蛋烧，表情瞬间凝固又化为宠溺：\"……这是要谋杀亲夫吗？\"**")
+        with col_ev1:
+            if st.button("视死如归自己尝一口：「呃……其实咸淡刚刚好（才怪）！」", use_container_width=True):
+                st.session_state.total_score += 15
+                st.session_state.current_event = None
+                st.rerun()
+        with col_ev2:
+            if st.button("吐舌头耍赖：「虽然卖相差了点，但心意满分噢！」", use_container_width=True):
+                st.session_state.total_score += 18
+                st.session_state.current_event = None
+                st.rerun()
 
-     if st.button("💥 哎呀，应对失误导致有些小狼狈（扣除部分积分）", use_container_width=True):
-                    st.session_state.total_score -= 25
-                    st.session_state.current_event = None
-                    st.rerun()
+    # 最后的兜底按钮（注意这里的缩进和上面的 if/elif 保持在同一竖直线上）
+    if st.button("💥 哎呀，应对失误导致有些小狼狈（扣除部分积分）", use_container_width=True):
+        st.session_state.total_score -= 25
+        st.session_state.current_event = None
+        st.rerun()
 else:
     # 剧本通关结局界面 (只有当所有幕数都走完才会走到这里)
     st.markdown(
