@@ -737,14 +737,15 @@ if st.session_state.current_event:
             st.success("✨ 【道具自动触发：备用双卡手机】及时联络到安保人员精准清场，安全脱身！")
             st.session_state.inventory.remove("📱 备用双卡手机")
             item_triggered = True
-    elif "暴雨" in ev_title:
+elif "暴雨" in ev_title:
         if "🥤 冰爽解暑饮料" in st.session_state.inventory:
             st.success("✨ 【道具自动触发：冰爽解暑饮料】虽然外面下暴雨，但手里的冰饮意外带来一抹甜意！")
             st.session_state.inventory.remove("🥤 冰爽解暑饮料")
             item_triggered = True
 
-if item_triggered:
-        st.info("💡 因为你携带了正确的心动道具，顺利化解危机，额外获得 **+25 积分**！")
+    # 让 if 和 else 保持完全相同的缩进（比如前面都是 4 个空格）
+    if item_triggered:
+        st.info("💡 Because you brought the correct item, you smoothly resolved the crisis and gained an extra **+25 points**!")
         if st.button("💖 携手化解危机，继续心动行程", use_container_width=True):
             st.session_state.total_score += 25
             st.session_state.current_event = None
