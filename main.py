@@ -722,7 +722,7 @@ if st.session_state.current_event:
     st.write(st.session_state.current_event["desc"])
     item_triggered = False
 
-    # 检查道具自动触发
+# 检查道具自动触发
     if "文春" in ev_title:
         if "🕵️‍♂️ 黑色鸭舌帽" in st.session_state.inventory:
             st.success("✨ 【道具自动触发：黑色鸭舌帽】低调伪装成功！你们完美避开了文春记者的长枪短炮！")
@@ -737,13 +737,13 @@ if st.session_state.current_event:
             st.success("✨ 【道具自动触发：备用双卡手机】及时联络到安保人员精准清场，安全脱身！")
             st.session_state.inventory.remove("📱 备用双卡手机")
             item_triggered = True
-elif "暴雨" in ev_title:
+    elif "暴雨" in ev_title:
         if "🥤 冰爽解暑饮料" in st.session_state.inventory:
             st.success("✨ 【道具自动触发：冰爽解暑饮料】虽然外面下暴雨，但手里的冰饮意外带来一抹甜意！")
             st.session_state.inventory.remove("🥤 冰爽解暑饮料")
             item_triggered = True
 
-    # 让 if 和 else 保持完全相同的缩进（比如前面都是 4 个空格）
+    # 道具未触发时的逻辑
     if item_triggered:
         st.info("💡 Because you brought the correct item, you smoothly resolved the crisis and gained an extra **+25 points**!")
         if st.button("💖 携手化解危机，继续心动行程", use_container_width=True):
@@ -766,18 +766,19 @@ elif "暴雨" in ev_title:
                     st.session_state.total_score += 15
                     st.session_state.current_event = None
                     st.rerun()
-    elif "私生饭" in ev_title:
-        st.markdown(f"**{m_name} 微微蹙眉，将你护在身后，语气低沉：\"别看他们，跟着我走。\"**")
-        with col_ev1:
-            if st.button("🛡️ 配合他的保护，迅速低头快步离开", use_container_width=True):
-                st.session_state.total_score += 15
-                st.session_state.current_event = None
-                st.rerun()
-        with col_ev2:
-            if st.button("🎭 反客为主，当众假装你们在吵架转移视线", use_container_width=True):
-                st.session_state.total_score += 18
-                st.session_state.current_event = None
-                st.rerun()
+                    
+        elif "私生饭" in ev_title:
+            st.markdown(f"**{m_name} 微微蹙眉，将你护在身后，语气低沉：\"别看他们，跟着我走。\"**")
+            with col_ev1:
+                if st.button("🛡️ 配合他的保护，迅速低头快步离开", use_container_width=True):
+                    st.session_state.total_score += 15
+                    st.session_state.current_event = None
+                    st.rerun()
+            with col_ev2:
+                if st.button("🎭 反客为主，当众假装你们在吵架转移视线", use_container_width=True):
+                    st.session_state.total_score += 18
+                    st.session_state.current_event = None
+                    st.rerun()
 
     elif "暴雨" in ev_title:
         st.markdown(f"**{m_name} 看着倾盆而下的雨幕，无奈地脱下外套帮你挡雨：\"这天气还真是说变就变。\"**")
