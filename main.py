@@ -6,7 +6,7 @@ import streamlit as st
 from stories.dajiang import DAJIANG_STORY
 from stories.gaogong import GAOGONG_STORY
 from stories.jo import JO_STORY
-from stories.kento import KENTO_STORY
+from stories.kento import KENTO_STORY 
 from stories.micchi import MICCHI_STORY
 from stories.purin import PURIN_STORY
 from stories.ryuche import RYUCHE_STORY
