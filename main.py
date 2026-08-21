@@ -743,29 +743,28 @@ if st.session_state.current_event:
             st.session_state.inventory.remove("🥤 冰爽解暑饮料")
             item_triggered = True
 
-    if item_triggered:
+if item_triggered:
         st.info("💡 因为你携带了正确的心动道具，顺利化解危机，额外获得 **+25 积分**！")
         if st.button("💖 携手化解危机，继续心动行程", use_container_width=True):
             st.session_state.total_score += 25
             st.session_state.current_event = None
             st.rerun()
     else:
-# 根据不同事件动态渲染不同的专属互动按钮
-    col_ev1, col_ev2 = st.columns(2)
-    
-    if "文春" in ev_title:
-        st.markdown(f"**{m_name} 看着远处的长焦镜头，眼神微冷：\"啧，这群记者还真是阴魂不散。\"**")
-        with col_ev1:
-            if st.button("📸 大方直面镜头，直接挽紧他的手臂", use_container_width=True):
-                st.session_state.total_score += 20
-                st.session_state.current_event = None
-                st.rerun()
-        with col_ev2:
-            if st.button("🏃‍♂️ 拽起他的衣角，闪身躲进旁边的盲区", use_container_width=True):
-                st.session_state.total_score += 15
-                st.session_state.current_event = None
-                st.rerun()
-
+        # 根据不同事件动态渲染不同的专属互动按钮
+        col_ev1, col_ev2 = st.columns(2)
+        
+        if "文春" in ev_title:
+            st.markdown(f"**{m_name} 看着远处的长焦镜头，眼神微冷：\"啧，这群记者还真是阴魂不散。\"**")
+            with col_ev1:
+                if st.button("📸 大方直面镜头，直接挽紧他的手臂", use_container_width=True):
+                    st.session_state.total_score += 20
+                    st.session_state.current_event = None
+                    st.rerun()
+            with col_ev2:
+                if st.button("🏃‍♂️ 拽起他的衣角，闪身躲进旁边的盲区", use_container_width=True):
+                    st.session_state.total_score += 15
+                    st.session_state.current_event = None
+                    st.rerun()
     elif "私生饭" in ev_title:
         st.markdown(f"**{m_name} 微微蹙眉，将你护在身后，语气低沉：\"别看他们，跟着我走。\"**")
         with col_ev1:
