@@ -14,7 +14,7 @@ from stories.ryuche import RYUCHE_STORY
 # 3. 组装数据 
 STORY_DATA = {
     "大酱": DAJIANG_STORY,
-    "高恭": GAOGONG_STORY,
+    "高恭": GAOGONG_STORY, 
     "丈君": JO_STORY,
     "谦杜": KENTO_STORY,
     "米七": MICCHI_STORY,
