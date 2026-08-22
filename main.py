@@ -716,7 +716,6 @@ if st.session_state.get("current_event") is None and random.random() < 0.4 and s
             "title": "🥞 突发状况：亲手做的日式料理“惨遭翻车”",
             "desc": f"你信心满满地做了一份厚蛋烧/咖喱，结果端上桌时卖相惨不忍睹，{m_name} 却一脸视死如归地笑着说要全部吃光。"
         }
-    ]
     st.session_state.current_event = random.choice(events_pool)
     st.rerun()
 
