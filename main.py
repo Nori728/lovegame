@@ -1,18 +1,23 @@
-# ==================== 1. 外部库导入 ====================
+# ==================== 第一部分：开头与基础设置 ====================
 import random
 import streamlit as st
 
-# ==================== 2. 页面基础配置 (必须在最前面) ====================
+# 1. 页面基础配置 (必须是第一个st命令)
 st.set_page_config(page_title="浪花男子心动日常", page_icon="💖", layout="centered")
 
-# ==================== 3. 初始化 Session State ====================
+# 2. 初始化所有需要的系统状态 (Session State)
 if "current_event" not in st.session_state:
     st.session_state.current_event = None
-
 if "day" not in st.session_state:
-    st.session_state.day = 1  # 如果默认从第一天开始
+    st.session_state.day = 1
+if "game_started" not in st.session_state:
+    st.session_state.game_started = False
+if "target" not in st.session_state:
+    st.session_state.target = None
+if "game_over" not in st.session_state:
+    st.session_state.game_over = False
 
-# ==================== 4. 导入故事剧本模块 ====================
+# 3. 导入故事剧本模块
 from stories.dajiang import DAJIANG_STORY
 from stories.gaogong import GAOGONG_STORY
 from stories.jo import JO_STORY
@@ -21,7 +26,7 @@ from stories.micchi import MICCHI_STORY
 from stories.purin import PURIN_STORY
 from stories.ryuche import RYUCHE_STORY
 
-# ==================== 5. 组装数据 ====================
+# 4. 组装数据
 STORY_DATA = {
     "大酱": DAJIANG_STORY,
     "高恭": GAOGONG_STORY, 
@@ -32,7 +37,7 @@ STORY_DATA = {
     "流星": RYUCHE_STORY,
 }
 
-# ==================== 6. 乙女风格 UI 样式与后续主逻辑 ====================
+# 5. UI 样式加载
 st.markdown("""
 <style> 
     /* 核心背景与字体 */
@@ -544,9 +549,6 @@ if st.session_state.random_event:
             st.rerun()
 
 # -----------------------------------------------------------------------------
-# 7. 主页面：开启心动互动剧情
-# -----------------------------------------------------------------------------
-# -----------------------------------------------------------------------------
 # 7. 主页面：开启心动互动剧情 (完美契合视频中的下拉选择与大图卡片)
 # -----------------------------------------------------------------------------
 st.markdown("### 📖 开启心动互动剧情")
@@ -599,9 +601,78 @@ if st.sidebar.button("🔄 重置当前剧情进度", use_container_width=True):
 
 
 # -----------------------------------------------------------------------------
-# 8. 主剧情关卡渲染 (使用 get_member_story 完美适配成员、身份与当前幕数，让选项真正运作起来)
+# 8. 主剧情关卡渲染 (逻辑核心：剧情 -> 选项 -> 自动跳转结局)
 # -----------------------------------------------------------------------------
 st.markdown("---")
+
+# A. 检查是否有上一幕的回顾结果
+if st.session_state.last_dialogue_result:
+    q_title, user_choice_text, char_reply, score_gain = st.session_state.last_dialogue_result
+    st.markdown(
+        f"""
+        <div style="background-color: #fdf2f8; border-left: 4px solid #db2777; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+            <p style="margin: 0; color: #9d174d; font-weight: bold;">💬 上一幕互动回顾：{q_title}</p>
+            <p style="margin: 5px 0 0 0; color: #4b5563;">你的选择：{user_choice_text}</p>
+            <p style="margin: 8px 0 0 0; color: #1f2937; font-size: 1.05rem;"><b>{st.session_state.target_member} 回应：</b> {char_reply}</p>
+            <p style="margin: 5px 0 0 0; color: #059669; font-size: 0.9rem;">✨ 好感度变动：+{score_gain} 分</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+# B. 获取剧情数据并判断是否通关
+act_data = get_member_story(
+    st.session_state.target_member,
+    st.session_state.player_role,
+    st.session_state.current_act
+)
+
+if act_data:
+    # 渲染当前幕剧情
+    st.markdown(f"### 📖 第 {st.session_state.current_act} 幕：{act_data.get('title', '')}")
+    st.markdown(f"<div class='dialogue-box'>{act_data.get('desc', '')}</div>", unsafe_allow_html=True)
+    
+    st.markdown("#### 💬 请选择你的应对：")
+    choices = act_data.get("choices", [])
+    for idx, (choice_text, reply_text, pts) in enumerate(choices):
+        if st.button(choice_text, key=f"choice_{st.session_state.current_act}_{idx}"):
+            # 记录互动结果并加分
+            st.session_state.total_score += pts
+            st.session_state.last_dialogue_result = (act_data.get('title'), choice_text, reply_text, pts)
+            # 推进幕数
+            st.session_state.current_act += 1
+            st.rerun()
+
+else:
+    # 这里嵌入你原来的结局界面代码
+    st.markdown(
+        f"""
+        <div style="background: linear-gradient(135deg, #fce7f3 100%, #fbcfe8 0%); border: 2px solid #f472b6; padding: 25px; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(244,114,182,0.2);">
+            <h2 style="color: #be185d; margin-top: 0;">🎉 恭喜达成完美结局！</h2>
+            <p style="font-size: 1.1rem; color: #4b5563; line-height: 1.6;">
+                你与 <b>{st.session_state.target_member}</b>（<b>{st.session_state.player_role}</b>线）历经了种种浪漫与心动，顺利完成了全剧本通关！
+            </p>
+            <p style="font-size: 1.2rem; color: #9d174d; font-weight: bold;">
+                🏆 最终收集心动积分：{st.session_state.total_score} 分
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    
+    col_end1, col_end2 = st.columns(2)
+    with col_end1:
+        if st.button("🔄 重新体验当前剧本", use_container_width=True):
+            st.session_state.current_act = 1
+            st.session_state.last_dialogue_result = None
+            st.session_state.total_score = 0 # 重置分数，体验更佳
+            st.rerun()
+    with col_end2:
+        if st.button("🎁 返回上方抽取高级恋爱道具", use_container_width=True):
+            st.session_state.current_act = 1
+            st.session_state.last_dialogue_result = None
+            st.session_state.total_score = 0 # 重置分数，体验更佳
+            st.rerun()
 
 # 如果刚好有上一幕互动反馈的结果，先展示出来
 if st.session_state.last_dialogue_result:
@@ -693,7 +764,7 @@ if st.session_state.get("current_event") is None and random.random() < 0.4 and s
             "title": "📋 突发危机：经纪人突击查岗",
             "desc": f"手机突然疯狂震动！经纪人的夺命连环Call打了过来，质问大明星现在到底在哪里、有没有偷偷旷工跑去约会！"
         },
-        # --- 在日留学or打工人日常事件 ---
+        # --- 在日学生or打工人日常事件 ---
         {
             "title": "🚲 突发状况：自行车链条突然脱落",
             "desc": f"骑车载着 {m_name} 经过坂道时，单车的链条突然卡死脱落！两人狼狈地推着车，却在夕阳下笑作一团。"
@@ -920,9 +991,11 @@ else:
         if st.button("🔄 重新体验当前剧本", use_container_width=True):
             st.session_state.current_act = 1
             st.session_state.last_dialogue_result = None
+            st.session_state.total_score = 0
             st.rerun()
     with col_end2:
-        if st.button("🎁 返回上方抽取高级恋爱道具", use_container_width=True):
+        if st.button("🎁 返回上方重新选人", use_container_width=True):
             st.session_state.current_act = 1
             st.session_state.last_dialogue_result = None
+            st.session_state.total_score = 0
             st.rerun()
