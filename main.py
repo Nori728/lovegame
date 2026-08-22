@@ -611,9 +611,11 @@ elif st.session_state.stage == "playing":
             st.session_state.current_act
         )
 
-    if act_data:
-        act_title = act_data.get('title', f"第 {st.session_state.current_act} 幕：心动时刻")
-        st.markdown(f"### 🎬 {act_title}")
+if isinstance(act_data, dict):
+    act_title = act_data.get('title', f"第 {st.session_state.current_act} 幕：心动时刻")
+    st.markdown(f"### 🎬 {act_title}")
+else:
+    st.markdown(f"### 🎬 第 {st.session_state.current_act} 幕：心动时刻")
         
         choices_list = act_data.get("choices", [])
         for idx, choice in enumerate(choices_list):
