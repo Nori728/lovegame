@@ -619,7 +619,6 @@ if isinstance(act_data, dict):
         st.markdown(f"### 🎬 第 {st.session_state.current_act} 幕：心动时刻")
         choices_list = []
 
-    # 补回了外层的循环和判断，这样下面的 else 就有主了！
     for idx, choice in enumerate(choices_list):
         if len(choice) == 3:
             btn_text, reply_text, base_score = choice
