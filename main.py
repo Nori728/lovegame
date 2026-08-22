@@ -37,8 +37,9 @@ STORIES = {
     "流星": RYUCHE_STORY,
 }
 
-# 5. UI 样式加载
-st.markdown("""
+# ==================== 5. UI 样式加载 ====================
+st.markdown(
+    """
 <style> 
     /* 核心背景与字体 */
     .stApp {
@@ -54,8 +55,6 @@ st.markdown("""
         margin-bottom: 5px;
         text-shadow: 1px 1px 2px #fecdd3;
     }
-</style>
-""", unsafe_allow_html=True)
     
     /* 动漫乙女对话框样式 */
     .dialogue-box {
@@ -138,7 +137,9 @@ st.markdown("""
         box-shadow: 0 2px 4px rgba(225, 29, 72, 0.2) !important;
     }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # 接下来接着你原本剩下的游戏运行逻辑代码...
 
