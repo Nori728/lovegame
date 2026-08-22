@@ -904,10 +904,14 @@ if st.session_state.stage == "menu":
 # 阶段二：游戏进行中（封面和菜单在此阶段会全部自动消失）
 # -------------------------------------------------------------
 elif st.session_state.stage == "playing":
-    st.info(f"当前身份：**{st.session_state.get('role', '经纪人')}** | 攻略对象：**{st.session_state.get('target', '')}**")
+    # 统一变量名，防止读取不到（同时兼容新旧变量名）
+    current_target = st.session_state.get('target_member', st.session_state.get('target', '丈君'))
+    current_role = st.session_state.get('player_role', st.session_state.get('role', '经纪人'))
+    
+    st.info(f"当前身份：**{current_role}** | 攻略对象：**{current_target}**")
     
     # 安全获取剧本数据
-    role_story = STORY_DATA.get(st.session_state.target, {}) if 'STORY_DATA' in globals() else {}
+    role_story = STORY_DATA.get(current_target, {}) if 'STORY_DATA' in globals() else {}
     day_data = role_story.get(st.session_state.day, {})
     turns_data = day_data.get("turns", {})
     current_turn = turns_data.get(st.session_state.turn, {})
@@ -918,13 +922,15 @@ elif st.session_state.stage == "playing":
         
         choices = current_turn.get("choices", [])
         for idx, (choice_text, reply_text, points) in enumerate(choices):
-            if st.button(choice_text, key=f"choice_d{st.session_state.day}_t{st.session_state.turn}_{idx}"):
-                st.success(f"【{st.session_state.target}的回应】\n\n{reply_text}")
+            # 给每个选项生成绝对唯一的 key
+            btn_key = f"choice_d{st.session_state.day}_t{st.session_state.turn}_{idx}"
+            if st.button(choice_text, key=btn_key):
+                st.success(f"【{current_target}的回应】\n\n{reply_text}")
                 
-                # 推进回合或天数
+                # 推进回合或天数（已修复判断逻辑）
                 if st.session_state.turn < len(turns_data):
                     st.session_state.turn += 1
-                elif st.session_state.day < 1:  
+                elif (st.session_state.day + 1) in role_story:  # 检查剧本里是否还有下一天
                     st.session_state.day += 1
                     st.session_state.turn = 1
                 else:
@@ -939,12 +945,10 @@ elif st.session_state.stage == "playing":
 # 阶段三：游戏结束 / 结局
 # -------------------------------------------------------------
 elif st.session_state.stage == "game_over":
-    st.markdown("""
-        <div class='dialogue-box' style='text-align: center;'>
-            <h2>🎉 恭喜达成完美结局！</h2>
-            <p>你与心仪的成员度过了非常美妙的一段时光！</p>
-        </div>
-    """, unsafe_allow_html=True)
+    st.success("游戏结束！")
+    if st.button("重新开始", key="restart_btn"):
+        st.session_state.stage = "menu"
+        st.rerun()
     
     if st.button("🔄 重新开始游戏", key="restart_game_button"):
         st.session_state.stage = "menu"  # 切回菜单页
