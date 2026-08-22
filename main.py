@@ -5,7 +5,7 @@ import random
 st.set_page_config(page_title="浪花男子心动日常", page_icon="💖", layout="centered")
 
 # 初始化所有状态
-if "stage" not in st.session_state:
+if "stage" not in st.session_state: 
     st.session_state.stage = "menu"
 if "player_role" not in st.session_state:
     st.session_state.player_role = "经纪人"
