@@ -883,8 +883,8 @@ if not st.session_state.game_started:
     with col2:
         st.session_state.target = st.selectbox("请选择你想攻略的成员", list(STORY_DATA.keys()), key="menu_target_select")
     
-    if st.button("🚀 开始心动旅程", key="start_game_button"):
-        st.session_state.game_started = True
+if st.button("🚀 开始心动旅程", key="start_game_button"):
+        st.session_state.stage = "playing"  # ✅ 改成用 stage 控制状态
         st.session_state.day = 1
         st.session_state.turn = 1
         st.rerun()
