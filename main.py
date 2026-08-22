@@ -17,6 +17,19 @@ if "total_score" not in st.session_state:
     st.session_state.total_score = 0
 if "last_dialogue_result" not in st.session_state:
     st.session_state.last_dialogue_result = None
+    # -------------------------------------------------------------
+# 阶段一：开始菜单（只有在这个阶段才会显示封面和大标题）
+# -------------------------------------------------------------
+if st.session_state.stage == "menu":
+    st.markdown("<h1 class='otome-title'>💖 浪花男子心动日常 💖</h1>", unsafe_allow_html=True)
+    st.markdown('<p class="sub-header">✨ 沉浸式乙女恋爱养成企划</p>', unsafe_allow_html=True)
+    st.markdown("### 🌟 开启心动互动剧情")
+    
+    if st.button("🚀 开始心动旅程", key="start_game_button"):
+        st.session_state.stage = "playing"  # 切换到游戏进行中阶段
+        st.session_state.day = 1
+        st.session_state.turn = 1
+        st.rerun()
 
 # 导入你的剧本 (请确保你的 stories 文件夹和导入语句正确)
 from stories.dajiang import DAJIANG_STORY
@@ -224,10 +237,6 @@ if st.session_state.stage == "menu":
 
     st.markdown("---")
     
-    # 点击后跳转到 playing 阶段
-    if st.button("🚀 开始心动旅程", use_container_width=True):
-        st.session_state.stage = "playing"
-        st.rerun()
 # -----------------------------------------------------------------------------
 # 剧本数据导入 (所有角色剧本已拆分至 stories/ 文件夹)
 # -----------------------------------------------------------------------------
@@ -878,20 +887,6 @@ if "day" not in st.session_state:
     st.session_state.day = 1
 if "turn" not in st.session_state:
     st.session_state.turn = 1
-
-# -------------------------------------------------------------
-# 阶段一：开始菜单（只有在这个阶段才会显示封面和大标题）
-# -------------------------------------------------------------
-if st.session_state.stage == "menu":
-    st.markdown("<h1 class='otome-title'>💖 浪花男子心动日常 💖</h1>", unsafe_allow_html=True)
-    st.markdown('<p class="sub-header">✨ 沉浸式乙女恋爱养成企划</p>', unsafe_allow_html=True)
-    st.markdown("### 🌟 开启心动互动剧情")
-    
-    if st.button("🚀 开始心动旅程", key="start_game_button"):
-        st.session_state.stage = "playing"  # 切换到游戏进行中阶段
-        st.session_state.day = 1
-        st.session_state.turn = 1
-        st.rerun()
 
 # -------------------------------------------------------------
 # 阶段二：游戏进行中（封面和菜单在此阶段会全部自动消失）
