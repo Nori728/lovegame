@@ -887,13 +887,6 @@ if st.session_state.stage == "menu":
     st.markdown('<p class="sub-header">✨ 沉浸式乙女恋爱养成企划</p>', unsafe_allow_html=True)
     st.markdown("### 🌟 开启心动互动剧情")
     
-    col1, col2 = st.columns(2)
-    with col1:
-        st.session_state.role = st.selectbox("请选择你的身份", ["经纪人", "青梅竹马"], key="menu_role_select")
-    with col2:
-        target_keys = list(STORY_DATA.keys()) if 'STORY_DATA' in globals() and STORY_DATA else ["成员A", "成员B"]
-        st.session_state.target = st.selectbox("请选择你想攻略的成员", target_keys, key="menu_target_select")
-    
     if st.button("🚀 开始心动旅程", key="start_game_button"):
         st.session_state.stage = "playing"  # 切换到游戏进行中阶段
         st.session_state.day = 1
