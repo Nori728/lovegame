@@ -140,9 +140,6 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
-
-# 接下来接着你原本剩下的游戏运行逻辑代码...
-
 # -----------------------------------------------------------------------------
 # 2. 基础数据源 (成员信息)
 # -----------------------------------------------------------------------------
@@ -246,24 +243,6 @@ def get_member_story(member, role, act):
 
     return {
         "title": f"🎬 {member} × {role} · 第 {act} 幕：心动进阶时刻",
-        "choices": [
-            (
-                "微笑着靠近一步，认真注视他的眼睛：『今天表现很棒哦。』",
-                "『被你这样看着……我的心跳连台词都快忘光了。』",
-                25,
-            ),
-            (
-                "开个轻松的小玩笑活跃沉闷的气氛",
-                "『好啊你，居然敢拿我开玩笑，看我怎么“惩罚”你～』",
-                20,
-            ),
-            (
-                "安静地陪伴在身旁，递上一杯温水",
-                "『只要有你陪着，哪怕什么都不做也是最幸福的时光。』",
-                22,
-            ),
-        ],
-    },
 # -----------------------------------------------------------------------------
 # 4. Session State 初始化
 # -----------------------------------------------------------------------------
@@ -293,10 +272,7 @@ if "last_dialogue_result" not in st.session_state:
 
 # -----------------------------------------------------------------------------
 # 5. 主界面渲染 (顶部标题、扭蛋机与背包)
-# -----------------------------------------------------------------------------
-st.markdown('<p class="main-header">💖 浪花男子心动日常</p>', unsafe_allow_html=True)
-st.markdown('<p class="sub-header">✨ 沉浸式乙女恋爱养成企划 (全剧情流畅推进)</p>', unsafe_allow_html=True)
-
+# ----------------------------------------------------------------------------
 st.markdown(
     """
     <div class="gacha-box">
@@ -557,49 +533,47 @@ if st.session_state.random_event:
             st.rerun()
 
 # -----------------------------------------------------------------------------
-# 7. 主页面：开启心动互动剧情 (完美契合视频中的下拉选择与大图卡片)
+# 7. 主页面：开启心动互动剧情
 # -----------------------------------------------------------------------------
 if st.session_state.stage == "menu":
     st.markdown("### 📖 开启心动互动剧情")
 
     col_sel1, col_sel2 = st.columns(2)
     with col_sel1:
-        player_role = st.selectbox(
+        # 直接用 key 绑定到 session_state.player_role，简洁清爽
+        st.selectbox(
             "1️⃣ 请选择你的身份：", 
-            ROLES if 'ROLES' in globals() else ["经纪人", "青梅竹马", "在日留学生or打工人"],
-            key="unique_player_role_select"
+            ["经纪人", "青梅竹马", "在日留学生or打工人"],
+            key="player_role"
         )
-        st.session_state.player_role = player_role
 
     with col_sel2:
-        if 'MEMBERS' in globals():
-            member_names = list(MEMBERS.keys())
-            target_member = st.selectbox(
-                "2️⃣ 请选择你想攻略的成员：", 
-                member_names,
-                index=member_names.index(st.session_state.target_member) if st.session_state.target_member in member_names else 0,
-                key="target_member_selector"
-            )
-            st.session_state.target_member = target_member
-
-    # 渲染选中成员的精美卡片
-    if 'MEMBERS' in globals() and st.session_state.target_member in MEMBERS:
-        m_info = MEMBERS[st.session_state.target_member]
-        st.image(m_info["img"], use_container_width=True)
-        st.markdown(
-            f"""
-            <div style="text-align: center; margin-top: 5px; margin-bottom: 15px;">
-                <span style="font-size: 1.1rem; font-weight: bold; color: #db2777;">
-                    ✨ {st.session_state.target_member}（特征：{m_info['trait']} | 专属色：{m_info['color']}）
-                </span>
-            </div>
-            """,
-            unsafe_allow_html=True
+        member_names = list(MEMBERS.keys())
+        # 直接用 key 绑定到 session_state.target_member
+        st.selectbox(
+            "2️⃣ 请选择你想攻略的成员：", 
+            member_names,
+            key="target_member"
         )
-        # 添加开始按钮，点击后跳转到 playing 阶段
-        if st.button("🚀 开始心动旅程", use_container_width=True):
-            st.session_state.stage = "playing"
-            st.rerun()
+
+    # 渲染选中成员的精美卡片（直接读取，不用再重复判断 globals）
+    m_info = MEMBERS[st.session_state.target_member]
+    st.image(m_info["img"], use_container_width=True)
+    st.markdown(
+        f"""
+        <div style="text-align: center; margin-top: 5px; margin-bottom: 15px;">
+            <span style="font-size: 1.1rem; font-weight: bold; color: #db2777;">
+                ✨ {st.session_state.target_member}（特征：{m_info['trait']} | 专属色：{m_info['color']}）
+            </span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # 添加开始按钮，点击后跳转到 playing 阶段
+    if st.button("🚀 开始心动旅程", use_container_width=True):
+        st.session_state.stage = "playing"
+        st.rerun()
 
 # =============================================================================
 # 8. 主剧情关卡与随机事件核心逻辑 (已完美闭环)
