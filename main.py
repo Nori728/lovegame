@@ -1,8 +1,18 @@
-# 1. 外部库导入 
+# ==================== 1. 外部库导入 ====================
 import random
 import streamlit as st
 
-# 2. 
+# ==================== 2. 页面基础配置 (必须在最前面) ====================
+st.set_page_config(page_title="浪花男子心动日常", page_icon="💖", layout="centered")
+
+# ==================== 3. 初始化 Session State ====================
+if "current_event" not in st.session_state:
+    st.session_state.current_event = None
+
+if "day" not in st.session_state:
+    st.session_state.day = 1  # 如果默认从第一天开始
+
+# ==================== 4. 导入故事剧本模块 ====================
 from stories.dajiang import DAJIANG_STORY
 from stories.gaogong import GAOGONG_STORY
 from stories.jo import JO_STORY
@@ -11,7 +21,7 @@ from stories.micchi import MICCHI_STORY
 from stories.purin import PURIN_STORY
 from stories.ryuche import RYUCHE_STORY
 
-# 3. 组装数据 
+# ==================== 5. 组装数据 ====================
 STORY_DATA = {
     "大酱": DAJIANG_STORY,
     "高恭": GAOGONG_STORY, 
@@ -22,13 +32,7 @@ STORY_DATA = {
     "流星": RYUCHE_STORY,
 }
 
-# 4. 你的程序主逻辑开始 (比如 st.title(), 游戏的运行循环等)
-# ... 这里接着你原来剩下的代码 ...
-# -----------------------------------------------------------------------------
-# 1. 基础配置与样式 (动漫乙女风格 UI)
-# -----------------------------------------------------------------------------
-st.set_page_config(page_title="浪花男子心动日常", page_icon="💖", layout="centered")
-
+# ==================== 6. 乙女风格 UI 样式与后续主逻辑 ====================
 st.markdown("""
 <style> 
     /* 核心背景与字体 */
@@ -128,6 +132,8 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
+
+# 接下来接着你原本剩下的游戏运行逻辑代码...
 
 # -----------------------------------------------------------------------------
 # 2. 基础数据源 (成员信息)
@@ -667,8 +673,7 @@ if act_data:
             st.session_state.current_act += 1
 
 # 2. 检查是否有突发事件触发 (40% 概率)
-if st.session_state.current_event is None and random.random() < 0.4 and st.session_state.day < 6:
-    events_pool = [
+if st.session_state.get("current_event") is None and random.random() < 0.4 and st.session_state.get("day", 1) < 6:
         # --- 危机事件 ---
         {
             "title": "🚨 突发危机：文春记者的长焦镜头",
