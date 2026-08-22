@@ -242,7 +242,7 @@ def get_member_story(member, role, act):
         return STORIES[member][role][act]
 
     return {
-        "title": f"🎬 {member} × {role} · 第 {act} 幕：心动进阶时刻",
+        "title": f"🎬 {member} × {role} · 第 {act} 幕：心动进阶时刻"},
 # -----------------------------------------------------------------------------
 # 4. Session State 初始化
 # -----------------------------------------------------------------------------
