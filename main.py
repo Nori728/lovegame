@@ -674,6 +674,8 @@ if act_data:
 
 # 2. 检查是否有突发事件触发 (40% 概率)
 if st.session_state.get("current_event") is None and random.random() < 0.4 and st.session_state.get("day", 1) < 6:
+    # 定义突发事件池
+    events_pool = [
         # --- 危机事件 ---
         {
             "title": "🚨 突发危机：文春记者的长焦镜头",
@@ -716,6 +718,8 @@ if st.session_state.get("current_event") is None and random.random() < 0.4 and s
             "title": "🥞 突发状况：亲手做的日式料理“惨遭翻车”",
             "desc": f"你信心满满地做了一份厚蛋烧/咖喱，结果端上桌时卖相惨不忍睹，{m_name} 却一脸视死如归地笑着说要全部吃光。"
         }
+    ]
+    
     st.session_state.current_event = random.choice(events_pool)
     st.rerun()
 
@@ -725,7 +729,6 @@ if st.session_state.current_event:
     st.error(ev_title)
     st.write(st.session_state.current_event["desc"])
     item_triggered = False
-
 # 检查道具自动触发
     if "文春" in ev_title:
         if "🕵️‍♂️ 黑色鸭舌帽" in st.session_state.inventory:
