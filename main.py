@@ -570,11 +570,6 @@ if st.session_state.stage == "menu":
         unsafe_allow_html=True
     )
 
-    # 添加开始按钮，点击后跳转到 playing 阶段
-    if st.button("🚀 开始心动旅程", use_container_width=True):
-        st.session_state.stage = "playing"
-        st.rerun()
-
 # =============================================================================
 # 8. 主剧情关卡与随机事件核心逻辑 (已完美闭环)
 # =============================================================================
