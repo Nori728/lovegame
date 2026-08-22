@@ -54,6 +54,8 @@ st.markdown("""
         margin-bottom: 5px;
         text-shadow: 1px 1px 2px #fecdd3;
     }
+</style>
+""", unsafe_allow_html=True)
     
     /* 动漫乙女对话框样式 */
     .dialogue-box {
@@ -206,6 +208,7 @@ if "random_event" not in st.session_state:
 # -----------------------------------------------------------------------------
 if st.session_state.stage == "menu":
     st.markdown('<p class="otome-title">💖 浪花男子心动日常</p>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-header">✨ 沉浸式乙女恋爱养成企划</p>', unsafe_allow_html=True)
 
     col_sel1, col_sel2 = st.columns(2)
     with col_sel1:
@@ -223,7 +226,7 @@ if st.session_state.stage == "menu":
 
     st.markdown("---")
     
-    # 【关键修改】添加开始按钮，点击后跳转到 playing 阶段
+    # 点击后跳转到 playing 阶段
     if st.button("🚀 开始心动旅程", use_container_width=True):
         st.session_state.stage = "playing"
         st.rerun()
@@ -897,34 +900,71 @@ elif st.session_state.stage == "playing":
                     st.session_state.current_event = None
                     st.rerun()
 
-    # 4. 剧本通关结局界面
-    else:
-        st.markdown(
-            f"""
-            <div style="background: linear-gradient(135deg, #fce7f3 100%, #fbcfe8 0%); border: 2px solid #f472b6; padding: 25px; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(244,114,182,0.2);">
-                <h2 style="color: #be185d; margin-top: 0;">🎉 恭喜达成完美结局！</h2>
-                <p style="font-size: 1.1rem; color: #4b5563; line-height: 1.6;">
-                    你与 <b>{m_name}</b>（<b>{st.session_state.player_role}</b>线）历经了种种浪漫与心动，顺利完成了全剧本通关！
-                </p>
-                <p style="font-size: 1.2rem; color: #9d174d; font-weight: bold;">
-                    🏆 最终收集心动积分：{st.session_state.total_score} 分
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+  # ==================== 9. 主游戏逻辑控制 ====================
+st.markdown("<h1 class='otome-title'>💖 浪花男子心动日常 💖</h1>", unsafe_allow_html=True)
+
+# 阶段一：开始菜单（未开始游戏时显示）
+if not st.session_state.game_started:
+    st.markdown("### 🌟 开启心动互动剧情")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.session_state.role = st.selectbox("请选择你的身份", ["经纪人", "青梅竹马"], key="menu_role_select")
+    with col2:
+        st.session_state.target = st.selectbox("请选择你想攻略的成员", list(STORY_DATA.keys()), key="menu_target_select")
+    
+    if st.button("🚀 开始心动旅程", key="start_game_button"):
+        st.session_state.game_started = True
+        st.session_state.day = 1
+        st.session_state.turn = 1
+        st.rerun()
+
+# 阶段二：游戏进行中
+elif st.session_state.game_started and not st.session_state.game_over:
+    st.info(f"当前身份：**{st.session_state.role}** | 攻略对象：**{st.session_state.target}**")
+    
+    # 安全获取剧本数据
+    role_story = STORY_DATA.get(st.session_state.target, {})
+    day_data = role_story.get(st.session_state.day, {})
+    turns_data = day_data.get("turns", {})
+    current_turn = turns_data.get(st.session_state.turn, {})
+    
+    if current_turn:
+        st.markdown(f"### 🎬 {current_turn.get('title', '剧情进行中')}")
+        st.markdown(f"<div class='dialogue-box'>{current_turn.get('desc', '暂无描述')}</div>", unsafe_allow_html=True)
         
-        col_end1, col_end2 = st.columns(2)
-        with col_end1:
-            if st.button("🔄 重新体验当前剧本", use_container_width=True):
-                st.session_state.current_act = 1
-                st.session_state.last_dialogue_result = None
-                st.session_state.total_score = 0
+        choices = current_turn.get("choices", [])
+        for idx, (choice_text, reply_text, points) in enumerate(choices):
+            # 给每一个选项按钮赋予绝对唯一的 key
+            if st.button(choice_text, key=f"choice_d{st.session_state.day}_t{st.session_state.turn}_{idx}"):
+                st.success(f"【{st.session_state.target}的回应】\n\n{reply_text}")
+                
+                # 推进回合或天数
+                if st.session_state.turn < len(turns_data):
+                    st.session_state.turn += 1
+                elif st.session_state.day < 1: 
+                    st.session_state.day += 1
+                    st.session_state.turn = 1
+                else:
+                    st.session_state.game_over = True
                 st.rerun()
-        with col_end2:
-            if st.button("🎁 返回上方重新选人", use_container_width=True):
-                st.session_state.current_act = 1
-                st.session_state.last_dialogue_result = None
-                st.session_state.total_score = 0
-                st.session_state.stage = "menu"  # 👈 核心修复：成功返回选角菜单
-                st.rerun()
+    else:
+        # 如果没有后续剧本，直接通关
+        st.session_state.game_over = True
+        st.rerun()
+
+# 阶段三：游戏结束 / 结局
+elif st.session_state.game_over:
+    st.markdown("""
+        <div class='dialogue-box' style='text-align: center;'>
+            <h2>🎉 恭喜达成完美结局！</h2>
+            <p>你与心仪的成员度过了非常美妙的一段时光！</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    if st.button("🔄 重新开始游戏", key="restart_game_button"):
+        st.session_state.game_started = False
+        st.session_state.game_over = False
+        st.session_state.day = 1
+        st.session_state.turn = 1
+        st.rerun()
