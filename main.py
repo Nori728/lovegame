@@ -1,23 +1,24 @@
-# ==================== 第一部分：开头与基础设置 ====================
-import random
 import streamlit as st
+import random
 
-# 1. 页面基础配置 (必须是第一个st命令)
+# ==================== 1. 页面配置与初始化 ====================
 st.set_page_config(page_title="浪花男子心动日常", page_icon="💖", layout="centered")
 
-# 2. 初始化所有需要的系统状态 (Session State)
-if "current_event" not in st.session_state:
-    st.session_state.current_event = None
-if "day" not in st.session_state:
-    st.session_state.day = 1
-if "game_started" not in st.session_state:
-    st.session_state.game_started = False
-if "target" not in st.session_state:
-    st.session_state.target = None
-if "game_over" not in st.session_state:
-    st.session_state.game_over = False
+# 初始化所有状态
+if "stage" not in st.session_state:
+    st.session_state.stage = "menu"
+if "player_role" not in st.session_state:
+    st.session_state.player_role = "经纪人"
+if "target_member" not in st.session_state:
+    st.session_state.target_member = "丈君"
+if "current_act" not in st.session_state:
+    st.session_state.current_act = 1
+if "total_score" not in st.session_state:
+    st.session_state.total_score = 0
+if "last_dialogue_result" not in st.session_state:
+    st.session_state.last_dialogue_result = None
 
-# 3. 导入故事剧本模块
+# 导入你的剧本 (请确保你的 stories 文件夹和导入语句正确)
 from stories.dajiang import DAJIANG_STORY
 from stories.gaogong import GAOGONG_STORY
 from stories.jo import JO_STORY
@@ -26,8 +27,7 @@ from stories.micchi import MICCHI_STORY
 from stories.purin import PURIN_STORY
 from stories.ryuche import RYUCHE_STORY
 
-# 4. 组装数据
-STORY_DATA = {
+STORIES = {
     "大酱": DAJIANG_STORY,
     "高恭": GAOGONG_STORY, 
     "丈君": JO_STORY,
@@ -202,25 +202,31 @@ if "random_event" not in st.session_state:
     st.session_state.random_event = None
 
 # -----------------------------------------------------------------------------
-# 4. 标题与选择区域
+# 4. 标题与选择区域 (已用 if stage == "menu" 包裹，解决封面重叠问题)
 # -----------------------------------------------------------------------------
-st.markdown('<p class="otome-title">💖 浪花男子心动日常</p>', unsafe_allow_html=True)
+if st.session_state.stage == "menu":
+    st.markdown('<p class="otome-title">💖 浪花男子心动日常</p>', unsafe_allow_html=True)
 
-col_sel1, col_sel2 = st.columns(2)
-with col_sel1:
-    player_role = st.selectbox("1️⃣ 请选择你的身份：", ROLES)
-    st.session_state.player_role = player_role
+    col_sel1, col_sel2 = st.columns(2)
+    with col_sel1:
+        player_role = st.selectbox("1️⃣ 请选择你的身份：", ROLES)
+        st.session_state.player_role = player_role
 
-with col_sel2:
-    member_names = list(MEMBERS.keys())
-    target_member = st.selectbox("2️⃣ 请选择你想攻略的成员：", member_names)
-    st.session_state.target_member = target_member
+    with col_sel2:
+        member_names = list(MEMBERS.keys())
+        target_member = st.selectbox("2️⃣ 请选择你想攻略的成员：", member_names)
+        st.session_state.target_member = target_member
 
-# 渲染选中成员的图片
-m_info = MEMBERS[st.session_state.target_member]
-st.image(m_info["img"], use_container_width=True)
+    # 渲染选中成员的图片
+    m_info = MEMBERS[st.session_state.target_member]
+    st.image(m_info["img"], use_container_width=True)
 
-st.markdown("---")
+    st.markdown("---")
+    
+    # 【关键修改】添加开始按钮，点击后跳转到 playing 阶段
+    if st.button("🚀 开始心动旅程", use_container_width=True):
+        st.session_state.stage = "playing"
+        st.rerun()
 # -----------------------------------------------------------------------------
 # 剧本数据导入 (所有角色剧本已拆分至 stories/ 文件夹)
 # -----------------------------------------------------------------------------
@@ -253,11 +259,7 @@ def get_member_story(member, role, act):
                 22,
             ),
         ],
-    }
-
-    
-
-
+    },
 # -----------------------------------------------------------------------------
 # 4. Session State 初始化
 # -----------------------------------------------------------------------------
