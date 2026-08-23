@@ -602,7 +602,7 @@ elif st.session_state.stage == "playing":
             unsafe_allow_html=True
         )
 
-# 2. 获取当前剧情数据
+    # 2. 获取当前剧情数据
     act_data = None
     if 'STORIES' in globals():
         act_data = get_member_story(
@@ -611,7 +611,7 @@ elif st.session_state.stage == "playing":
             st.session_state.current_act
         )
 
-if isinstance(act_data, dict):
+    if isinstance(act_data, dict):
         act_title = act_data.get('title', f"第 {st.session_state.current_act} 幕：心动时刻")
         st.markdown(f"### 🎬 {act_title}")
         choices_list = act_data.get("choices", [])
