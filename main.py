@@ -47,21 +47,29 @@ from stories.jo import JO_STORY
 from stories.kento import KENTO_STORY 
 from stories.micchi import MICCHI_STORY
 from stories.purin import PURIN_STORY
-from stories.ryuche import RYUCHE_STORY
+# ==================== 剧本导入与安全获取 ====================
+try:
+    from stories.dajiang import DAJIANG_STORY
+    from stories.gaogong import GAOGONG_STORY
+    from stories.jo import JO_STORY
+    from stories.kento import KENTO_STORY
+    from stories.micchi import MICCHI_STORY
+    from stories.purin import PURIN_STORY
+    from stories.ryuche import RYUCHE_STORY
 
-STORIES = {
-    "大酱": DAJIANG_STORY,
-    "高恭": GAOGONG_STORY, 
-    "丈君": JO_STORY,
-    "谦杜": KENTO_STORY,
-    "米七": MICCHI_STORY,
-    "布丁": PURIN_STORY,
-    "流星": RYUCHE_STORY,
-}
+    STORIES = {
+        "大酱": DAJIANG_STORY,
+        "高恭": GAOGONG_STORY,
+        "丈君": JO_STORY,
+        "谦杜": KENTO_STORY,
+        "米七": MICCHI_STORY,
+        "布丁": PURIN_STORY,
+        "流星": RYUCHE_STORY,
+    }
 except ImportError:
     STORIES = {}
 
-# 2. 
+# 安全获取剧本
 def get_member_story(member_name):
     story_data = STORIES.get(member_name, [])
     if isinstance(story_data, list):
@@ -76,6 +84,9 @@ st.markdown(
     .stApp {
         background: linear-gradient(135deg, #fff5f7 0%, #fed7aa 100%);
     }
+""",
+    unsafe_allow_html=True,
+)
     
     /* 标题样式 */
     .otome-title {
