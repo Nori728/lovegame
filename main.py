@@ -69,12 +69,27 @@ try:
 except ImportError:
     STORIES = {}
 
-# 安全获取剧本
-def get_member_story(member_name):
-    story_data = STORIES.get(member_name, [])
-    if isinstance(story_data, list):
-        return story_data
-    return []
+# 适配多层字典结构的剧本获取函数
+def get_member_story(member_name, role="经纪人", day=1, turn=1):
+    member_dict = STORIES.get(member_name, {})
+    if not isinstance(member_dict, dict):
+        return None
+
+    # 1. 获取身份（如经纪人）
+    role_dict = member_dict.get(role, next(iter(member_dict.values()), {}))
+    if not isinstance(role_dict, dict):
+        return None
+
+    # 2. 获取天数（如 Day 1）
+    day_dict = role_dict.get(
+        day, role_dict.get(str(day), next(iter(role_dict.values()), {}))
+    )
+    if not isinstance(day_dict, dict):
+        return None
+
+    # 3. 获取具体回合数据
+    turns_dict = day_dict.get("turns", {})
+    return turns_dict.get(turn, turns_dict.get(str(turn), None))
 
 # ==================== 5. UI 样式加载 ====================
 st.markdown(
@@ -291,11 +306,33 @@ elif st.session_state.stage == "playing":
         # 正常的主剧情关卡与对话代码放这里...
         pass
 
-# 提取当前这一幕的数据
+# 获取当前玩家的状态参数
 current_target = st.session_state.get("target_member", "丈君")
-act_index = st.session_state.get("current_act", 0)
+current_role = st.session_state.get("player_role", "经纪人")
+current_day = st.session_state.get("current_day", 1)
+current_turn = st.session_state.get("current_turn", 1)
 
-member_story = get_member_story(current_target)
+# 获取当前回合的数据
+act_data = get_member_story(
+    current_target, current_role, current_day, current_turn
+)
+
+if act_data and isinstance(act_data, dict):
+    # 渲染标题
+    title = act_data.get("title", f"第 {current_turn} 回合")
+    st.markdown(f"### 🎬 {title}")
+
+    # 拼接台词文本并渲染
+    desc = act_data.get("desc", "")
+    desc_text = "".join(desc) if isinstance(desc, (list, tuple)) else str(desc)
+    st.markdown(
+        f"<div class='dialogue-box'>{desc_text}</div>", unsafe_allow_html=True
+    )
+
+    # 提取选项
+    choices_list = act_data.get("choices", [])
+else:
+    st.success("🎉 当前路线剧情已播放完毕！感谢游玩！")
 
 # 如果剧本列表有内容，且还没放完
 if member_story and act_index < len(member_story):
