@@ -37,8 +37,7 @@ if st.session_state.stage == "menu":
     
     if st.button("🚀 开始心动旅程", key="start_game_button"):
         st.session_state.stage = "playing"  # 切换到游戏进行中阶段
-        st.session_state.day = 1
-        st.session_state.turn = 1
+        st.session_state.current_act = 0    # 初始化剧情进度从第 0 幕开始
         st.rerun()
 
 # 导入你的剧本 (请确保你的 stories 文件夹和导入语句正确)
@@ -59,6 +58,10 @@ STORIES = {
     "布丁": PURIN_STORY,
     "流星": RYUCHE_STORY,
 }
+
+# 获取剧本的辅助函数（顺便把这个也加上，确保 get_member_story 可以正常工作）
+def get_member_story(name):
+    return STORIES.get(name, [])
 
 # ==================== 5. UI 样式加载 ====================
 st.markdown(
@@ -671,47 +674,17 @@ elif st.session_state.stage == "playing":
     st.info(f"当前身份：**{current_role}** | 攻略对象：**{current_target}**")
     
     # 安全获取剧本数据
-    role_story = STORY_DATA.get(current_target, {}) if 'STORY_DATA' in globals() else {}
-    day_data = role_story.get(st.session_state.day, {})
-    turns_data = day_data.get("turns", {})
-    current_turn = turns_data.get(st.session_state.turn, {})
-    
-    if current_turn:
-        st.markdown(f"### 🎬 {current_turn.get('title', '剧情进行中')}")
-        st.markdown(f"<div class='dialogue-box'>{current_turn.get('desc', '暂无描述')}</div>", unsafe_allow_html=True)
-        
-        choices = current_turn.get("choices", [])
-        for idx, (choice_text, reply_text, points) in enumerate(choices):
-            # 给每个选项生成绝对唯一的 key
-            btn_key = f"choice_d{st.session_state.day}_t{st.session_state.turn}_{idx}"
-            if st.button(choice_text, key=btn_key):
-                st.success(f"【{current_target}的回应】\n\n{reply_text}")
-                
-                # 推进回合或天数（已修复判断逻辑）
-                if st.session_state.turn < len(turns_data):
-                    st.session_state.turn += 1
-                elif (st.session_state.day + 1) in role_story:  # 检查剧本里是否还有下一天
-                    st.session_state.day += 1
-                    st.session_state.turn = 1
-                else:
-                    st.session_state.stage = "game_over"
-                st.rerun()
-    else:
-        # 如果没有后续剧本，直接通关
-        st.session_state.stage = "game_over"
-        st.rerun()
+    member_story = get_member_story(current_target) if 'get_member_story' in globals() else []
+    act_index = st.session_state.get('current_act', 0)
+    current_turn = member_story[act_index] if member_story and act_index < len(member_story) else {}
 
 # -------------------------------------------------------------
 # 阶段三：游戏结束 / 结局
 # -------------------------------------------------------------
 elif st.session_state.stage == "game_over":
     st.success("游戏结束！")
-    if st.button("重新开始", key="restart_btn"):
-        st.session_state.stage = "menu"
-        st.rerun()
-    
     if st.button("🔄 重新开始游戏", key="restart_game_button"):
-        st.session_state.stage = "menu"  # 切回菜单页
+        st.session_state.stage = "menu"
         st.session_state.day = 1
         st.session_state.turn = 1
         st.rerun()
