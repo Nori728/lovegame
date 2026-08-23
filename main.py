@@ -36,8 +36,8 @@ if st.session_state.stage == "menu":
     st.markdown("### 🌟 开启心动互动剧情")
     
     if st.button("🚀 开始心动旅程", key="start_game_button"):
-        st.session_state.stage = "playing"  # 切换到游戏进行中阶段
-        st.session_state.current_act = 1    # 初始化剧情进度从第 0 幕开始
+        st.session_state.stage = "playing"
+        st.session_state.current_act = 1 
         st.rerun()
 
 # 导入你的剧本 (请确保你的 stories 文件夹和导入语句正确)
@@ -58,6 +58,15 @@ STORIES = {
     "布丁": PURIN_STORY,
     "流星": RYUCHE_STORY,
 }
+except ImportError:
+    STORIES = {}
+
+# 安全获取剧本的辅助函数
+def get_member_story(member_name):
+    story_data = STORIES.get(member_name, [])
+    if isinstance(story_data, list):
+        return story_data
+    return []
 
 # ==================== 5. UI 样式加载 ====================
 st.markdown(
@@ -201,27 +210,7 @@ MEMBERS = {
 ROLES = ["经纪人", "青梅竹马", "在日学生or打工人"]
 
 # -----------------------------------------------------------------------------
-# 3. Session State 初始化
-# -----------------------------------------------------------------------------
-if "stage" not in st.session_state:
-    st.session_state.stage = "menu"
-if "player_role" not in st.session_state:
-    st.session_state.player_role = ROLES[0]
-if "target_member" not in st.session_state:
-    st.session_state.target_member = "丈君"
-if "current_act" not in st.session_state:
-    st.session_state.current_act = 1
-if "total_score" not in st.session_state:
-    st.session_state.total_score = 0
-if "last_dialogue_result" not in st.session_state:
-    st.session_state.last_dialogue_result = None
-if "random_event" not in st.session_state:
-    st.session_state.random_event = None
-if "daily_gacha_result" not in st.session_state:
-    st.session_state.daily_gacha_result = None
-
-# -----------------------------------------------------------------------------
-# 4. 标题与选择区域 (已用 if stage == "menu" 包裹，解决封面重叠问题)
+# 3. 标题与选择区域 (已用 if stage == "menu" 包裹，解决封面重叠问题)
 # -----------------------------------------------------------------------------
 if st.session_state.stage == "menu":
     st.markdown('<p class="otome-title">💖 浪花男子心动日常</p>', unsafe_allow_html=True)
@@ -327,7 +316,7 @@ if st.session_state.active_buff:
 
 st.markdown("---")
 # =============================================================================
-# 6. 主剧情关卡与随机事件核心逻辑
+# 5. 主剧情关卡与随机事件核心逻辑
 # =============================================================================
 if st.session_state.stage == "menu":
     # 菜单界面的代码...
@@ -468,7 +457,7 @@ elif st.session_state.stage == "playing":
             st.session_state.current_event = random.choice(events_pool)
             st.rerun()
 # -----------------------------------------------------------------------------
-# 7. 游戏流程控制 (突发事件弹窗处理)
+# 6. 游戏流程控制 (突发事件弹窗处理)
 # -----------------------------------------------------------------------------
 if st.session_state.random_event:
     ev = st.session_state.random_event
@@ -658,12 +647,10 @@ if st.session_state.random_event:
                     st.session_state.total_score -= 25
                     st.session_state.current_event = None
                     st.rerun()
-# 定义获取剧本的函数
-def get_member_story(name):
-    return STORIES.get(name, [])
-
+# -------------------------------------------------------------
+# 阶段二：游戏进行中
+# -------------------------------------------------------------
 elif st.session_state.stage == "playing":
-    # 统一变量名，防止读取不到
     current_target = st.session_state.get('target_member', st.session_state.get('target', '丈君'))
     current_role = st.session_state.get('player_role', st.session_state.get('role', '经纪人'))
     
@@ -692,13 +679,14 @@ elif st.session_state.stage == "playing":
                 if reply_text:
                     st.success(f"【{current_target}的回应】\n\n{reply_text}")
                 
-                # 点击后推进到下一幕
+                # 点击推进到下一幕
                 st.session_state.current_act += 1
                 st.rerun()
     else:
         # 剧本播放完毕，跳转到结束
         st.session_state.stage = "game_over"
         st.rerun()
+
 # -------------------------------------------------------------
 # 阶段三：游戏结束 / 结局
 # -------------------------------------------------------------
