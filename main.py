@@ -665,6 +665,8 @@ def get_member_story(name):
 # -------------------------------------------------------------
 # 阶段二：游戏进行中（封面和菜单在此阶段会全部自动消失）
 # -------------------------------------------------------------
+if st.session_state.stage == "menu":
+    pass
 elif st.session_state.stage == "playing":
     # 统一变量名，防止读取不到（同时兼容新旧变量名）
     current_target = st.session_state.get('target_member', st.session_state.get('target', '丈君'))
