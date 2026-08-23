@@ -59,10 +59,6 @@ STORIES = {
     "流星": RYUCHE_STORY,
 }
 
-# 获取剧本的辅助函数（顺便把这个也加上，确保 get_member_story 可以正常工作）
-def get_member_story(name):
-    return STORIES.get(name, [])
-
 # ==================== 5. UI 样式加载 ====================
 st.markdown(
     """
@@ -662,6 +658,9 @@ if st.session_state.random_event:
                     st.session_state.total_score -= 25
                     st.session_state.current_event = None
                     st.rerun()
+# 定义获取剧本的函数
+def get_member_story(name):
+    return STORIES.get(name, [])
 
 # -------------------------------------------------------------
 # 阶段二：游戏进行中（封面和菜单在此阶段会全部自动消失）
@@ -674,10 +673,9 @@ elif st.session_state.stage == "playing":
     st.info(f"当前身份：**{current_role}** | 攻略对象：**{current_target}**")
     
     # 安全获取剧本数据
-    member_story = get_member_story(current_target) if 'get_member_story' in globals() else []
+    member_story = get_member_story(current_target)
     act_index = st.session_state.get('current_act', 0)
     current_turn = member_story[act_index] if member_story and act_index < len(member_story) else {}
-
 # -------------------------------------------------------------
 # 阶段三：游戏结束 / 结局
 # -------------------------------------------------------------
