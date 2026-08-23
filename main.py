@@ -144,11 +144,6 @@ st.markdown(
         box-shadow: 0 6px 12px rgba(225, 29, 72, 0.35) !important;
         transform: translateY(-2px) !important;
     }
-    
-    .stButton > button:active {
-        transform: translateY(1px) !important;
-        box-shadow: 0 2px 4px rgba(225, 29, 72, 0.2) !important;
-    }
 </style>
 """,
     unsafe_allow_html=True,
@@ -253,34 +248,7 @@ def get_member_story(member, role, act):
     return {
         "title": f"🎬 {member} × {role} · 第 {act} 幕：心动进阶时刻"},
 # -----------------------------------------------------------------------------
-# 4. Session State 初始化
-# -----------------------------------------------------------------------------
-if "stage" not in st.session_state:
-    st.session_state.stage = "menu"
-if "player_role" not in st.session_state:
-    st.session_state.player_role = ROLES[0] if 'ROLES' in globals() else "经纪人"
-if "target_member" not in st.session_state:
-    st.session_state.target_member = "丈君"
-if "current_act" not in st.session_state:
-    st.session_state.current_act = 1
-if "total_score" not in st.session_state:
-    st.session_state.total_score = 30
-if "dialogue_history" not in st.session_state:
-    st.session_state.dialogue_history = []
-if "inventory" not in st.session_state:
-    st.session_state.inventory = []
-if "active_buff" not in st.session_state:
-    st.session_state.active_buff = None
-if "daily_gacha_result" not in st.session_state:
-    st.session_state.daily_gacha_result = None
-if "random_event" not in st.session_state:
-    st.session_state.random_event = None
-if "last_dialogue_result" not in st.session_state:
-    st.session_state.last_dialogue_result = None
-
-
-# -----------------------------------------------------------------------------
-# 5. 主界面渲染 (顶部标题、扭蛋机与背包)
+# 4. 主界面渲染 (顶部标题、扭蛋机与背包)
 # ----------------------------------------------------------------------------
 st.markdown(
     """
@@ -347,239 +315,8 @@ if st.session_state.active_buff:
     st.markdown(f"> ⚡ **当前生效增益Buff:** `{st.session_state.active_buff}`")
 
 st.markdown("---")
-
-
-# -----------------------------------------------------------------------------
-# 6. 游戏流程控制 (突发事件弹窗处理)
-# -----------------------------------------------------------------------------
-if st.session_state.random_event:
-    ev = st.session_state.random_event
-    ev_title = ev['title']
-    ev_desc = ev['desc']
-    
-    st.markdown(
-        f"""
-        <div style="background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); border: 2px solid #fb7185; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(225,29,72,0.15);">
-            <h3 style="margin-top:0; color: #9f1239; font-size: 1.3rem;">⚡ 【心动危机 / 突发事件】{ev_title}</h3>
-            <p style="font-size: 1.05rem; color: #44403c; line-height: 1.6;">{ev_desc}</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    
-    # 点击后清空事件，返回正常剧情流程
-    if st.button("✅ 完美化解危机", use_container_width=True):
-        st.session_state.random_event = None 
-        st.rerun()
-
-    # 检查道具自动触发
-    if "文春" in ev_title:
-        if "🕵️‍♂️ 黑色鸭舌帽" in st.session_state.inventory:
-            st.success("✨ 【道具自动触发：黑色鸭舌帽】低调伪装成功！你们完美避开了文春记者的长枪短炮！")
-            st.session_state.inventory.remove("🕵️‍♂️ 黑色鸭舌帽")
-            item_triggered = True
-        elif "📜 紧急公关手稿" in st.session_state.inventory:
-            st.success("✨ 【道具自动触发：紧急公关手稿】手稿发挥作用，团队迅速稳住了媒体风向！")
-            st.session_state.inventory.remove("📜 紧急公关手稿")
-            item_triggered = True
-    elif "私生饭" in ev_title:
-        if "📱 备用双卡手机" in st.session_state.inventory:
-            st.success("✨ 【道具自动触发：备用双卡手机】及时联络到安保人员精准清场，安全脱身！")
-            st.session_state.inventory.remove("📱 备用双卡手机")
-            item_triggered = True
-    elif "暴雨" in ev_title:
-        if "🥤 冰爽解暑饮料" in st.session_state.inventory:
-            st.success("✨ 【道具自动触发：冰爽解暑饮料】虽然外面下暴雨，但手里的冰饮意外带来一抹甜意！")
-            st.session_state.inventory.remove("🥤 冰爽解暑饮料")
-            item_triggered = True
-
-    if item_triggered:
-        st.info("💡 因为你携带了正确的心动道具，顺利化解危机，额外获得 **+25 积分**！")
-        if st.button("💖 携手化解危机，继续心动行程", use_container_width=True):
-            st.session_state.total_score += 25
-            st.session_state.random_event = None
-            st.rerun()
-    else:
-        # 根据不同事件动态渲染不同的专属互动按钮
-        col_ev1, col_ev2 = st.columns(2)
-        
-        if "文春" in ev_title:
-            st.markdown(f"**{m_name} 看着远处的长焦镜头，眼神微冷：\"啧，这群记者还真是阴魂不散。\"**")
-            with col_ev1:
-                if st.button("📸 大方直面镜头，直接挽紧他的手臂", use_container_width=True):
-                    st.session_state.total_score += 20
-                    st.session_state.random_event = None
-                    st.rerun()
-            with col_ev2:
-                if st.button("🏃‍♂️ 拽起他的衣角，闪身躲进旁边的盲区", use_container_width=True):
-                    st.session_state.total_score += 15
-                    st.session_state.random_event = None
-                    st.rerun()
-
-        elif "私生饭" in ev_title:
-            st.markdown(f"**{m_name} 微微蹙眉，将你护在身后，语气低沉：\"别看他们，跟着我走。\"**")
-            with col_ev1:
-                if st.button("🛡️ 配合他的保护，迅速低头快步离开", use_container_width=True):
-                    st.session_state.total_score += 15
-                    st.session_state.random_event = None
-                    st.rerun()
-            with col_ev2:
-                if st.button("🎭 反客为主，当众假装你们在吵架转移视线", use_container_width=True):
-                    st.session_state.total_score += 18
-                    st.session_state.random_event = None
-                    st.rerun()
-
-        elif "暴雨" in ev_title:
-            st.markdown(f"**{m_name} 看着倾盆而下的雨幕，无奈地脱下外套帮你挡雨：\"这天气还真是说变就变。\"**")
-            with col_ev1:
-                if st.button("☂️ 钻进同一件外套下，紧紧贴在一起避雨", use_container_width=True):
-                    st.session_state.total_score += 20
-                    st.session_state.random_event = None
-                    st.rerun()
-            with col_ev2:
-                if st.button("🏃‍♂️ 笑着拉他一起踩水坑，享受雨中狂奔", use_container_width=True):
-                    st.session_state.total_score += 15
-                    st.session_state.random_event = None
-                    st.rerun()
-
-        elif "经纪人" in ev_title:
-            st.markdown(f"**{m_name} 看着震个不停的手机，露出一抹恶作剧般的坏笑：\"要接吗？\"**")
-            with col_ev1:
-                if st.button("📱 帮他直接挂断并关机：\"今天休假，天王老子来了也没用！\"", use_container_width=True):
-                    st.session_state.total_score += 20
-                    st.session_state.random_event = None
-                    st.rerun()
-            with col_ev2:
-                if st.button("🗣️ 拿过手机一本正经地帮他编借口请假", use_container_width=True):
-                    st.session_state.total_score += 15
-                    st.session_state.random_event = None
-                    st.rerun()
-
-        elif "自行车链条" in ev_title:
-            st.markdown(f"**{m_name} 蹲在地上擦了擦手上的黑油，抬头冲你爽朗一笑：\"看来只能步行啦。\"**")
-            with col_ev1:
-                if st.button("🚲 「没关系，本大爷载你回去！」（推车漫步夕阳）", use_container_width=True):
-                    st.session_state.total_score += 15
-                    st.session_state.random_event = None
-                    st.rerun()
-            with col_ev2:
-                if st.button("🥤 「罚你今晚请喝抹茶拿铁压惊！」", use_container_width=True):
-                    st.session_state.total_score += 18
-                    st.session_state.random_event = None
-                    st.rerun()
-
-        elif "便利店" in ev_title:
-            st.markdown(f"**{m_name} 压低帽檐，隔着玻璃冲你挑眉坏笑：\"兼职的小员工，这份炸鸡块我要了。\"**")
-            with col_ev1:
-                if st.button("🍙 笑眯眯地让给他：「大明星辛苦啦，这个让给你。」", use_container_width=True):
-                    st.session_state.total_score += 15
-                    st.session_state.random_event = None
-                    st.rerun()
-            with col_ev2:
-                if st.button("🛡️ 叉腰护住便当：「先到先得！这可是本打工人的夜宵！」", use_container_width=True):
-                    st.session_state.total_score += 18
-                    st.session_state.random_event = None
-                    st.rerun()
-
-        elif "流浪肥猫" in ev_title:
-            st.markdown(f"**{m_name} 毫无偶像包袱地蹲在路边，伸手逗弄着胖橘猫：\"你看它，眼神跟你生气时一模一样。\"**")
-            with col_ev1:
-                if st.button("🐾 蹲下来温柔撸猫：「好可爱啊……像谁呢哼？」", use_container_width=True):
-                    st.session_state.total_score += 15
-                    st.session_state.random_event = None
-                    st.rerun()
-            with col_ev2:
-                if st.button("💢 假装吃醋拍拍他的肩：「怎么，眼里只有猫没有我了？」", use_container_width=True):
-                    st.session_state.total_score += 18
-                    st.session_state.random_event = None
-                    st.rerun()
-
-        elif "Suica卡" in ev_title:
-            st.markdown(f"**{m_name} 看着闸机屏幕上的残高不足，忍不住轻笑出声：\"关键时刻还得靠本大爷吧。\"**")
-            with col_ev1:
-                if st.button("羞涩道谢：「谢谢大明星慷慨解囊，回头请吃章鱼烧！」", use_container_width=True):
-                    st.session_state.total_score += 15
-                    st.session_state.random_event = None
-                    st.rerun()
-            with col_ev2:
-                if st.button("理直气壮挑眉：「花青梅/男友的钱天经地义！」", use_container_width=True):
-                    st.session_state.total_score += 18
-                    st.session_state.random_event = None
-                    st.rerun()
-
-        elif "成名曲" in ev_title:
-            st.markdown(f"**{m_name} 微微一顿，有些不好意思地拉了拉你的衣角：\"……怎么突然放这个。\"**")
-            with col_ev1:
-                if st.button("小声哼唱并戳他手臂：「听，是你的歌耶，大明星有何感想？」", use_container_width=True):
-                    st.session_state.total_score += 15
-                    st.session_state.random_event = None
-                    st.rerun()
-            with col_ev2:
-                if st.button("坏笑着拉他快走：「走啦，在这里听自己的歌不害羞吗？」", use_container_width=True):
-                    st.session_state.total_score += 18
-                    st.session_state.random_event = None
-                    st.rerun()
-
-        elif "料理翻车" in ev_title:
-            st.markdown(f"**{m_name} 看着盘子里黑乎乎的厚蛋烧，表情瞬间凝固又化为宠溺：\"……这是要谋杀亲夫吗？\"**")
-            with col_ev1:
-                if st.button("视死如归自己尝一口：「呃……其实咸淡刚刚好（才怪）！」", use_container_width=True):
-                    st.session_state.total_score += 15
-                    st.session_state.random_event = None
-                    st.rerun()
-            with col_ev2:
-                if st.button("吐舌头耍赖：「虽然卖相差了点，但心意满分噢！」", use_container_width=True):
-                    st.session_state.total_score += 18
-                    st.session_state.random_event = None
-                    st.rerun()
-
-        # ✅ 正确缩进：这个失败兜底按钮现在处于 `else:` 块的最下方，对所有突发事件都生效
-        if st.button("💥 哎呀，应对失误导致有些小狼狈（扣除部分积分）", use_container_width=True):
-            penalty = 25
-            st.session_state.total_score -= penalty
-            st.warning(f"由于应对略显慌乱，好感度 -{penalty} 分！")
-            st.session_state.random_event = None
-            st.rerun()
-
-# -----------------------------------------------------------------------------
-# 7. 主页面：开启心动互动剧情
-# -----------------------------------------------------------------------------
-    st.markdown("### 📖 开启心动互动剧情")
-
-    col_sel1, col_sel2 = st.columns(2)
-    with col_sel1:
-        # 直接用 key 绑定到 session_state.player_role，简洁清爽
-        st.selectbox(
-            "1️⃣ 请选择你的身份：", 
-            ["经纪人", "青梅竹马", "在日留学生or打工人"],
-            key="player_role"
-        )
-
-    with col_sel2:
-        member_names = list(MEMBERS.keys())
-        # 直接用 key 绑定到 session_state.target_member
-        st.selectbox(
-            "2️⃣ 请选择你想攻略的成员：", 
-            member_names,
-            key="target_member"
-        )
-
-    # 渲染选中成员的精美卡片（直接读取，不用再重复判断 globals）
-    m_info = MEMBERS[st.session_state.target_member]
-    st.image(m_info["img"], use_container_width=True)
-    st.markdown(
-        f"""
-        <div style="text-align: center; margin-top: 5px; margin-bottom: 15px;">
-            <span style="font-size: 1.1rem; font-weight: bold; color: #db2777;">
-                ✨ {st.session_state.target_member}（特征：{m_info['trait']} | 专属色：{m_info['color']}）
-            </span>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
 # =============================================================================
-# 8. 主剧情关卡与随机事件核心逻辑 (已完美闭环)
+# 6. 主剧情关卡与随机事件核心逻辑 (已完美闭环)
 # =============================================================================
 elif st.session_state.stage == "playing":
     st.markdown("---")
@@ -707,13 +444,31 @@ elif st.session_state.stage == "playing":
             
             st.session_state.current_event = random.choice(events_pool)
             st.rerun()
+# -----------------------------------------------------------------------------
+# 7. 游戏流程控制 (突发事件弹窗处理)
+# -----------------------------------------------------------------------------
+if st.session_state.random_event:
+    ev = st.session_state.random_event
+    ev_title = ev['title']
+    ev_desc = ev['desc']
+    
+    st.markdown(
+        f"""
+        <div style="background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); border: 2px solid #fb7185; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(225,29,72,0.15);">
+            <h3 style="margin-top:0; color: #9f1239; font-size: 1.3rem;">⚡ 【心动危机 / 突发事件】{ev_title}</h3>
+            <p style="font-size: 1.05rem; color: #44403c; line-height: 1.6;">{ev_desc}</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    
+    # 点击后清空事件，返回正常剧情流程
+    if st.button("✅ 完美化解危机", use_container_width=True):
+        st.session_state.random_event = None 
+        st.rerun()
 
-        # 如果触发了突发事件，进入专属事件分支
-        if st.session_state.get("current_event"):
-            ev_title = st.session_state.current_event["title"]
-            st.error(ev_title)
-            st.write(st.session_state.current_event["desc"])
-            item_triggered = False
+    # 初始化道具触发标志
+    item_triggered = False
 
             # 检查道具自动触发
             inventory = st.session_state.get("inventory", [])
@@ -880,16 +635,6 @@ elif st.session_state.stage == "playing":
                     st.session_state.total_score -= 25
                     st.session_state.current_event = None
                     st.rerun()
-
-# ==================== 9. 主游戏逻辑控制 ====================
-
-# 初始化默认状态
-if "stage" not in st.session_state:
-    st.session_state.stage = "menu"
-if "day" not in st.session_state:
-    st.session_state.day = 1
-if "turn" not in st.session_state:
-    st.session_state.turn = 1
 
 # -------------------------------------------------------------
 # 阶段二：游戏进行中（封面和菜单在此阶段会全部自动消失）
