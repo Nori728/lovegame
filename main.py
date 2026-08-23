@@ -61,7 +61,7 @@ STORIES = {
 except ImportError:
     STORIES = {}
 
-# 安全获取剧本的辅助函数
+# 2. 
 def get_member_story(member_name):
     story_data = STORIES.get(member_name, [])
     if isinstance(story_data, list):
