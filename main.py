@@ -37,7 +37,7 @@ if st.session_state.stage == "menu":
     
     if st.button("🚀 开始心动旅程", key="start_game_button"):
         st.session_state.stage = "playing"
-        st.session_state.current_act = 1 
+        st.session_state.current_act = 0 
         st.rerun()
 
 # 导入你的剧本 (请确保你的 stories 文件夹和导入语句正确)
@@ -291,17 +291,29 @@ elif st.session_state.stage == "playing":
         # 正常的主剧情关卡与对话代码放这里...
         pass
 
-    # 提取当前这一幕的数据
+# 提取当前这一幕的数据
+    current_target = st.session_state.get("target_member", "丈君") 
+    act_index = st.session_state.get("current_act", 0)
     act_data = None
+
+    member_story = get_member_story(current_target)
     if member_story and act_index < len(member_story):
         act_data = member_story[act_index]
 
     if isinstance(act_data, dict):
-        act_title = act_data.get('title', f"第 {st.session_state.current_act} 幕：心动时刻")
+        act_title = act_data.get("title", f"第 {act_index + 1} 幕：心动时刻")
         st.markdown(f"### 🎬 {act_title}")
+
+        # 渲染剧情台词/描述文本
+        if "desc" in act_data:
+            st.markdown(
+                f"<div class='dialogue-box'>{act_data['desc']}</div>",
+                unsafe_allow_html=True,
+            )
+
         choices_list = act_data.get("choices", [])
     else:
-        st.markdown(f"### 🎬 第 {st.session_state.current_act} 幕：心动时刻")
+        st.markdown(f"### 🎬 第 {act_index + 1} 幕：心动时刻")
         choices_list = []
 
     for idx, choice in enumerate(choices_list):
