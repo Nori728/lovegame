@@ -662,29 +662,49 @@ if st.session_state.random_event:
 def get_member_story(name):
     return STORIES.get(name, [])
 
-# -------------------------------------------------------------
-# 阶段二：游戏进行中（封面和菜单在此阶段会全部自动消失）
-# -------------------------------------------------------------
-if st.session_state.stage == "menu":
-    pass
 elif st.session_state.stage == "playing":
-    # 统一变量名，防止读取不到（同时兼容新旧变量名）
+    # 统一变量名，防止读取不到
     current_target = st.session_state.get('target_member', st.session_state.get('target', '丈君'))
     current_role = st.session_state.get('player_role', st.session_state.get('role', '经纪人'))
     
     st.info(f"当前身份：**{current_role}** | 攻略对象：**{current_target}**")
     
-    # 安全获取剧本数据
+    # 获取剧本数据
     member_story = get_member_story(current_target)
     act_index = st.session_state.get('current_act', 0)
-    current_turn = member_story[act_index] if member_story and act_index < len(member_story) else {}
+    
+    if member_story and act_index < len(member_story):
+        current_turn = member_story[act_index]
+        
+        # 渲染剧情标题与描述
+        st.markdown(f"### 🎬 {current_turn.get('title', f'第 {act_index + 1} 幕')}")
+        if 'desc' in current_turn:
+            st.markdown(f"<div class='dialogue-box'>{current_turn['desc']}</div>", unsafe_allow_html=True)
+            
+        # 渲染选项按钮
+        choices = current_turn.get("choices", [])
+        for idx, choice_item in enumerate(choices):
+            btn_text = choice_item[0] if isinstance(choice_item, (list, tuple)) else str(choice_item)
+            reply_text = choice_item[1] if isinstance(choice_item, (list, tuple)) and len(choice_item) > 1 else ""
+            
+            btn_key = f"choice_act_{act_index}_{idx}"
+            if st.button(btn_text, key=btn_key, use_container_width=True):
+                if reply_text:
+                    st.success(f"【{current_target}的回应】\n\n{reply_text}")
+                
+                # 点击后推进到下一幕
+                st.session_state.current_act += 1
+                st.rerun()
+    else:
+        # 剧本播放完毕，跳转到结束
+        st.session_state.stage = "game_over"
+        st.rerun()
 # -------------------------------------------------------------
 # 阶段三：游戏结束 / 结局
 # -------------------------------------------------------------
 elif st.session_state.stage == "game_over":
-    st.success("游戏结束！")
+    st.success("🎉 游戏结束！感谢游玩！")
     if st.button("🔄 重新开始游戏", key="restart_game_button"):
         st.session_state.stage = "menu"
-        st.session_state.day = 1
-        st.session_state.turn = 1
+        st.session_state.current_act = 0
         st.rerun()
