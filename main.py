@@ -483,26 +483,26 @@ if st.session_state.random_event:
     item_triggered = False
 
 # 检查道具自动触发
-        inventory = st.session_state.get("inventory", [])
-        if "文春" in ev_title:
-            if "🕵️‍♂️ 黑色鸭舌帽" in inventory:
-                st.success("✨ 【道具自动触发：黑色鸭舌帽】低调伪装成功！你们完美避开了文春记者的长枪短炮！")
-                inventory.remove("🕵️‍♂️ 黑色鸭舌帽")
-                item_triggered = True
-                elif "📜 紧急公关手稿" in inventory:
-                    st.success("✨ 【道具自动触发：紧急公关手稿】手稿发挥作用，团队迅速稳住了媒体风向！")
-                    inventory.remove("📜 紧急公关手稿")
-                    item_triggered = True
-            elif "私生饭" in ev_title:
-                if "📱 备用双卡手机" in inventory:
-                    st.success("✨ 【道具自动触发：备用双卡手机】及时联络到安保人员精准清场，安全脱身！")
-                    inventory.remove("📱 备用双卡手机")
-                    item_triggered = True
-            elif "暴雨" in ev_title:
-                if "🥤 冰爽解暑饮料" in inventory:
-                    st.success("✨ 【道具自动触发：冰爽解暑饮料】虽然外面下暴雨，但手里的冰饮意外带来一抹甜意！")
-                    inventory.remove("🥤 冰爽解暑饮料")
-                    item_triggered = True
+    inventory = st.session_state.get("inventory", [])
+    if "文春" in ev_title:
+        if "🕵️‍♂️ 黑色鸭舌帽" in inventory:
+            st.success("✨ 【道具自动触发：黑色鸭舌帽】低调伪装成功！你们完美避开了文春记者的长枪短炮！")
+            inventory.remove("🕵️‍♂️ 黑色鸭舌帽")
+            item_triggered = True
+        elif "📜 紧急公关手稿" in inventory:
+            st.success("✨ 【道具自动触发：紧急公关手稿】手稿发挥作用，团队迅速稳住了媒体风向！")
+            inventory.remove("📜 紧急公关手稿")
+            item_triggered = True
+    elif "私生饭" in ev_title:
+        if "📱 备用双卡手机" in inventory:
+            st.success("✨ 【道具自动触发：备用双卡手机】及时联络到安保人员精准清场，安全脱身！")
+            inventory.remove("📱 备用双卡手机")
+            item_triggered = True
+    elif "暴雨" in ev_title:
+        if "🥤 冰爽解暑饮料" in inventory:
+            st.success("✨ 【道具自动触发：冰爽解暑饮料】虽然外面下暴雨，但手里的冰饮意外带来一抹甜意！")
+            inventory.remove("🥤 冰爽解暑饮料")
+            item_triggered = True
 
             if item_triggered:
                 st.info("💡 携带了正确道具，顺利化解危机，额外获得 **+25 积分**！")
