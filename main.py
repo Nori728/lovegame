@@ -37,7 +37,7 @@ if st.session_state.stage == "menu":
     
     if st.button("🚀 开始心动旅程", key="start_game_button"):
         st.session_state.stage = "playing"  # 切换到游戏进行中阶段
-        st.session_state.current_act = 0    # 初始化剧情进度从第 0 幕开始
+        st.session_state.current_act = 1    # 初始化剧情进度从第 0 幕开始
         st.rerun()
 
 # 导入你的剧本 (请确保你的 stories 文件夹和导入语句正确)
