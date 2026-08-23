@@ -316,8 +316,12 @@ if st.session_state.active_buff:
 
 st.markdown("---")
 # =============================================================================
-# 6. 主剧情关卡与随机事件核心逻辑 (已完美闭环)
+# 6. 主剧情关卡与随机事件核心逻辑
 # =============================================================================
+if st.session_state.stage == "menu":
+    # 菜单界面的代码...
+    pass
+
 elif st.session_state.stage == "playing":
     st.markdown("---")
 
@@ -338,6 +342,14 @@ elif st.session_state.stage == "playing":
             """,
             unsafe_allow_html=True
         )
+
+    # 2. 突发事件弹窗处理（作为 playing 状态下的分支）
+    if st.session_state.random_event:
+        # 突发事件的相关代码放这里...
+        pass
+    else:
+        # 正常的主剧情关卡与对话代码放这里...
+        pass
 
     # 2. 获取当前剧情数据
     act_data = None
