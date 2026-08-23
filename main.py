@@ -482,13 +482,13 @@ if st.session_state.random_event:
     # 初始化道具触发标志
     item_triggered = False
 
-            # 检查道具自动触发
-            inventory = st.session_state.get("inventory", [])
-            if "文春" in ev_title:
-                if "🕵️‍♂️ 黑色鸭舌帽" in inventory:
-                    st.success("✨ 【道具自动触发：黑色鸭舌帽】低调伪装成功！你们完美避开了文春记者的长枪短炮！")
-                    inventory.remove("🕵️‍♂️ 黑色鸭舌帽")
-                    item_triggered = True
+# 检查道具自动触发
+        inventory = st.session_state.get("inventory", [])
+        if "文春" in ev_title:
+            if "🕵️‍♂️ 黑色鸭舌帽" in inventory:
+                st.success("✨ 【道具自动触发：黑色鸭舌帽】低调伪装成功！你们完美避开了文春记者的长枪短炮！")
+                inventory.remove("🕵️‍♂️ 黑色鸭舌帽")
+                item_triggered = True
                 elif "📜 紧急公关手稿" in inventory:
                     st.success("✨ 【道具自动触发：紧急公关手稿】手稿发挥作用，团队迅速稳住了媒体风向！")
                     inventory.remove("📜 紧急公关手稿")
