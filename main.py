@@ -187,22 +187,6 @@ if st.session_state.stage == "menu":
     st.image(m_info["img"], use_container_width=True)
 
     st.markdown("---")
-    
-# -----------------------------------------------------------------------------
-# 剧本数据导入 (所有角色剧本已拆分至 stories/ 文件夹)
-# -----------------------------------------------------------------------------
-
-# 终极智能兜底函数（双重保险，绝不报错）
-def get_member_story(member, role, act):
-    if (
-        member in STORIES
-        and role in STORIES[member]
-        and act in STORIES[member][role]
-    ):
-        return STORIES[member][role][act]
-
-    return {
-        "title": f"🎬 {member} × {role} · 第 {act} 幕：心动进阶时刻"},
 # -----------------------------------------------------------------------------
 # 4. 主界面渲染 (顶部标题、扭蛋机与背包)
 # ----------------------------------------------------------------------------
@@ -307,14 +291,10 @@ elif st.session_state.stage == "playing":
         # 正常的主剧情关卡与对话代码放这里...
         pass
 
-    # 2. 获取当前剧情数据
+    # 提取当前这一幕的数据
     act_data = None
-    if 'STORIES' in globals():
-        act_data = get_member_story(
-            m_name,
-            st.session_state.player_role,
-            st.session_state.current_act
-        )
+    if member_story and act_index < len(member_story):
+        act_data = member_story[act_index]
 
     if isinstance(act_data, dict):
         act_title = act_data.get('title', f"第 {st.session_state.current_act} 幕：心动时刻")
