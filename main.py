@@ -1,5 +1,7 @@
 import streamlit as st
 import random
+if "inventory" not in st.session_state:
+    st.session_state.inventory = []
 
 # ==================== 1. 页面配置与初始化 ====================
 st.set_page_config(page_title="浪花男子心动日常", page_icon="💖", layout="centered")
@@ -299,7 +301,7 @@ if st.session_state.daily_gacha_result:
     st.info(f"✨ 今日运势大吉！今日最强心动电波对象是：**{lname}**（特点：{ldata['trait']}）。快去选择他开启剧情吧！")
 
 # 背包与 Buff 道具栏
-if st.session_state.inventory:
+if st.session_state.get("inventory"):
     st.markdown("---")
     st.write("🎒 **你的恋爱道具背包：**")
     cols_inv = st.columns(len(st.session_state.inventory))
