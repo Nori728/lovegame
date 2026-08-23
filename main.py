@@ -79,100 +79,45 @@ def get_member_story(member_name):
 # ==================== 5. UI 样式加载 ====================
 st.markdown(
     """
-<style> 
-    /* 核心背景与字体 */
-    .stApp {
-        background: linear-gradient(135deg, #fff5f7 0%, #fed7aa 100%);
-    }
-""",
-    unsafe_allow_html=True,
-)
-    
-    /* 标题样式 */
-    .otome-title {
-        font-size: 2.2rem;
-        color: #e11d48;
-        text-align: center;
-        font-weight: bold;
-        margin-bottom: 5px;
-        text-shadow: 1px 1px 2px #fecdd3;
-    }
-    
-    /* 动漫乙女对话框样式 */
-    .dialogue-box {
-        background-color: rgba(255, 255, 255, 0.95);
-        border: 2px solid #fda4af;
-        border-radius: 15px;
-        padding: 20px;
-        margin-top: 15px;
-        box-shadow: 0 10px 25px rgba(225, 29, 72, 0.1);
-    }
-    
-    .speaker-tag {
-        font-size: 1.1rem;
-        font-weight: bold;
-        color: #be123c;
-        background: #ffe4e6;
-        padding: 4px 12px;
-        border-radius: 20px;
-        display: inline-block;
-        margin-bottom: 10px;
-    }
-    
-    .scene-desc {
-        color: #78350f;
-        font-style: italic;
-        font-size: 0.95rem;
-        margin-bottom: 12px;
-        background: #fff7ed;
-        padding: 8px 12px;
-        border-left: 3px solid #f97316;
-        border-radius: 4px;
-    }
-    
-    .event-header {
-        background: linear-gradient(90deg, #f43f5e, #fb7185);
-        color: white;
-        padding: 8px 15px;
-        border-radius: 10px;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-    
-    /* 抽卡结果框 & 事件结局框 */
-    .gacha-box {
-        background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-        padding: 15px;
-        border-radius: 12px;
-        border: 1px solid #fde68a;
-        margin-bottom: 15px;
-    }
-    
-    .event-box {
-        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
-        padding: 15px;
-        border-radius: 12px;
-        border: 1px solid #7dd3fc;
-        margin-bottom: 15px;
-    }
-    
-    /* 按钮大改造：变成粉色游戏风按钮 */
-    .stButton > button {
-        background: linear-gradient(135deg, #fb7185 0%, #f43f5e 100%) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 20px !important;
-        box-shadow: 0 4px 6px rgba(225, 29, 72, 0.2) !important;
-        transition: all 0.3s ease !important;
-        font-weight: bold !important;
-        padding: 10px 24px !important;
-    }
-    
-    .stButton > button:hover {
-        background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%) !important;
-        box-shadow: 0 6px 12px rgba(225, 29, 72, 0.35) !important;
-        transform: translateY(-2px) !important;
-    }
+<style>
+.stApp {
+    background: linear-gradient(135deg, #fff5f7 0%, #fed7aa 100%);
+}
+.otome-title {
+    font-size: 2.2rem;
+    color: #e11d48;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-shadow: 1px 1px 2px #fecdd3;
+}
+.dialogue-box {
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 2px solid #fda4af;
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 15px;
+    box-shadow: 0 10px 25px rgba(225, 29, 72, 0.1);
+}
+.gacha-box {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #fde68a;
+    margin-bottom: 15px;
+}
+.stButton > button {
+    background: linear-gradient(135deg, #fb7185 0%, #f43f5e 100%) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 20px !important;
+    font-weight: bold !important;
+    padding: 10px 24px !important;
+}
+.stButton > button:hover {
+    background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%) !important;
+    transform: translateY(-2px) !important;
+}
 </style>
 """,
     unsafe_allow_html=True,
