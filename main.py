@@ -292,19 +292,19 @@ elif st.session_state.stage == "playing":
         pass
 
 # 提取当前这一幕的数据
-    current_target = st.session_state.get("target_member", "丈君") 
-    act_index = st.session_state.get("current_act", 0)
-    act_data = None
+current_target = st.session_state.get("target_member", "丈君")
+act_index = st.session_state.get("current_act", 0)
 
-    member_story = get_member_story(current_target)
-    if member_story and act_index < len(member_story):
-        act_data = member_story[act_index]
+member_story = get_member_story(current_target)
+
+# 如果剧本列表有内容，且还没放完
+if member_story and act_index < len(member_story):
+    act_data = member_story[act_index]
 
     if isinstance(act_data, dict):
-        act_title = act_data.get("title", f"第 {act_index + 1} 幕：心动时刻")
+        act_title = act_data.get("title", f"第 {act_index + 1} 幕")
         st.markdown(f"### 🎬 {act_title}")
 
-        # 渲染剧情台词/描述文本
         if "desc" in act_data:
             st.markdown(
                 f"<div class='dialogue-box'>{act_data['desc']}</div>",
@@ -312,9 +312,14 @@ elif st.session_state.stage == "playing":
             )
 
         choices_list = act_data.get("choices", [])
+else:
+    # 调试提示：如果没拿到剧本，抛出警告而不是误判为通关
+    if not member_story:
+        st.warning(
+            f"⚠️ 未找到 [{current_target}] 的剧本数据，请检查 stories/ 文件夹导入是否正常！"
+        )
     else:
-        st.markdown(f"### 🎬 第 {act_index + 1} 幕：心动时刻")
-        choices_list = []
+        st.success("🎉 游戏结束！感谢游玩！")
 
     for idx, choice in enumerate(choices_list):
         if len(choice) == 3:
