@@ -298,65 +298,11 @@ elif st.session_state.stage == "playing":
             unsafe_allow_html=True
         )
 
-    # 2. 突发事件弹窗处理（作为 playing 状态下的分支）
-    if st.session_state.random_event:
-        # 突发事件的相关代码放这里...
-        pass
-    else:
-        # 正常的主剧情关卡与对话代码放这里...
-        pass
-
 # 获取当前玩家的状态参数
 current_target = st.session_state.get("target_member", "丈君")
 current_role = st.session_state.get("player_role", "经纪人")
 current_day = st.session_state.get("current_day", 1)
 current_turn = st.session_state.get("current_turn", 1)
-
-# 获取当前回合的数据
-act_data = get_member_story(
-    current_target, current_role, current_day, current_turn
-)
-
-if act_data and isinstance(act_data, dict):
-    # 渲染标题
-    title = act_data.get("title", f"第 {current_turn} 回合")
-    st.markdown(f"### 🎬 {title}")
-
-    # 拼接台词文本并渲染
-    desc = act_data.get("desc", "")
-    desc_text = "".join(desc) if isinstance(desc, (list, tuple)) else str(desc)
-    st.markdown(
-        f"<div class='dialogue-box'>{desc_text}</div>", unsafe_allow_html=True
-    )
-
-    # 提取选项
-    choices_list = act_data.get("choices", [])
-else:
-    st.success("🎉 当前路线剧情已播放完毕！感谢游玩！")
-
-# 如果剧本列表有内容，且还没放完
-if member_story and act_index < len(member_story):
-    act_data = member_story[act_index]
-
-    if isinstance(act_data, dict):
-        act_title = act_data.get("title", f"第 {act_index + 1} 幕")
-        st.markdown(f"### 🎬 {act_title}")
-
-        if "desc" in act_data:
-            st.markdown(
-                f"<div class='dialogue-box'>{act_data['desc']}</div>",
-                unsafe_allow_html=True,
-            )
-
-        choices_list = act_data.get("choices", [])
-else:
-    # 调试提示：如果没拿到剧本，抛出警告而不是误判为通关
-    if not member_story:
-        st.warning(
-            f"⚠️ 未找到 [{current_target}] 的剧本数据，请检查 stories/ 文件夹导入是否正常！"
-        )
-    else:
-        st.success("🎉 游戏结束！感谢游玩！")
 
     for idx, choice in enumerate(choices_list):
         if len(choice) == 3:
@@ -646,36 +592,34 @@ elif st.session_state.stage == "playing":
     
     st.info(f"当前身份：**{current_role}** | 攻略对象：**{current_target}**")
     
-    # 获取剧本数据
-    member_story = get_member_story(current_target)
-    act_index = st.session_state.get('current_act', 0)
-    
-    if member_story and act_index < len(member_story):
-        current_turn = member_story[act_index]
-        
-        # 渲染剧情标题与描述
-        st.markdown(f"### 🎬 {current_turn.get('title', f'第 {act_index + 1} 幕')}")
-        if 'desc' in current_turn:
-            st.markdown(f"<div class='dialogue-box'>{current_turn['desc']}</div>", unsafe_allow_html=True)
-            
-        # 渲染选项按钮
-        choices = current_turn.get("choices", [])
-        for idx, choice_item in enumerate(choices):
-            btn_text = choice_item[0] if isinstance(choice_item, (list, tuple)) else str(choice_item)
-            reply_text = choice_item[1] if isinstance(choice_item, (list, tuple)) and len(choice_item) > 1 else ""
-            
-            btn_key = f"choice_act_{act_index}_{idx}"
-            if st.button(btn_text, key=btn_key, use_container_width=True):
-                if reply_text:
-                    st.success(f"【{current_target}的回应】\n\n{reply_text}")
-                
-                # 点击推进到下一幕
-                st.session_state.current_act += 1
-                st.rerun()
-    else:
-        # 剧本播放完毕，跳转到结束
-        st.session_state.stage = "game_over"
-        st.rerun()
+# ==================== 最新适配剧情提取逻辑 ====================
+current_target = st.session_state.get("target_member", "丈君")
+current_role = st.session_state.get("player_role", "经纪人")
+current_day = st.session_state.get("current_day", 1)
+current_turn = st.session_state.get("current_turn", 1)
+
+# 读取字典里的回合数据
+act_data = get_member_story(
+    current_target, current_role, current_day, current_turn
+)
+
+if act_data and isinstance(act_data, dict):
+    # 1. 渲染标题
+    title = act_data.get("title", f"第 {current_turn} 回合")
+    st.markdown(f"### 🎬 {title}")
+
+    # 2. 渲染台词
+    desc = act_data.get("desc", "")
+    desc_text = "".join(desc) if isinstance(desc, (list, tuple)) else str(desc)
+    st.markdown(
+        f"<div class='dialogue-box'>{desc_text}</div>", unsafe_allow_html=True
+    )
+
+    # 3. 获取选项列表
+    choices_list = act_data.get("choices", [])
+else:
+    st.success("🎉 当前路线剧情已播放完毕！感谢游玩！")
+    choices_list = []
 
 # -------------------------------------------------------------
 # 阶段三：游戏结束 / 结局
