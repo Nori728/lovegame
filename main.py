@@ -210,6 +210,8 @@ if "last_dialogue_result" not in st.session_state:
     st.session_state.last_dialogue_result = None
 if "random_event" not in st.session_state:
     st.session_state.random_event = None
+if "daily_gacha_result" not in st.session_state:
+    st.session_state.daily_gacha_result = None
 
 # -----------------------------------------------------------------------------
 # 4. 标题与选择区域 (已用 if stage == "menu" 包裹，解决封面重叠问题)
@@ -296,7 +298,7 @@ with col_g2:
         else:
             st.warning("积分不足10分,快去剧情里增加好感吧！")
 
-if st.session_state.daily_gacha_result:
+if st.session_state.get("daily_gacha_result"):
     lname, ldata = st.session_state.daily_gacha_result
     st.info(f"✨ 今日运势大吉！今日最强心动电波对象是：**{lname}**（特点：{ldata['trait']}）。快去选择他开启剧情吧！")
 
