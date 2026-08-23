@@ -6,8 +6,8 @@ if "inventory" not in st.session_state:
 # ==================== 1. 页面配置与初始化 ====================
 st.set_page_config(page_title="浪花男子心动日常", page_icon="💖", layout="centered")
 
-# 初始化所有状态
-if "stage" not in st.session_state: 
+# 初始化所有核心状态（杜绝所有 AttributeError 报错）
+if "stage" not in st.session_state:
     st.session_state.stage = "menu"
 if "player_role" not in st.session_state:
     st.session_state.player_role = "经纪人"
@@ -19,7 +19,15 @@ if "total_score" not in st.session_state:
     st.session_state.total_score = 0
 if "last_dialogue_result" not in st.session_state:
     st.session_state.last_dialogue_result = None
-    # -------------------------------------------------------------
+if "inventory" not in st.session_state:
+    st.session_state.inventory = []
+if "random_event" not in st.session_state:
+    st.session_state.random_event = None
+if "daily_gacha_result" not in st.session_state:
+    st.session_state.daily_gacha_result = None
+if "active_buff" not in st.session_state:
+    st.session_state.active_buff = None
+# -------------------------------------------------------------
 # 阶段一：开始菜单（只有在这个阶段才会显示封面和大标题）
 # -------------------------------------------------------------
 if st.session_state.stage == "menu":
