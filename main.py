@@ -1,6 +1,7 @@
 import random
 import streamlit as st
-
+if "inventory" not in st.session_state:
+    st.session_state.inventory = []
 # ==================== 1. 页面配置与初始化 ====================
 st.set_page_config(page_title="浪花男子心动日常", page_icon="💖", layout="centered")
 
@@ -27,17 +28,15 @@ if "daily_gacha_result" not in st.session_state:
     st.session_state.daily_gacha_result = None
 if "active_buff" not in st.session_state:
     st.session_state.active_buff = None
+
 # ==================== 1.1 界面视觉美化 (Custom CSS) ====================
 st.markdown("""
 <style>
-    /* 1. 主页面背景：柔和粉白渐变 */
     .stApp {
         background: linear-gradient(135deg, #fff5f7 0%, #fed7aa 50%, #fbcfe8 100%) !important;
         background-attachment: fixed !important;
         font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
     }
-
-    /* 2. 核心内容卡片容器封装 */
     .block-container {
         background: rgba(255, 255, 255, 0.75);
         backdrop-filter: blur(12px);
@@ -49,8 +48,6 @@ st.markdown("""
         margin-top: 1rem;
         margin-bottom: 2rem;
     }
-
-    /* 3. 扭蛋机与背包区域 */
     .gacha-box {
         background: linear-gradient(135deg, #fffbe3 0%, #fef3c7 100%);
         border: 2px dashed #f59e0b;
@@ -59,8 +56,6 @@ st.markdown("""
         margin-bottom: 15px;
         box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
     }
-
-    /* 4. Galgame 风格对话框 */
     .dialogue-box {
         background: rgba(255, 255, 255, 0.95);
         border: 2px solid #f472b6;
@@ -85,8 +80,6 @@ st.markdown("""
         font-weight: bold;
         border-radius: 10px;
     }
-
-    /* 5. 心动粉色胶囊按钮样式 */
     div.stButton > button {
         background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%) !important;
         color: white !important;
@@ -98,20 +91,14 @@ st.markdown("""
         box-shadow: 0 4px 14px rgba(236, 72, 153, 0.35) !important;
         transition: all 0.25s ease-in-out !important;
     }
-    
-    /* 按钮悬浮效果 (Hover) */
     div.stButton > button:hover {
         transform: translateY(-2px) scale(1.02) !important;
         box-shadow: 0 6px 20px rgba(236, 72, 153, 0.5) !important;
         background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%) !important;
     }
-
-    /* 6. 选择框与下拉菜单美化 */
     div[data-baseweb="select"] {
         border-radius: 12px !important;
     }
-
-    /* 7. 隐藏 Streamlit 默认的页眉与页脚以增强沉浸感 */
     header {visibility: hidden;}
     footer {visibility: hidden;}
 </style>
@@ -198,7 +185,6 @@ MEMBERS = {
         "img": "https://i.pinimg.com/1200x/47/1a/59/471a59c662b0affdee44776e34946118.jpg",
     },
 }
-
 
 ROLES = ["经纪人", "青梅竹马", "在日学生or打工人"]
 
@@ -291,6 +277,11 @@ if st.session_state.stage == "menu":
 
     if st.button("💖 开启心动旅程", use_container_width=True):
         st.session_state.stage = "playing"
+        st.session_state.current_day = 1
+        st.session_state.current_turn = 1
+        st.session_state.total_score = 0
+        st.session_state.last_dialogue_result = None
+        st.session_state.random_event = None
         st.rerun()
 
 # -------------------------------------------------------------
@@ -303,7 +294,8 @@ elif st.session_state.stage == "playing":
     current_day = st.session_state.get("current_day", 1)
     current_turn = st.session_state.get("current_turn", 1)
 
-    st.info(f"当前身份：**{current_role}** | 攻略对象：**{current_target}** | 当前积分：**{st.session_state.total_score}**")
+    # 状态展示栏：增加了天数与回合的显示
+    st.info(f"📅 **第 {current_day} 天 - 第 {current_turn} 回合** | 身份：**{current_role}** | 攻略对象：**{m_name}** | 好感积分：**{st.session_state.total_score}**")
 
     # A. 先处理【突发事件】展示
     if st.session_state.random_event:
@@ -509,112 +501,146 @@ elif st.session_state.stage == "playing":
         current_target, current_role, current_day, current_turn
     )
 
-    if act_data and isinstance(act_data, dict):
-        title = act_data.get("title", f"第 {current_turn} 回合")
-        st.markdown(f"### 🎬 {title}")
+    # 如果无法找到后续剧情（说明剧情放完，或天数超标），直接跳转到结局
+    if not act_data or not isinstance(act_data, dict):
+        st.session_state.stage = "game_over"
+        st.rerun()
 
-        desc = act_data.get("desc", "")
-        desc_text = "".join(desc) if isinstance(desc, (list, tuple)) else str(desc)
-        st.markdown(
-            f"<div class='dialogue-box'>{desc_text}</div>", unsafe_allow_html=True
-        )
+    title = act_data.get("title", f"第 {current_turn} 回合")
+    st.markdown(f"### 🎬 {title}")
 
-        choices_list = act_data.get("choices", [])
+    desc = act_data.get("desc", "")
+    desc_text = "".join(desc) if isinstance(desc, (list, tuple)) else str(desc)
+    st.markdown(
+        f"<div class='dialogue-box'>{desc_text}</div>", unsafe_allow_html=True
+    )
 
-        # 遍历与渲染当前回合的动态选项
-        for idx, choice in enumerate(choices_list):
-            if len(choice) == 3:
-                btn_text, reply_text, base_score = choice
-            else:
-                btn_text, reply_text, base_score = choice[0], "……（温柔地看着你笑）", 20
+    choices_list = act_data.get("choices", [])
 
-            if st.button(btn_text, key=f"choice_{current_day}_{current_turn}_{idx}", use_container_width=True):
-                actual_score = base_score
-                active_buff = st.session_state.get("active_buff")
+    # 遍历与渲染当前回合的动态选项
+    for idx, choice in enumerate(choices_list):
+        if len(choice) == 3:
+            btn_text, reply_text, base_score = choice
+        else:
+            btn_text, reply_text, base_score = choice[0], "……（温柔地看着你笑）", 20
 
-                if active_buff == "🍬 恋爱加倍糖果":
-                    actual_score *= 2
-                    st.session_state.active_buff = None
-                    st.toast("🍬 恋爱加倍糖果生效！好感积分翻倍！", icon="✨")
-                elif active_buff == "🎧 读心耳机":
-                    actual_score += 15
-                    st.session_state.active_buff = None
-                    st.toast("🎧 读心耳机生效：额外 +15 积分！", icon="✨")
-                elif active_buff in ["☕ 专属应援手摇杯", "🥤 冰爽解暑饮料"]:
-                    actual_score += 10
-                    st.session_state.active_buff = None
-                    st.toast("☕ 道具加成生效：额外 +10 积分！", icon="✨")
-                elif active_buff == "🌙 星空定制项链":
-                    actual_score += 25
-                    st.session_state.active_buff = None
-                    st.toast("🌙 星空定制项链生效：额外 +25 积分！", icon="💖")
+        if st.button(btn_text, key=f"choice_{current_day}_{current_turn}_{idx}", use_container_width=True):
+            actual_score = base_score
+            active_buff = st.session_state.get("active_buff")
 
-                st.session_state.total_score += actual_score
+            if active_buff == "🍬 恋爱加倍糖果":
+                actual_score *= 2
+                st.session_state.active_buff = None
+                st.toast("🍬 恋爱加倍糖果生效！好感积分翻倍！", icon="✨")
+            elif active_buff == "🎧 读心耳机":
+                actual_score += 15
+                st.session_state.active_buff = None
+                st.toast("🎧 读心耳机生效：额外 +15 积分！", icon="✨")
+            elif active_buff in ["☕ 专属应援手摇杯", "🥤 冰爽解暑饮料"]:
+                actual_score += 10
+                st.session_state.active_buff = None
+                st.toast("☕ 道具加成生效：额外 +10 积分！", icon="✨")
+            elif active_buff == "🌙 星空定制项链":
+                actual_score += 25
+                st.session_state.active_buff = None
+                st.toast("🌙 星空定制项链生效：额外 +25 积分！", icon="💖")
 
-                act_title = f"第{current_day}天 第{current_turn}回合"
-                st.session_state.last_dialogue_result = (
-                    act_title,
-                    btn_text,
-                    reply_text,
-                    actual_score
-                )
+            st.session_state.total_score += actual_score
 
-                # 检查突发事件触发 (40% 概率)
-                if st.session_state.get("random_event") is None and random.random() < 0.4:
-                    events_pool = [
-                        {
-                            "title": "🚨 突发危机：文春记者的长焦镜头",
-                            "desc": f"在约会途中，街角突然闪过一道可疑的快门闪光灯！有八卦记者正在试图偷拍你和 {m_name} 的亲密合影！"
-                        },
-                        {
-                            "title": "⚡ 突发危机：热情粉丝与私生饭围堵",
-                            "desc": f"由于近期人气暴涨，你们在离开咖啡厅时突然被大批粉丝和围观人群堵在门口，场面一度有些混乱！"
-                        },
-                        {
-                            "title": "🌧️ 突发危机：突如其来的暴雨袭城",
-                            "desc": f"原本晴朗的天空瞬间下起倾盆大雨，街上的行人纷纷避雨，你们的计划被打乱了。"
-                        },
-                        {
-                            "title": "📋 突发危机：经纪人突击查岗",
-                            "desc": f"手机突然疯狂震动！经纪人的夺命连环Call打了过来，质问大明星现在到底在哪里、有没有偷偷旷工跑去约会！"
-                        },
-                        {
-                            "title": "🚲 突发状况：自行车链条突然脱落",
-                            "desc": f"骑车载着 {m_name} 经过坂道时，单车的链条突然卡死脱落！两人狼狈地推着车，却在夕阳下笑作一团。"
-                        },
-                        {
-                            "title": "🍙 突发日常：深夜便利店的半价便当争夺战",
-                            "desc": f"深夜在街角罗森便利店抢最后一份半价炸鸡块时，你和 {m_name} 的手同时按在了包装盒上！"
-                        },
-                        {
-                            "title": "🐱 突发趣事：路遇厚脸皮的流浪肥猫“碰瓷”",
-                            "desc": f"回家的巷子里，一只橘猫突然大摇大摆地躺在你们脚边打滚赖着不走，{m_name} 蹲下来笑得毫无偶像包袱。"
-                        },
-                        {
-                            "title": "💸 突发社死：出站时Suica卡余额不足",
-                            "desc": f"急着出站时，闸机突然发出刺耳的“哔哔”声将你拦下，身后排着长队，{m_name} 忍俊不禁地帮你在旁边充了值。"
-                        },
-                        {
-                            "title": "📻 突发心动：店内突然播放他的成名曲",
-                            "desc": f"在安静的中古CD店或咖啡馆里，店里的音响突然毫无征兆地放起了 {m_name} 的出道单曲，气氛瞬间变得微妙又浪漫。"
-                        },
-                        {
-                            "title": "🥞 突发状况：亲手做的日式料理“惨遭翻车”",
-                            "desc": f"你信心满满地做了一份厚蛋烧/咖喱，结果端上桌时卖相惨不忍睹，{m_name} 却一脸视死如归地笑着说要全部吃光。"
-                        }
-                    ]
-                    st.session_state.random_event = random.choice(events_pool)
+            act_title = f"第{current_day}天 第{current_turn}回合"
+            st.session_state.last_dialogue_result = (
+                act_title,
+                btn_text,
+                reply_text,
+                actual_score
+            )
 
-                st.session_state.current_turn += 1
-                st.rerun()
+            # 检查突发事件触发 (40% 概率)
+            if st.session_state.get("random_event") is None and random.random() < 0.4:
+                events_pool = [
+                    {
+                        "title": "🚨 突发危机：文春记者的长焦镜头",
+                        "desc": f"在约会途中，街角突然闪过一道可疑的快门闪光灯！有八卦记者正在试图偷拍你和 {m_name} 的亲密合影！"
+                    },
+                    {
+                        "title": "⚡ 突发危机：热情粉丝与私生饭围堵",
+                        "desc": f"由于近期人气暴涨，你们在离开咖啡厅时突然被大批粉丝和围观人群堵在门口，场面一度有些混乱！"
+                    },
+                    {
+                        "title": "🌧️ 突发危机：突如其来的暴雨袭城",
+                        "desc": f"原本晴朗的天空瞬间下起倾盆大雨，街上的行人纷纷避雨，你们的计划被打乱了。"
+                    },
+                    {
+                        "title": "📋 突发危机：经纪人突击查岗",
+                        "desc": f"手机突然疯狂震动！经纪人的夺命连环Call打了过来，质问大明星现在到底在哪里、有没有偷偷旷工跑去约会！"
+                    },
+                    {
+                        "title": "🚲 突发状况：自行车链条突然脱落",
+                        "desc": f"骑车载着 {m_name} 经过坂道时，单车的链条突然卡死脱落！两人狼狈地推着车，却在夕阳下笑作一团。"
+                    },
+                    {
+                        "title": "🍙 突发日常：深夜便利店的半价便当争夺战",
+                        "desc": f"深夜在街角罗森便利店抢最后一份半价炸鸡块时，你和 {m_name} 的手同时按在了包装盒上！"
+                    },
+                    {
+                        "title": "🐱 突发趣事：路遇厚脸皮的流浪肥猫“碰瓷”",
+                        "desc": f"回家的巷子里，一只橘猫突然大摇大摆地躺在你们脚边打滚赖着不走，{m_name} 蹲下来笑得毫无偶像包袱。"
+                    },
+                    {
+                        "title": "💸 突发社死：出站时Suica卡余额不足",
+                        "desc": f"急着出站时，闸机突然发出刺耳的“哔哔”声将你拦下，身后排着长队，{m_name} 忍俊不禁地帮你在旁边充了值。"
+                    },
+                    {
+                        "title": "📻 突发心动：店内突然播放他的成名曲",
+                        "desc": f"在安静的中古CD店或咖啡馆里，店里的音响突然毫无征兆地放起了 {m_name} 的出道单曲，气氛瞬间变得微妙又浪漫。"
+                    },
+                    {
+                        "title": "🥞 突发状况：亲手做的日式料理“惨遭翻车”",
+                        "desc": f"你信心满满地做了一份厚蛋烧/咖喱，结果端上桌时卖相惨不忍睹，{m_name} 却一脸视死如归地笑着说要全部吃光。"
+                    }
+                ]
+                st.session_state.random_event = random.choice(events_pool)
+
+            # ---------------- 回合与天数的推进逻辑 ----------------
+            st.session_state.current_turn += 1
+
+            # 假设每个天数有 3 个回合，满 3 个回合则天数 +1，回合归 1
+            if st.session_state.current_turn > 3:
+                st.session_state.current_day += 1
+                st.session_state.current_turn = 1
+
+            # 假设设定总共游玩 7 天，超过 7 天进入结局
+            if st.session_state.current_day > 7:
+                st.session_state.stage = "game_over"
+
+            st.rerun()
 
 # -------------------------------------------------------------
 # 阶段三：游戏结束 / 结局
 # -------------------------------------------------------------
 elif st.session_state.stage == "game_over":
+    st.balloons()
     st.success("🎉 游戏结束！感谢游玩！")
-    st.write(f"最终获得心动积分：**{st.session_state.total_score}**")
-    if st.button("🔄 重新开始游戏", key="restart_game_button"):
+    
+    score = st.session_state.total_score
+    m_name = st.session_state.get("target_member", "成员")
+    
+    st.markdown(f"### 💌 最终告白与评级")
+    st.write(f"最终获得心动积分：**{score}** 分")
+
+    # 根据得分判定最终结局
+    if score >= 150:
+        st.markdown(f"💖 **SSR 结局：【超越星辰的偏爱】**")
+        st.write(f"{m_name} 在演唱会结束后偷偷把你拉进后台休息室，紧紧抱住你：『从今往后，我所有的荣耀与浪漫，都只属于你一个人。』")
+    elif score >= 80:
+        st.markdown(f"🌸 **SR 结局：【暖洋洋的日常陪伴】**")
+        st.write(f"{m_name} 笑着递给你一杯热咖啡：『和在一起的每一天都很开心，以后也请多多指教啦！』")
+    else:
+        st.markdown(f"☘️ **NORMAL 结局：【默契的好友关系】**")
+        st.write(f"{m_name} 拍了拍你的肩膀：『你真是个可靠的伙伴！下次再一起出去玩吧！』")
+
+    st.markdown("---")
+    if st.button("🔄 重新开始游戏", key="restart_game_button", use_container_width=True):
         st.session_state.stage = "menu"
         st.session_state.current_turn = 1
         st.session_state.current_day = 1
