@@ -4,7 +4,6 @@ if "inventory" not in st.session_state:
     st.session_state.inventory = []
 # ==================== 1. 页面配置与初始化 ====================
 st.set_page_config(page_title="浪花男子心动日常", page_icon="💖", layout="centered")
-st.write("已加载成员：", list(STORIES.keys()))
 
 # 初始化所有核心状态
 if "stage" not in st.session_state:
@@ -127,6 +126,7 @@ try:
     }
 except ImportError:
     STORIES = {}
+    st.write("已加载成员：", list(STORIES.keys()))
 
 
 def get_member_story(member_name, role="经纪人", day=1, turn=1):
