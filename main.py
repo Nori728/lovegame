@@ -4,6 +4,7 @@ if "inventory" not in st.session_state:
     st.session_state.inventory = []
 # ==================== 1. 页面配置与初始化 ====================
 st.set_page_config(page_title="浪花男子心动日常", page_icon="💖", layout="centered")
+st.write("已加载成员：", list(STORIES.keys()))
 
 # 初始化所有核心状态
 if "stage" not in st.session_state:
@@ -129,23 +130,54 @@ except ImportError:
 
 
 def get_member_story(member_name, role="经纪人", day=1, turn=1):
+    # 1. 获取成员字典
     member_dict = STORIES.get(member_name, {})
-    if not isinstance(member_dict, dict):
+    if not isinstance(member_dict, dict) or not member_dict:
         return None
 
-    role_dict = member_dict.get(role, next(iter(member_dict.values()), {}))
+    # 2. 获取身份字典 (容错：找不到就取第一个身份)
+    role_dict = member_dict.get(role)
+    if not isinstance(role_dict, dict):
+        role_dict = next(iter(member_dict.values()), {})
     if not isinstance(role_dict, dict):
         return None
 
-    day_dict = role_dict.get(
-        day, role_dict.get(str(day), next(iter(role_dict.values()), {}))
+    # 3. 获取天数字典 (兼容 1 和 "1" / Day1)
+    day_dict = (
+        role_dict.get(day)
+        or role_dict.get(str(day))
+        or role_dict.get(f"day{day}")
+        or role_dict.get(f"Day{day}")
     )
+    if not isinstance(day_dict, dict):
+        # 兜底：取当前顺序位置的天数
+        day_keys = list(role_dict.keys())
+        if len(day_keys) >= day:
+            day_dict = role_dict.get(day_keys[day - 1], {})
+
     if not isinstance(day_dict, dict):
         return None
 
-    turns_dict = day_dict.get("turns", {})
-    return turns_dict.get(turn, turns_dict.get(str(turn), None))
+    # 4. 获取 turns 字典
+    turns_dict = day_dict.get("turns", day_dict)
+    if not isinstance(turns_dict, dict):
+        return None
 
+    # 5. 获取具体回合 (兼容 1 和 "1" / turn1)
+    act = (
+        turns_dict.get(turn)
+        or turns_dict.get(str(turn))
+        or turns_dict.get(f"turn{turn}")
+        or turns_dict.get(f"Turn{turn}")
+    )
+
+    if not act and isinstance(turns_dict, dict):
+        # 兜底：取当前顺序位置的回合
+        turn_keys = [k for k in turns_dict.keys() if k != "title"]
+        if len(turn_keys) >= turn:
+            act = turns_dict.get(turn_keys[turn - 1])
+
+    return act
 
 # ==================== 3. 基础数据源 ====================
 MEMBERS = {
