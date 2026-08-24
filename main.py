@@ -235,42 +235,40 @@ for idx, choice in enumerate(choices_list):
         btn_text, reply_text, base_score = choice[0], "……（温柔地看着你笑）", 20
 
     if st.button(btn_text, key=f"choice_{current_day}_{current_turn}_{idx}", use_container_width=True):
-            # -----------------------------------------------------------------
-            # Buff 道具加成计算（修复缩进对齐）
-            # -----------------------------------------------------------------
-            actual_score = base_score
-            active_buff = st.session_state.get("active_buff")
+        # -----------------------------------------------------------------
+        # Buff 道具加成计算（修复缩进对齐）
+        # -----------------------------------------------------------------
+        actual_score = base_score
+        active_buff = st.session_state.get("active_buff")
 
-            if active_buff == "🍬 恋爱加倍糖果":
-                actual_score *= 2
-                st.session_state.active_buff = None
-                st.toast("🍬 恋爱加倍糖果生效！好感积分翻倍！", icon="✨")
-            elif active_buff == "🎧 读心耳机":
-                actual_score += 15
-                st.session_state.active_buff = None
-                st.toast("🎧 读心耳机生效：额外 +15 积分！", icon="✨")
-            elif active_buff in ["☕ 专属应援手摇杯", "🥤 冰爽解暑饮料"]:
-                actual_score += 10
-                st.session_state.active_buff = None
-                st.toast("☕ 道具加成生效：额外 +10 积分！", icon="✨")
-            elif active_buff == "🌙 星空定制项链":
-                actual_score += 25
-                st.session_state.active_buff = None
-                st.toast("🌙 星空定制项链生效：额外 +25 积分！", icon="💖")
-            # 累加积分  
-            st.session_state.total_score += actual_score
+        if active_buff == "🍬 恋爱加倍糖果":
+            actual_score *= 2
+            st.session_state.active_buff = None
+            st.toast("🍬 恋爱加倍糖果生效！好感积分翻倍！", icon="✨")
+        elif active_buff == "🎧 读心耳机":
+            actual_score += 15
+            st.session_state.active_buff = None
+            st.toast("🎧 读心耳机生效：额外 +15 积分！", icon="✨")
+        elif active_buff in ["☕ 专属应援手摇杯", "🥤 冰爽解暑饮料"]:
+            actual_score += 10
+            st.session_state.active_buff = None
+            st.toast("☕ 道具加成生效：额外 +10 积分！", icon="✨")
+        elif active_buff == "🌙 星空定制项链":
+            actual_score += 25
+            st.session_state.active_buff = None
+            st.toast("🌙 星空定制项链生效：额外 +25 积分！", icon="💖")
+            
+        # 累加积分  
+        st.session_state.total_score += actual_score
 
-            # 记录历史与最新结果
-            st.session_state.last_dialogue_result = (
-                act_title,
-                btn_text,
-                reply_text,
-                actual_score
-            )
-
-            # 推进到下一幕并清空上一幕缓存
-            st.session_state.current_act += 1
-            st.rerun()
+        # 记录历史与最新结果
+        act_title = f"第{current_day}天 第{current_turn}回合"
+        st.session_state.last_dialogue_result = (
+            act_title,
+            btn_text,
+            reply_text,
+            actual_score
+        )
 
         # 3. 检查是否有突发事件触发 (40% 概率)
         if st.session_state.get("current_event") is None and random.random() < 0.4:
@@ -316,9 +314,12 @@ for idx, choice in enumerate(choices_list):
                     "desc": f"你信心满满地做了一份厚蛋烧/咖喱，结果端上桌时卖相惨不忍睹，{m_name} 却一脸视死如归地笑着说要全部吃光。"
                 }
             ]
-            
             st.session_state.current_event = random.choice(events_pool)
-            st.rerun()
+
+        # 推进到下一幕/回合
+        if hasattr(st.session_state, "current_act"):
+            st.session_state.current_act += 1
+        st.rerun()
 # -----------------------------------------------------------------------------
 # 6. 游戏流程控制 (突发事件弹窗处理)
 # -----------------------------------------------------------------------------
