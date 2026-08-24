@@ -47,15 +47,6 @@ from stories.jo import JO_STORY
 from stories.kento import KENTO_STORY 
 from stories.micchi import MICCHI_STORY
 from stories.purin import PURIN_STORY
-# ==================== 剧本导入与安全获取 ====================
-try:
-    from stories.dajiang import DAJIANG_STORY
-    from stories.gaogong import GAOGONG_STORY
-    from stories.jo import JO_STORY
-    from stories.kento import KENTO_STORY
-    from stories.micchi import MICCHI_STORY
-    from stories.purin import PURIN_STORY
-    from stories.ryuche import RYUCHE_STORY
 
     STORIES = {
         "大酱": DAJIANG_STORY,
@@ -183,10 +174,6 @@ ROLES = ["经纪人", "青梅竹马", "在日学生or打工人"]
 # -----------------------------------------------------------------------------
 # 3. 标题与选择区域 (已用 if stage == "menu" 包裹，解决封面重叠问题)
 # -----------------------------------------------------------------------------
-if st.session_state.stage == "menu":
-    st.markdown('<p class="otome-title">💖 浪花男子心动日常</p>', unsafe_allow_html=True)
-    st.markdown('<p class="sub-header">✨ 沉浸式乙女恋爱养成企划</p>', unsafe_allow_html=True)
-
     col_sel1, col_sel2 = st.columns(2)
     with col_sel1:
         player_role = st.selectbox("1️⃣ 请选择你的身份：", ROLES)
@@ -313,7 +300,6 @@ for idx, choice in enumerate(choices_list):
     if st.button(btn_text, key=f"choice_{current_day}_{current_turn}_{idx}", use_container_width=True):
         # 计算 Buff 加成
         actual_score = base_score
-            actual_score = base_score
             if st.session_state.active_buff == "🍬 恋爱加倍糖果":
                 actual_score *= 2
                 st.session_state.active_buff = None  
