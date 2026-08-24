@@ -235,25 +235,28 @@ for idx, choice in enumerate(choices_list):
         btn_text, reply_text, base_score = choice[0], "……（温柔地看着你笑）", 20
 
     if st.button(btn_text, key=f"choice_{current_day}_{current_turn}_{idx}", use_container_width=True):
-        # 计算 Buff 加成
-        actual_score = base_score
-            if st.session_state.active_buff == "🍬 恋爱加倍糖果":
+            # -----------------------------------------------------------------
+            # Buff 道具加成计算（修复缩进对齐）
+            # -----------------------------------------------------------------
+            actual_score = base_score
+            active_buff = st.session_state.get("active_buff")
+
+            if active_buff == "🍬 恋爱加倍糖果":
                 actual_score *= 2
-                st.session_state.active_buff = None  
+                st.session_state.active_buff = None
                 st.toast("🍬 恋爱加倍糖果生效！好感积分翻倍！", icon="✨")
-            elif st.session_state.active_buff == "🎧 读心耳机":
+            elif active_buff == "🎧 读心耳机":
                 actual_score += 15
                 st.session_state.active_buff = None
                 st.toast("🎧 读心耳机生效：额外 +15 积分！", icon="✨")
-            elif st.session_state.active_buff in ["☕ 专属应援手摇杯", "🥤 冰爽解暑饮料"]:
+            elif active_buff in ["☕ 专属应援手摇杯", "🥤 冰爽解暑饮料"]:
                 actual_score += 10
                 st.session_state.active_buff = None
                 st.toast("☕ 道具加成生效：额外 +10 积分！", icon="✨")
-            elif st.session_state.active_buff == "🌙 星空定制项链":
+            elif active_buff == "🌙 星空定制项链":
                 actual_score += 25
                 st.session_state.active_buff = None
-                st.toast("🌙 星空定制项链生效：大幅提升结局甜度，额外 +25 积分！", icon="💖")
-
+                st.toast("🌙 星空定制项链生效：额外 +25 积分！", icon="💖")
             # 累加积分  
             st.session_state.total_score += actual_score
 
