@@ -304,14 +304,15 @@ current_role = st.session_state.get("player_role", "经纪人")
 current_day = st.session_state.get("current_day", 1)
 current_turn = st.session_state.get("current_turn", 1)
 
-    for idx, choice in enumerate(choices_list):
-        if len(choice) == 3:
-            btn_text, reply_text, base_score = choice
-        else:
-            btn_text, reply_text, base_score = choice[0], "……（温柔地看着你笑）", 20
+for idx, choice in enumerate(choices_list):
+    if len(choice) == 3:
+        btn_text, reply_text, base_score = choice
+    else:
+        btn_text, reply_text, base_score = choice[0], "……（温柔地看着你笑）", 20
 
-        if st.button(btn_text, key=f"choice_{st.session_state.current_act}_{idx}", use_container_width=True):
-            # 计算 Buff 加成
+    if st.button(btn_text, key=f"choice_{current_day}_{current_turn}_{idx}", use_container_width=True):
+        # 计算 Buff 加成
+        actual_score = base_score
             actual_score = base_score
             if st.session_state.active_buff == "🍬 恋爱加倍糖果":
                 actual_score *= 2
