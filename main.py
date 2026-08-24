@@ -545,12 +545,12 @@ if act_data and isinstance(act_data, dict):
 
     # 3. 获取选项列表
     choices_list = act_data.get("choices", [])
-else:
-    st.success("🎉 当前路线剧情已播放完毕！感谢游玩！")
-    choices_list = []
+elif st.session_state.stage == "playing":
+    # 游戏主流程逻辑
+    pass
 
 # -------------------------------------------------------------
-# 阶段三：游戏结束 / 结局
+# 阶段三：游戏结束 / 结局 
 # -------------------------------------------------------------
 elif st.session_state.stage == "game_over":
     st.success("🎉 游戏结束！感谢游玩！")
