@@ -1,3 +1,7 @@
+import random
+import streamlit as st
+if "inventory" not in st.session_state:
+    st.session_state.inventory = []
 # ==================== 1. 页面配置与初始化 ====================
 st.set_page_config(page_title="浪花男子心动日常", page_icon="💖", layout="centered")
 
