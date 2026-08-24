@@ -1,20 +1,17 @@
-import streamlit as st
-import random
-if "inventory" not in st.session_state:
-    st.session_state.inventory = []
-
 # ==================== 1. 页面配置与初始化 ====================
 st.set_page_config(page_title="浪花男子心动日常", page_icon="💖", layout="centered")
 
-# 初始化所有核心状态（杜绝所有 AttributeError 报错）
+# 初始化所有核心状态
 if "stage" not in st.session_state:
     st.session_state.stage = "menu"
 if "player_role" not in st.session_state:
     st.session_state.player_role = "经纪人"
 if "target_member" not in st.session_state:
     st.session_state.target_member = "丈君"
-if "current_act" not in st.session_state:
-    st.session_state.current_act = 1
+if "current_day" not in st.session_state:
+    st.session_state.current_day = 1
+if "current_turn" not in st.session_state:
+    st.session_state.current_turn = 1
 if "total_score" not in st.session_state:
     st.session_state.total_score = 0
 if "last_dialogue_result" not in st.session_state:
@@ -27,26 +24,17 @@ if "daily_gacha_result" not in st.session_state:
     st.session_state.daily_gacha_result = None
 if "active_buff" not in st.session_state:
     st.session_state.active_buff = None
-# -------------------------------------------------------------
-# 阶段一：开始菜单（只有在这个阶段才会显示封面和大标题）
-# -------------------------------------------------------------
-if st.session_state.stage == "menu":
-    st.markdown("<h1 class='otome-title'>💖 浪花男子心动日常 💖</h1>", unsafe_allow_html=True)
-    st.markdown('<p class="sub-header">✨ 沉浸式乙女恋爱养成企划</p>', unsafe_allow_html=True)
-    st.markdown("### 🌟 开启心动互动剧情")
-    
-    if st.button("🚀 开始心动旅程", key="start_game_button"):
-        st.session_state.stage = "playing"
-        st.session_state.current_act = 0 
-        st.rerun()
 
-# 导入你的剧本 (请确保你的 stories 文件夹和导入语句正确)
-from stories.dajiang import DAJIANG_STORY
-from stories.gaogong import GAOGONG_STORY
-from stories.jo import JO_STORY
-from stories.kento import KENTO_STORY 
-from stories.micchi import MICCHI_STORY
-from stories.purin import PURIN_STORY
+# ==================== 2. 剧本导入与安全获取 ====================
+STORIES = {}
+try:
+    from stories.dajiang import DAJIANG_STORY
+    from stories.gaogong import GAOGONG_STORY
+    from stories.jo import JO_STORY
+    from stories.kento import KENTO_STORY
+    from stories.micchi import MICCHI_STORY
+    from stories.purin import PURIN_STORY
+    from stories.ryuche import RYUCHE_STORY
 
     STORIES = {
         "大酱": DAJIANG_STORY,
@@ -60,77 +48,25 @@ from stories.purin import PURIN_STORY
 except ImportError:
     STORIES = {}
 
-# 适配多层字典结构的剧本获取函数
+
 def get_member_story(member_name, role="经纪人", day=1, turn=1):
     member_dict = STORIES.get(member_name, {})
     if not isinstance(member_dict, dict):
         return None
 
-    # 1. 获取身份（如经纪人）
     role_dict = member_dict.get(role, next(iter(member_dict.values()), {}))
     if not isinstance(role_dict, dict):
         return None
 
-    # 2. 获取天数（如 Day 1）
     day_dict = role_dict.get(
         day, role_dict.get(str(day), next(iter(role_dict.values()), {}))
     )
     if not isinstance(day_dict, dict):
         return None
 
-    # 3. 获取具体回合数据
     turns_dict = day_dict.get("turns", {})
     return turns_dict.get(turn, turns_dict.get(str(turn), None))
-
-# ==================== 5. UI 样式加载 ====================
-st.markdown(
-    """
-<style>
-.stApp {
-    background: linear-gradient(135deg, #fff5f7 0%, #fed7aa 100%);
-}
-.otome-title {
-    font-size: 2.2rem;
-    color: #e11d48;
-    text-align: center;
-    font-weight: bold;
-    margin-bottom: 5px;
-    text-shadow: 1px 1px 2px #fecdd3;
-}
-.dialogue-box {
-    background-color: rgba(255, 255, 255, 0.95);
-    border: 2px solid #fda4af;
-    border-radius: 15px;
-    padding: 20px;
-    margin-top: 15px;
-    box-shadow: 0 10px 25px rgba(225, 29, 72, 0.1);
-}
-.gacha-box {
-    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-    padding: 15px;
-    border-radius: 12px;
-    border: 1px solid #fde68a;
-    margin-bottom: 15px;
-}
-.stButton > button {
-    background: linear-gradient(135deg, #fb7185 0%, #f43f5e 100%) !important;
-    color: white !important;
-    border: none !important;
-    border-radius: 20px !important;
-    font-weight: bold !important;
-    padding: 10px 24px !important;
-}
-.stButton > button:hover {
-    background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%) !important;
-    transform: translateY(-2px) !important;
-}
-</style>
-""",
-    unsafe_allow_html=True,
-)
-# -----------------------------------------------------------------------------
-# 2. 基础数据源 (成员信息)
-# -----------------------------------------------------------------------------
+# ==================== 3. 基础数据源 ====================
 MEMBERS = {
     "丈君": {
         "trait": "⚾ 大阪搞笑担当 · 热血野球少年",
