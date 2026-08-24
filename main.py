@@ -232,12 +232,6 @@ current_role = st.session_state.get("player_role", "经纪人")
 current_day = st.session_state.get("current_day", 1)
 current_turn = st.session_state.get("current_turn", 1)
 
-# 防错处理：优先从 session_state 获取剧情选项，若不存在则使用默认选项列表
-choices_list = st.session_state.get("current_choices", [
-    ("聊聊昨天的比赛", "“你也看了？太精彩了吧！”", 20),
-    ("提醒他准备递交通告表", "“知道了知道了，等会儿就填~”", 10)
-])
-
 for idx, choice in enumerate(choices_list):
     if len(choice) == 3:
         btn_text, reply_text, base_score = choice
